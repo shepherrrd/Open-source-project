@@ -1,0 +1,46 @@
+
+Manhali - Free Course Management System
+
+ * 	Author: El Haddioui Ismail <ismail.elhaddioui@gmail.com>
+ * 	Copyright (C) 2009-2014  El Haddioui Ismail. All rights reserved
+ * 	License : GNU/GPL v3
+		
+English :
+
+Requirements
+============
+
+Apache	-> http://www.apache.org
+PHP 4 or higher -> http://www.php.net
+MySQL 4 or higher -> http://www.mysql.com
+
+Installation
+============
+
+- Edit the file "includes/dbconfig.php" to configure the system.
+- Copy the entire Manhali folder into the web server.
+- Open "install.php" with a browser, example : http://www.manhali.com/install.php
+- Type the setup password (You can find the password in the file "includes/dbconfig.php").
+- Give Manhali write privileges (777) to the folder "docs" with the command : chmod a+w manhali/docs (Unix/Linux System)
+
+==========================================================
+
+Français :
+
+Requirements
+============
+
+Apache	-> http://www.apache.org
+PHP 4 ou plus -> http://www.php.net
+MySQL 4 ou plus -> http://www.mysql.com
+
+Installation
+============
+
+- Editez le fichier "includes/dbconfig.php" pour configurer le système.
+- Copiez tout le dossier de Manhali dans le serveur web.
+- Ouvrez la page "install.php" avec un navigateur, exemple : http://www.manhali.com/install.php
+- Tapez le mot de passe d'installation (vous trouverez le mot de passe dans le fichier "includes/dbconfig.php").
+- Donnez à Manhali les privilèges d'écriture (777) dans le dossier "docs" avec la commande : chmod a+w manhali/docs (Systèmes Unix/Linux)
+
+==========================================================

@@ -1,0 +1,74 @@
+<?php
+/*
+ * 	Manhali - Free Learning Management System
+ *	language.php
+ *	2009-05-16 09:14
+ * 	Author: El Haddioui Ismail <ismail.elhaddioui@gmail.com>
+ * 	Copyright (C) 2009-2014  El Haddioui Ismail. All rights reserved
+ * 	License : GNU/GPL v3
+
+This file is part of Manhali
+
+Manhali is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Manhali is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+defined("access_const") or die( 'Restricted access' );
+
+$langfolder = "language/";
+
+if (file_exists($langfolder)){
+
+	if(!isset($language)){
+		if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($_SESSION['id']) && ctype_digit($_SESSION['id'])){
+			$this_user_id = escape_string($_SESSION['id']);
+			$selectlanguage = mysql_query("select langue_user from `" . $tblprefix . "users` where id_user = $this_user_id;",$connect);
+		}
+		else if (isset($_SESSION['log']) && $_SESSION['log'] == 2 && isset($_SESSION['id']) && ctype_digit($_SESSION['id'])){
+			$this_user_id = escape_string($_SESSION['id']);
+			$selectlanguage = mysql_query("select langue_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $this_user_id;",$connect);
+		}
+		else 
+			$selectlanguage = mysql_query("select langue_site from `" . $tblprefix . "site_infos`;",$connect);
+		
+		if ($selectlanguage){
+			if (mysql_num_rows($selectlanguage) > 0)
+				$language = mysql_result($selectlanguage,0);
+			else $language = "en";
+		} else $language = "en";
+	}
+
+	if (isset($language) && !empty($language) && file_exists($langfolder.$language."/home.ini"))
+		$file_lang = $langfolder.$language."/home.ini";
+	else if (file_exists($langfolder."en/home.ini"))
+		$file_lang = $langfolder."en/home.ini";
+	else if (file_exists($langfolder."fr/home.ini"))
+		$file_lang = $langfolder."fr/home.ini";
+	else die ("Manhali, no language file found in the folder : language");
+
+	$fd = @fopen($file_lang,"r") or die ("Manhali, no language file found in the folder : language");
+	while (!feof($fd)) {
+		$line = fgets($fd);
+  	if (strpos($line,"=")){
+  		$line = str_replace("\r\n","",$line);
+			$chaine = explode("=",$line,2);
+			$name = $chaine[0];
+			$value = $chaine[1];
+			define($name,$value);
+		}
+	}
+	@fclose ($fd);
+} else die ("Manhali, no language folder found");
+
+?>

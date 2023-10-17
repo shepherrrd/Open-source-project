@@ -1,0 +1,275 @@
+body {
+	background-color: #f1d3bd;
+}
+table.infos {
+	border: 3px ridge #f7a568;
+}
+table.redirection {
+	background-color: #f1d3bd;
+}
+td.header {
+	background-color: #f7a568;
+}
+td.verticalmenu {
+	background-color: #c89664;
+}
+td.bgr {
+	background-color: #f1d3bd;
+}
+td.affichage_table {
+	border: 1px solid #000000;
+	text-align: center;
+	font-weight: bold;
+}
+#titre {
+	font-size:16pt;
+	color: #c90016;
+	font-weight: bold;
+	text-decoration: underline;
+	text-align: center;
+}
+#titre_article {
+	font-size:14pt;
+	color: #c90016;
+	font-weight: bold;
+	text-decoration: underline;
+}
+#write_by {
+	font-size:11pt;
+	color: #888888;
+	font-weight: bold;
+}
+#fwd {
+	font-size:9pt;
+	color: #888888;
+	font-weight: bold;
+}
+#tuto_infos {
+	font-weight: bold;
+	text-decoration: underline;
+	text-align: center;
+	font-size:14pt;
+}
+#objectifs {
+	font-weight: bold;
+	text-decoration:underline;
+	color: #000000;
+	font-size:12pt;
+}
+#connexion {
+	width: 553px;
+	border: 2px solid #294963;
+	background-color: White;
+}
+.form {
+	margin-bottom: 0;
+}
+.input {
+	border: 1px solid #000000;
+	margin-bottom: 0;
+	margin-left: 0;
+	margin-right: 0;
+	margin-top: 0;
+	height: 17px;
+}
+.input:focus {
+	border: 1px solid #114E7D;
+}
+.button{
+	font-size: 14px;
+	border: 1px solid #000000;
+	background-color: #f1d3bd;
+	color: #000000;
+	margin-bottom: 0;
+	margin-left: 0;
+	margin-right: 0;
+	margin-top: 0;
+	font-weight: bold;
+}
+.button:hover {
+	border: 1px solid #114E7D;
+	background-color: #f7a568;
+	color: #114E7D;
+}
+.searchbtn{
+	height: 20px;
+	font-size: 11px;
+	border: 1px solid #000000;
+	background-color: #f1d3bd;
+	color: #000000;
+	margin-bottom: 0;
+	margin-left: 0;
+	margin-right: 0;
+	margin-top: 0;
+	font-weight: bold;
+}
+.searchbtn:hover {
+	border: 1px solid #114E7D;
+	background-color: #f7a568;
+	color: #000000;
+}
+#hormenu {
+	font-weight: bold;
+}
+#verticalmenu_text {
+	color: #000000;
+}
+#horizontalmenu_text {
+	color: #000000;
+}
+#breadcrumbs {
+	font-weight: bold;
+	color: #000000;
+	text-decoration: none;
+}
+a.breadcrumbs {
+	font-weight: bold;
+	color: #000000;
+}
+a.partie, li.partie {
+	font-size:16pt;
+	font-weight: bold;
+	color: #c84b00;
+}
+a.chapitre, li.chapitre {
+	font-size:14pt;
+	font-weight: bold;
+	color: #c84b00;
+}
+a.bloc, li.bloc {
+	font-size:12pt;
+	font-weight: bold;
+	color: #c84b00;
+}
+a.horizontalmenu {
+	font-weight: bold;
+	color: #000000;
+	text-decoration: none;
+}
+a.horizontalmenu:hover {
+	text-decoration: underline;
+}
+a.horizontalmenu_selected {
+	color: #c90016;
+	text-decoration: none;
+}
+a.menu_admin {
+	font-weight: bold;
+	color: #004b64;
+	text-decoration: underline;
+}
+a.menu_admin_selected {
+	font-weight: bold;
+	color: #000000;
+	text-decoration: underline;
+}
+a {
+	color: #007daf;
+	text-decoration: underline;
+}
+#normal {
+	font-size:12pt;
+	font-weight: normal;
+	color: #000000;
+}
+
+/* ************************************ */
+/* ********** vertical menu *********** */
+/* ************************************ */
+.menu{
+    width:152px;
+    width/**/:150px;
+    border-top: 1px #FFFFFF solid;
+    border-left: 1px #FFFFFF solid;
+    border-right: 1px #FFFFFF solid;
+    margin:0;
+    padding:0;
+		font-weight: bold;
+		font-family: "Trebuchet MS","Times New Roman";
+		font-size: 10pt;
+    }
+.menu span{
+    display:none;
+    }
+.menu ul{
+    border-top: 1px #FFFFFF solid;
+    border-left: 1px #FFFFFF solid;
+    border-right: 1px #FFFFFF solid;
+    margin:0;
+    padding:0;
+    position:absolute;
+    width:152px;
+    width/**/:150px;
+    }
+.menu li ul{
+    visibility:hidden;
+    }
+.menu a{
+    text-align:center;
+    background-color: #c89664;
+    color: #000000;
+    display:block;
+    width:150px;
+    border-bottom: 1px #FFFFFF solid;
+    text-decoration:none;
+    margin:0;
+    padding:3px 0 3px 0;
+    font-weight: bold;
+		font-family: "Trebuchet MS","Times New Roman";
+		font-size: 10pt;
+    }
+.menu a:hover{
+    background-color: #f7a568;
+    color: #000000;
+    }
+.menu a:focus{
+    background-color: #f7a568;
+}
+.menu span{
+    display:none;
+    }
+.menu li{
+    width:150px;
+    display:block;    
+    float:left;  
+    list-style:none;
+    margin:0;
+    padding:0;
+    }
+* html .menu li {
+    display:inline;
+    float:none;
+    }
+a.linkOver{
+    background-color: #f1d3bd;
+    }
+    
+/* ************************************ */
+/* ************** whatis ************** */
+/* ************************************ */
+a.whatis {
+   position: relative;
+   color: black;
+   text-decoration: none;
+   border-bottom: 1px gray dotted;
+}
+a.whatis span {
+   display: none;
+}
+a.whatis:hover {
+   background: none;
+   z-index: 500;
+   cursor: help;
+}
+a.whatis:hover span {
+   display: inline;
+   position: absolute;
+   white-space: nowrap;
+   top: 30px;
+   left: 20px;
+   background: #f1d3bd;
+   color: #000000;
+   padding: 3px;
+   border: 1px solid #f7a568;
+   border-left: 4px solid #f7a568;
+}

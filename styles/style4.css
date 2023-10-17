@@ -1,0 +1,260 @@
+body {
+	background-color: #f6f6f6;
+}
+table.infos {
+	border: 3px ridge #990134;
+}
+table.redirection {
+	background-color: #f6f6f6;
+}
+td.header {
+	background-color: #990134;
+}
+td.verticalmenu {
+	background-color: #de9e9e;
+}
+td.bgr {
+	background-color: #f6f6f6;
+}
+td.affichage_table {
+	border: 1px solid #000000;
+	text-align: center;
+	font-weight: bold;
+}
+#titre {
+	font-size:16pt;
+	color: #990134;
+	font-weight: bold;
+	text-decoration: underline;
+	text-align: center;
+}
+#titre_article {
+	font-size:14pt;
+	color: #990134;
+	font-weight: bold;
+	text-decoration: underline;
+}
+#write_by {
+	font-size:11pt;
+	color: #888888;
+	font-weight: bold;
+}
+#fwd {
+	font-size:9pt;
+	color: #888888;
+	font-weight: bold;
+}
+#tuto_infos {
+	font-weight: bold;
+	text-decoration: underline;
+	text-align: center;
+	font-size:14pt;
+}
+#objectifs {
+	font-weight: bold;
+	text-decoration:underline;
+	color: #000000;
+	font-size:12pt;
+}
+.form {
+	margin-bottom: 0;
+}
+.input {
+	border: 1px solid #000000;
+	margin-bottom: 0;
+	margin-left: 0;
+	margin-right: 0;
+	margin-top: 0;
+	height: 17px;
+}
+.input:focus {
+	border: 1px solid #c60c31;
+}
+.button{
+	font-size: 14px;
+	border: 1px solid #000000;
+	background-color: #f6f6f6;
+	color: #000000;
+	margin-bottom: 0;
+	margin-left: 0;
+	margin-right: 0;
+	margin-top: 0;
+	font-weight: bold;
+}
+.button:hover {
+	border: 1px solid #000000;
+	background-color: #c60c31;
+	color: #FFFFFF;
+}
+.searchbtn{
+	height: 20px;
+	font-size: 11px;
+	border: 1px solid #000000;
+	background-color: #f6f6f6;
+	color: #000000;
+	margin-bottom: 0;
+	margin-left: 0;
+	margin-right: 0;
+	margin-top: 0;
+	font-weight: bold;
+}
+.searchbtn:hover {
+	border: 1px solid #000000;
+	background-color: #c60c31;
+	color: #FFFFFF;
+}
+#hormenu {
+	font-weight: bold;
+}
+#verticalmenu_text {
+	color: #000000;
+}
+#horizontalmenu_text {
+	color: #FFFFFF;
+}
+#breadcrumbs {
+	font-weight: bold;
+	color: #000000;
+	text-decoration: none;
+}
+a.breadcrumbs {
+	font-weight: bold;
+	color: #000000;
+}
+a.partie, li.partie {
+	font-size:16pt;
+	font-weight: bold;
+	color: #ab4040;
+}
+a.chapitre, li.chapitre {
+	font-size:14pt;
+	font-weight: bold;
+	color: #ab4040;
+}
+a.bloc, li.bloc {
+	font-size:12pt;
+	font-weight: bold;
+	color: #ab4040;
+}
+a.horizontalmenu {
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+a.horizontalmenu:hover {
+	text-decoration: underline;
+}
+a.horizontalmenu_selected {
+	color: #ffbc64;
+	text-decoration: none;
+}
+a {
+	color: #ab4040;
+	text-decoration: underline;
+}
+#normal {
+	font-size:12pt;
+	font-weight: normal;
+	color: #000000;
+}
+
+/* ************************************ */
+/* ********** vertical menu *********** */
+/* ************************************ */
+.menu{
+    width:152px;
+    width/**/:150px;
+    border-top: 1px #000000 solid;
+    border-left: 1px #000000 solid;
+    border-right: 1px #000000 solid;
+    margin:0;
+    padding:0;
+		font-weight: bold;
+		font-family: "Trebuchet MS","Times New Roman";
+		font-size: 10pt;
+    }
+.menu span{
+    display:none;
+    }
+.menu ul{
+    border-top: 1px #000000 solid;
+    border-left: 1px #000000 solid;
+    border-right: 1px #000000 solid;
+    margin:0;
+    padding:0;
+    position:absolute;
+    width:152px;
+    width/**/:150px;
+    }
+.menu li ul{
+    visibility:hidden;
+    }
+.menu a{
+    text-align:center;
+    background-color: #de9e9e;
+    color: #000000;
+    display:block;
+    width:150px;
+    border-bottom: 1px #000000 solid;
+    text-decoration:none;
+    margin:0;
+    padding:3px 0 3px 0;
+		font-weight: bold;
+		font-family: "Trebuchet MS","Times New Roman";
+		font-size: 10pt;
+    }
+.menu a:hover{
+    background-color: #c60c31;
+    color: #FFFFFF;
+    }
+.menu a:focus{
+    background-color: #c60c31;
+}
+.menu span{
+    display:none;
+    }
+.menu li{
+    width:150px;
+    display:block;    
+    float:left;  
+    list-style:none;
+    margin:0;
+    padding:0;
+    }
+* html .menu li {
+    display:inline;
+    float:none;
+    }
+a.linkOver{
+    background-color: #f6f6f6;
+    }
+    
+/* ************************************ */
+/* ************** whatis ************** */
+/* ************************************ */
+a.whatis {
+   position: relative;
+   color: black;
+   text-decoration: none;
+   border-bottom: 1px gray dotted;
+}
+a.whatis span {
+   display: none;
+}
+a.whatis:hover {
+   background: none;
+   z-index: 500;
+   cursor: help;
+}
+a.whatis:hover span {
+   display: inline;
+   position: absolute;
+   white-space: nowrap;
+   top: 30px;
+   left: 20px;
+   background: #f6f6f6;
+   color: #000000;
+   padding: 3px;
+   border: 1px solid #990134;
+   border-left: 4px solid #990134;
+}
