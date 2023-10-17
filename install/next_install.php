@@ -835,7 +835,7 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 									else if ($sexe == "F") $photo_user = "woman.jpg";
 									
     							$select_user_login = $connect->query("select id_user from `" . $tblprefix . "users` where identifiant_user = '$login';");
-    							$select_app_login = $connect->query($connect,"select id_apprenant from `" . $tblprefix . "apprenants` where identifiant_apprenant = '$login';");
+    							$select_app_login = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants` where identifiant_apprenant = '$login';");
  									if (mysqli_num_rows($select_app_login) == 0 && mysqli_num_rows($select_user_login) == 0) {
 										if (mail_valide($email)) {
 	                  	if ($password == $pass_conf) {

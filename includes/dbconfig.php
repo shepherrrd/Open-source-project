@@ -82,7 +82,7 @@ $connect = @mysqli_connect ($host,$user,$passwd,$dbname);
 
 if ($db) {
 $setnames = mysqli_query($connect,"SET NAMES 'UTF8' ");
-// 	$bd_test_req = mysqli_query($connect,"select count(id_site) from site_infos");
+$bd_test_req = mysqli_query($connect,"select count(id_site) from site_infos");
 }
 
 ?>

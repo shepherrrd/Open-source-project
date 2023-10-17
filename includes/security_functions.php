@@ -25,15 +25,16 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 defined("access_const") or die( 'Restricted access' );
-
 function escape_string($value){
-    $magic_quotes_active = get_magic_quotes_gpc();
+include("dbconfig.php");
+
+    $magic_quotes_active = (bool) ini_get('magic_quotes_gpc');
     $new_enough_php = function_exists("mysql_real_escape_string");
     if($new_enough_php){
     		if($magic_quotes_active){
         		$value = stripslashes($value);
     		}
-    		$value = mysql_real_escape_string($value);
+    		$value = mysqli_real_escape_string($connect,$value);
     }
     else{
         if(!$magic_quotes_active){
