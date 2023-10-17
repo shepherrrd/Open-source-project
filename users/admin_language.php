@@ -33,12 +33,12 @@ if (file_exists($langfolder)){
 	if(!isset($language)){
 		if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($_SESSION['id']) && ctype_digit($_SESSION['id'])){
 			$this_user_id = escape_string($_SESSION['id']);
-			$selectlanguage = mysql_query("select langue_user from `" . $tblprefix . "users` where id_user = $this_user_id;",$connect);
+			$selectlanguage = mysqli_query($connect,"select langue_user from `" . $tblprefix . "users` where id_user = $this_user_id;",);
 		} else 
-			$selectlanguage = mysql_query("select langue_site from `" . $tblprefix . "site_infos`;",$connect);
+			$selectlanguage = mysqli_query($connect,"select langue_site from `" . $tblprefix . "site_infos`;");
 		
 		if ($selectlanguage){
-			if (mysql_num_rows($selectlanguage) > 0)
+			if (mysqli_num_rows($selectlanguage) > 0)
 				$language = mysql_result($selectlanguage,0);
 			else $language = "en";
 		} else $language = "en";

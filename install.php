@@ -75,19 +75,19 @@ else {
 				echo "<a href=\"#\" onClick=\"window.location.reload();\">".actualiser."</a>";
 			}
 			else {
-				$select = "SELECT COUNT(*) FROM `" . $tblprefix . "articles`;";
-				$query = @mysqli_query($connect,$select);
+				// $select = "SELECT COUNT(*) FROM `articles`;";
+				// $query = @mysqli_query($connect,$select);
 
-				if($query){
-					echo "<h3><img src=\"images/icones/critical.png\" /><font color=\"red\">" .deja_install. "</h3>";
-					echo "<h3>" .deja_install2. "</font></h3>";
-				}
+				// if($query){
+				// 	echo "<h3><img src=\"images/icones/critical.png\" /><font color=\"red\">" .deja_install. "</h3>";
+				// 	echo "<h3>" .deja_install2. "</font></h3>";
+				// }
 
 				echo "<hr />";
 				echo "<b><img src=\"images/icones/info.png\" />".text_install." <u>includes/bdonfig.php</u><br /><br />";
 				echo form_verif."</b>";
 
-				echo "<br /><br /><form name=\"form1\" method=\"POST\" action=\"install/next_install.php\"><input type=\"hidden\" name=\"pass\" value=\"".md5($_POST['pass'])."\">";
+				echo "<br /><br /><form name=\"form1\" method=\"POST\" action=\"install/next_install.php\"><input type=\"hidden\" name=\"pass\" value=\"".md5($_POST['pass'])."\"><input type=\"hidden\" name=\"etape\" value=\"2\">";
 				echo "<input type=\"hidden\" name=\"lang\" value=\"".$language."\"><input type=\"submit\" class=\"button\" value=\"" .btn_verif. "\"></form>";
 
 				@mysqli_close($connect);

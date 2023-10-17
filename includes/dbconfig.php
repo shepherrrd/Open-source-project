@@ -76,13 +76,13 @@ $dateformat = 3;
 // ************************************************************************
 // ************************************************************************
 // ************************** DO NOT EDIT THIS ! **************************
-$connect = @mysqli_connect ($host,$user,$passwd);
-$db = @mysqli_select_db ($connect,$dbname);
+$connect = @mysqli_connect ($host,$user,$passwd,$dbname);
+ $db = @mysqli_select_db ($connect,$dbname);
 
 
 if ($db) {
-	$setnames = mysqli_query($connect,"SET NAMES 'UTF8' ");
-	//$bd_test_req = mysqli_query($connect,"select count(id_site) from site_infos");
+$setnames = mysqli_query($connect,"SET NAMES 'UTF8' ");
+// 	$bd_test_req = mysqli_query($connect,"select count(id_site) from site_infos");
 }
 
 ?>
