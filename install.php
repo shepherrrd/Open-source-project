@@ -90,7 +90,7 @@ else {
 				echo "<br /><br /><form name=\"form1\" method=\"POST\" action=\"install/next_install.php\"><input type=\"hidden\" name=\"pass\" value=\"".md5($_POST['pass'])."\">";
 				echo "<input type=\"hidden\" name=\"lang\" value=\"".$language."\"><input type=\"submit\" class=\"button\" value=\"" .btn_verif. "\"></form>";
 
-				@mysql_close($connect);
+				@mysqli_close($connect);
 			}
 		 }
 		 else {
