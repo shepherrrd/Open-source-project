@@ -76,14 +76,14 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 	case "1" : {
 		if (!$db){
 			$reqcreation = "CREATE DATABASE " . $dbname . " CHARACTER SET utf8 COLLATE utf8_general_ci;";
-			$create_db = $connect->query(new mysqli($host,$user,$passwd),$reqcreation);
+			$create_db = $connect->query($reqcreation);
 			if ($create_db){
 				$db = mysqli_select_db($connect,$create_db);
-				echo "<h4><img src=\"../images/icones/tips.png\" />".bd_create_succes."</h4>";
+				echo "<h4><img src=\"../images/icones/tips.png\" />bd_create_succes</h4>";
 				echo "<h3></h3>";
 				echo "<h4><img src=\"../images/icones/info.png\" /><font color=\"red\"></font></h4>";
-				echo "<form name=\"form1\" method=\"POST\"><br /><input name=\"insert\" type=\"radio\" value=\"non\" checked>".non."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name=\"insert\" type=\"radio\" value=\"oui\">".oui."<br />";
-				echo "<br /><br /><input type=\"hidden\" name=\"etape\" value=\"2\"><input type=\"hidden\" name=\"pass\" value=\"".$pass."\"><input type=\"hidden\" name=\"lang\" value=\"".$language."\"><input type=\"submit\" class=\"button\" value=\"" .install_step2. "\"></form>";
+				echo "<form name=\"form1\" method=\"POST\"><br /><input name=\"insert\" type=\"radio\" value=\"non\" checked>non&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name=\"insert\" type=\"radio\" value=\"oui\">oui<br />";
+				echo "<br /><br /><input type=\"hidden\" name=\"etape\" value=\"2\"><input type=\"hidden\" name=\"pass\" value=\"".$pass."\"><input type=\"hidden\" name=\"lang\" value=\"".$language."\"><input type=\"submit\" class=\"button\" value=\"install_step2\"></form>";
 			}
 			else {
 				echo "<h4><img src=\"../images/icones/error.png\" /><font color=\"red\"> ".$dbname."</font></h4>";
@@ -91,10 +91,10 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 			}
 		}
 		else {
-			echo "<h3>" .tables_create. "</h3>";
-			echo "<h4><img src=\"../images/icones/info.png\" /><font color=\"red\">".prefix_recommandation."</font></h4>";
-			echo "<form name=\"form1\" method=\"POST\">" .bd_default_data. "<br /><input name=\"insert\" type=\"radio\" value=\"non\" checked>".non."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name=\"insert\" type=\"radio\" value=\"oui\">".oui."<br />";
-			echo bd_default_data2."<br /><br /><input type=\"hidden\" name=\"etape\" value=\"2\"><input type=\"hidden\" name=\"pass\" value=\"".$pass."\"><input type=\"hidden\" name=\"lang\" value=\"".$language."\"><input type=\"submit\" class=\"button\" value=\"" .install_step2. "\"></form>";
+			echo "<h3>tables_create</h3>";
+			echo "<h4><img src=\"../images/icones/info.png\" /><font color=\"red\">prefix_recommandation</font></h4>";
+			echo "<form name=\"form1\" method=\"POST\">bd_default_data<br /><input name=\"insert\" type=\"radio\" value=\"non\" checked>non&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name=\"insert\" type=\"radio\" value=\"oui\">oui<br />";
+			echo "<br /><br /><input type=\"hidden\" name=\"etape\" value=\"2\"><input type=\"hidden\" name=\"pass\" value=\"".$pass."\"><input type=\"hidden\" name=\"lang\" value=\"".$language."\"><input type=\"submit\" class=\"button\" value=\"install_step2\"></form>";
 		}
 	} break;
 
@@ -143,9 +143,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable4 = "CREATE TABLE `" . $tblprefix . "chapitres` (id_chapitre int(10) unsigned NOT NULL auto_increment, id_partie int(10) unsigned NOT NULL default '0', titre_chapitre varchar(100) NOT NULL default '', objectifs_chapitre text NOT NULL, nombre_lectures int(10) unsigned NOT NULL default '0', publie_chapitre enum('1','0') NOT NULL default '1', ordre_chapitre int(10) unsigned NOT NULL default '0', date_creation_chapitre int(10) unsigned NOT NULL default '0', date_modification_chapitre int(10) unsigned NOT NULL default '0', nombre_votes_chapitre int(10) unsigned NOT NULL default '0', rating_chapitre int(10) unsigned NOT NULL default '0', grade_chapitre varchar(30) NOT NULL default '*', PRIMARY KEY  (id_chapitre)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable4);
 				if ($connect->query($createtable4))
-					echo "<li>".creation_table." chapitres</li>";
+					echo "<li> chapitres</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." chapitres</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> chapitres</li></font>";
 					$error_create_table = 1;
 				}
 			  flush();
@@ -154,9 +154,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable5 = "CREATE TABLE `" . $tblprefix . "composants` (id_composant int(4) unsigned NOT NULL auto_increment, nom_composant varchar(50) NOT NULL default '', titre_composant varchar(100) NOT NULL default '', contenu_composant text NOT NULL, active_composant enum('1','0') NOT NULL default '1', ordre_composant int(3) unsigned NOT NULL default '0', PRIMARY KEY  (id_composant)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable5);
 				if ($connect->query($createtable5))
-					echo "<li>".creation_table." composants</li>";
+					echo "<li> composants</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." composants</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> composants</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -165,9 +165,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable6 = "CREATE TABLE `" . $tblprefix . "hormenu` (id_hormenu int(10) unsigned NOT NULL auto_increment, titre_hormenu varchar(100) NOT NULL default '', type_hormenu enum('article','url','module') NOT NULL default 'article', lien_hormenu varchar(200) NOT NULL default '', active_hormenu enum('1','0') NOT NULL default '1', ordre_hormenu int(3) unsigned NOT NULL default '0', PRIMARY KEY  (id_hormenu)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable6);
 				if ($connect->query($createtable6))
-					echo "<li>".creation_table." hormenu</li>";
+					echo "<li> hormenu</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." hormenu</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> hormenu</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -176,9 +176,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable7 = "CREATE TABLE `" . $tblprefix . "messages` (id_message int(10) unsigned NOT NULL auto_increment, id_emetteur int(10) unsigned NOT NULL default '0', id_emetteur_app int(10) unsigned NOT NULL default '0', nom_emetteur varchar(50) NOT NULL default '', email_emetteur varchar(50) NOT NULL default '', id_destinataires text NOT NULL, id_destinataires_app text NOT NULL, titre_message varchar(100) NOT NULL default '', contenu_message text NOT NULL, lu_message text NOT NULL, lu_message_app text NOT NULL, date_message int(10) unsigned NOT NULL default '0', boite_envoi text NOT NULL, boite_envoi_app text NOT NULL, deleted_from_outbox enum('1','0') NOT NULL default '0', PRIMARY KEY  (id_message)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable7);
 				if ($connect->query($createtable7))
-					echo "<li>".creation_table." messages</li>";
+					echo "<li> messages</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." messages</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> messages</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -187,9 +187,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable8 = "CREATE TABLE `" . $tblprefix . "parties` (id_partie int(10) unsigned NOT NULL auto_increment, id_tutoriel int(10) unsigned NOT NULL default '0', titre_partie varchar(100) NOT NULL default '', objectifs_partie text NOT NULL, introduction_partie text NOT NULL, conclusion_partie text NOT NULL, publie_partie enum('1','0') NOT NULL default '1', ordre_partie int(10) unsigned NOT NULL default '0', PRIMARY KEY  (id_partie)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable8);
 				if ($connect->query($createtable8))
-					echo "<li>".creation_table." parties</li>";
+					echo "<li> parties</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." parties</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> parties</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -198,9 +198,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable9 = "CREATE TABLE `" . $tblprefix . "qcm` (id_qcm int(10) unsigned NOT NULL auto_increment, id_chapitre int(10) unsigned NOT NULL default '0', question_qcm text NOT NULL, reponse1_qcm varchar(200) NOT NULL default '', reponse2_qcm varchar(200) NOT NULL default '', reponse3_qcm varchar(200) NOT NULL default '', reponse4_qcm varchar(200) NOT NULL default '', reponse5_qcm varchar(200) NOT NULL default '', reponse6_qcm varchar(200) NOT NULL default '', reponse_correcte enum('1','2','3','4','5','6') NOT NULL default '1', total_essais int(10) unsigned NOT NULL default '0', total_reponses_correctes int(10) unsigned NOT NULL default '0', publie_qcm enum('1','0') NOT NULL default '1', ordre_qcm int(10) unsigned NOT NULL default '0', PRIMARY KEY  (id_qcm)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable9);
 				if ($connect->query($createtable9))
-					echo "<li>".creation_table." qcm</li>";
+					echo "<li> qcm</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." qcm</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> qcm</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -209,9 +209,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable10 = "CREATE TABLE `" . $tblprefix . "site_infos` (id_site int(3) unsigned NOT NULL auto_increment, nom_site varchar(50) NOT NULL default '', titre_site varchar(100) NOT NULL default '', url_site varchar(100) NOT NULL default '', description_site text NOT NULL, keywords_site text NOT NULL, langue_site varchar(20) NOT NULL default '', footer_site text NOT NULL, accueil_multicolonnes enum('1','0') NOT NULL default '1', inscription enum('1','0') NOT NULL default '1', activation_apprenants enum('1','0') NOT NULL default '0', demander_classe enum('1','0') NOT NULL default '1', autoriser_modification_classe enum('1','0') NOT NULL default '0', afficher_profil_aux_visiteurs enum('1','0') NOT NULL default '0', nombre_elements_page int(10) unsigned NOT NULL default '10', nombre_caracteres int(10) unsigned NOT NULL default '500', PRIMARY KEY  (id_site)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable10);
 				if ($connect->query($createtable10))
-					echo "<li>".creation_table." site_infos</li>";
+					echo "<li> site_infos</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." site_infos</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> site_infos</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -220,9 +220,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable11 = "CREATE TABLE `" . $tblprefix . "tutoriels` (id_tutoriel int(10) unsigned NOT NULL auto_increment, id_user int(10) unsigned NOT NULL default '0', titre_tutoriel varchar(100) NOT NULL default '', objectifs_tutoriel text NOT NULL, introduction_tutoriel text NOT NULL, conclusion_tutoriel text NOT NULL, licence_tutoriel enum('by','by-sa','by-nd','by-nc','by-nc-sa','by-nc-nd') NOT NULL default 'by', notes_tutoriel text NOT NULL, publie_tutoriel enum('0','1','2') NOT NULL default '0', ordre_tutoriel int(10) unsigned NOT NULL default '0', date_creation_tutoriel int(10) unsigned NOT NULL default '0', date_modification_tutoriel int(10) unsigned NOT NULL default '0', id_validateur int(10) unsigned NOT NULL default '0', acces_tutoriel varchar(200) NOT NULL default '*', nombre_votes_tutoriel int(10) unsigned NOT NULL default '0', rating_tutoriel int(10) unsigned NOT NULL default '0', PRIMARY KEY  (id_tutoriel)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable11);
 				if ($connect->query($createtable11))
-					echo "<li>".creation_table." tutoriels</li>";
+					echo "<li> tutoriels</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." tutoriels</li></font>";
+					echo "<font color=\"red\"><li><b> : </b>tutoriels</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -231,9 +231,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable12 = "CREATE TABLE `" . $tblprefix . "users` (id_user int(10) unsigned NOT NULL auto_increment, nom_user varchar(50) NOT NULL default '', identifiant_user varchar(30) NOT NULL default '', mdp_user varchar(40) NOT NULL default '', email_user varchar(50) NOT NULL default '', active_user enum('1','0') NOT NULL default '1', grade_user enum('0','1','2','3') NOT NULL default '0', photo_profil varchar(30) NOT NULL default '', sexe_user enum('M','F') NOT NULL default 'M', date_inscription int(10) unsigned NOT NULL default '0', last_connect int(10) unsigned NOT NULL default '0', connected_now enum('0','1') NOT NULL default '0', langue_user varchar(20) NOT NULL default '', tutos_vote text NOT NULL, chaps_vote text NOT NULL, last_duration int(10) unsigned NOT NULL default '0', total_duration int(10) unsigned NOT NULL default '0', nbr_connexion int(10) unsigned NOT NULL default '0', nbr_pages int(10) unsigned NOT NULL default '0', PRIMARY KEY  (id_user)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable12);
 				if ($connect->query($createtable12))
-        	echo "<li>".creation_table." users</li>";
+        	echo "<li> users</li>";
         else {
-        	echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." users</li></font>";
+        	echo "<font color=\"red\"><li><b> : </b> users</li></font>";
         	$error_create_table = 1;
         }
         flush();
@@ -242,9 +242,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable13 = "CREATE TABLE `" . $tblprefix . "apprenants` (id_apprenant int(10) unsigned NOT NULL auto_increment, id_classe int(4) unsigned NOT NULL default '0', nom_apprenant varchar(50) NOT NULL default '', identifiant_apprenant varchar(30) NOT NULL default '', mdp_apprenant varchar(40) NOT NULL default '', email_apprenant varchar(50) NOT NULL default '', naissance_apprenant varchar(10) NOT NULL default '', active_apprenant enum('1','0') NOT NULL default '1', photo_apprenant varchar(30) NOT NULL default '', sexe_apprenant enum('M','F') NOT NULL default 'M', date_inscription_apprenant int(10) unsigned NOT NULL default '0', last_connect_apprenant int(10) unsigned NOT NULL default '0', connected_now_apprenant enum('0','1') NOT NULL default '0', tutos_vote text NOT NULL, chaps_vote text NOT NULL, langue_apprenant varchar(20) NOT NULL default '', last_duration int(10) unsigned NOT NULL default '0', total_duration int(10) unsigned NOT NULL default '0', nbr_connexion int(10) unsigned NOT NULL default '0', total_essais int(10) unsigned NOT NULL default '0', total_reponses_correctes int(10) unsigned NOT NULL default '0', nbr_pages int(10) unsigned NOT NULL default '0', cree_par int(10) unsigned NOT NULL default '0', chaps_qcm text NOT NULL, grade_apprenant enum('A','B','C','D','E') NOT NULL default 'E', machine_apprenant text NOT NULL, style_apprenant varchar(50) NOT NULL default '-', PRIMARY KEY  (id_apprenant)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable13);
 				if ($connect->query($createtable13))
-        	echo "<li>".creation_table." apprenants</li>";
+        	echo "<li> apprenants</li>";
         else {
-        	echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." apprenants</li></font>";
+        	echo "<font color=\"red\"><li><b> : </b> apprenants</li></font>";
         	$error_create_table = 1;
         }
         flush();
@@ -253,9 +253,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable14 = "CREATE TABLE `" . $tblprefix . "files` (id_file int(10) unsigned NOT NULL auto_increment, id_user int(10) unsigned NOT NULL default '0', nom_file varchar(100) NOT NULL default '', taille_file int(10) unsigned NOT NULL default '0', lien_file varchar(30) NOT NULL default '', date_file int(10) unsigned NOT NULL default '0', is_image enum('0','1') NOT NULL default '0', type_user enum('u','l') NOT NULL default 'u', id_folder int(10) unsigned NOT NULL default '0', PRIMARY KEY  (id_file)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable14);
 				if ($connect->query($createtable14))
-        	echo "<li>".creation_table." files</li>";
+        	echo "<li> files</li>";
         else {
-        	echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." files</li></font>";
+        	echo "<font color=\"red\"><li><b> : </b> files</li></font>";
         	$error_create_table = 1;
         }
         flush();
@@ -264,9 +264,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable15 = "CREATE TABLE `" . $tblprefix . "sondage_questions` (id_question int(10) unsigned NOT NULL auto_increment, id_conjoint int(10) unsigned NOT NULL default '0', question text NOT NULL, active_question enum('0','1') NOT NULL default '0', PRIMARY KEY  (id_question)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable15);
 				if ($connect->query($createtable15))
-        	echo "<li>".creation_table." sondage_questions</li>";
+        	echo "<li> sondage_questions</li>";
         else {
-        	echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." sondage_questions</li></font>";
+        	echo "<font color=\"red\"><li><b> : </b> sondage_questions</li></font>";
         	$error_create_table = 1;
         }
         flush();
@@ -275,9 +275,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable16 = "CREATE TABLE `" . $tblprefix . "sondage_reponses` (id_reponse int(10) unsigned NOT NULL auto_increment, id_question int(10) unsigned NOT NULL default '0', reponse varchar(200) NOT NULL default '', PRIMARY KEY  (id_reponse)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable16);
 				if ($connect->query($createtable16))
-        	echo "<li>".creation_table." sondage_reponses</li>";
+        	echo "<li> sondage_reponses</li>";
         else {
-        	echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." sondage_reponses</li></font>";
+        	echo "<font color=\"red\"><li><b> : </b> sondage_reponses</li></font>";
         	$error_create_table = 1;
         }
         flush();
@@ -286,9 +286,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable17 = "CREATE TABLE `" . $tblprefix . "sondage_votes` (id_vote int(10) unsigned NOT NULL auto_increment, id_reponse1 int(10) unsigned NOT NULL default '0', id_reponse2 int(10) unsigned NOT NULL default '0', nbr_votes int(10) unsigned NOT NULL default '0', PRIMARY KEY  (id_vote)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable17);
 				if ($connect->query($createtable17))
-        	echo "<li>".creation_table." sondage_votes</li>";
+        	echo "<li> sondage_votes</li>";
         else {
-        	echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." sondage_votes</li></font>";
+        	echo "<font color=\"red\"><li><b> : </b> sondage_votes</li></font>";
         	$error_create_table = 1;
         }
         flush();
@@ -297,9 +297,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable18 = "CREATE TABLE `" . $tblprefix . "sondage_ip` (id_ip int(10) unsigned NOT NULL auto_increment, ip_vote varchar(16) NOT NULL default '', heure_vote time NOT NULL default '00:00:00', id_question int(10) unsigned NOT NULL default '0', PRIMARY KEY  (id_ip)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable18);
 				if ($connect->query($createtable18))
-        	echo "<li>".creation_table." sondage_ip</li>";
+        	echo "<li> sondage_ip</li>";
         else {
-        	echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." sondage_ip</li></font>";
+        	echo "<font color=\"red\"><li><b> : </b> sondage_ip</li></font>";
         	$error_create_table = 1;
         }
         flush();
@@ -308,9 +308,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable19 = "CREATE TABLE `" . $tblprefix . "classes` (id_classe int(4) unsigned NOT NULL auto_increment, classe varchar(30) NOT NULL default '', PRIMARY KEY  (id_classe)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable19);
 				if ($connect->query($createtable19))
-					echo "<li>".creation_table." classes</li>";
+					echo "<li> classes</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." classes</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> classes</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -319,9 +319,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable20 = "CREATE TABLE `" . $tblprefix . "devoirs` (id_devoir int(10) unsigned NOT NULL auto_increment, id_chapitre int(10) unsigned NOT NULL default '0', acces_devoir varchar(200) NOT NULL default '*', titre_devoir varchar(100) NOT NULL default '', contenu_devoir text NOT NULL, date_publie_devoir int(10) unsigned NOT NULL default '0', date_expire_devoir int(10) unsigned NOT NULL default '0', publie_devoir enum('1','0') NOT NULL default '1', ordre_devoir int(10) unsigned NOT NULL default '0', PRIMARY KEY (id_devoir)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable20);
 				if ($connect->query($createtable20))
-					echo "<li>".creation_table." devoirs</li>";
+					echo "<li> devoirs</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." devoirs</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> devoirs</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -330,9 +330,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable21 = "CREATE TABLE `" . $tblprefix . "devoirs_rendus` (id_devoir_rendu int(10) unsigned NOT NULL auto_increment, id_devoir int(10) unsigned NOT NULL default '0', id_apprenant int(10) unsigned NOT NULL default '0', nom_file varchar(100) NOT NULL default '', taille_file int(10) unsigned NOT NULL default '0', lien_file varchar(100) NOT NULL default '', date_file int(10) unsigned NOT NULL default '0', PRIMARY KEY (id_devoir_rendu)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable21);
 				if ($connect->query($createtable21))
-					echo "<li>".creation_table." devoirs_rendus</li>";
+					echo "<li> devoirs_rendus</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." devoirs_rendus</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> devoirs_rendus</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -341,9 +341,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable22 = "CREATE TABLE `" . $tblprefix . "devoirs_notes` (id_devoir_note int(10) unsigned NOT NULL auto_increment, id_devoir int(10) unsigned NOT NULL default '0', id_apprenant int(10) unsigned NOT NULL default '0', note_devoir float(10) unsigned NOT NULL default '0', PRIMARY KEY (id_devoir_note)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable22);
 				if ($connect->query($createtable22))
-					echo "<li>".creation_table." devoirs_notes</li>";
+					echo "<li> devoirs_notes</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." devoirs_notes</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> devoirs_notes</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -352,9 +352,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable23 = "CREATE TABLE `" . $tblprefix . "vermenu` (id_vermenu int(10) unsigned NOT NULL auto_increment, titre_vermenu varchar(100) NOT NULL default '', type_vermenu enum('article','url','module') NOT NULL default 'article', lien_vermenu varchar(200) NOT NULL default '', active_vermenu enum('1','0') NOT NULL default '1', ordre_vermenu int(3) unsigned NOT NULL default '0', PRIMARY KEY  (id_vermenu)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable23);
 				if ($connect->query($createtable23))
-					echo "<li>".creation_table." vermenu</li>";
+					echo "<li> vermenu</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." vermenu</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> vermenu</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -363,9 +363,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable24 = "CREATE TABLE `" . $tblprefix . "commentaires` (id_post int(10) unsigned NOT NULL auto_increment, type_objet enum('a','t','c') NOT NULL default 'a', id_objet int(10) unsigned NOT NULL default '0', type_user enum('l','u') NOT NULL default 'l', id_user int(10) unsigned NOT NULL default '0', contenu_post text NOT NULL, date_creation int(10) unsigned NOT NULL default '0', date_modification int(10) unsigned NOT NULL default '0', PRIMARY KEY (id_post)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable24);
 				if ($connect->query($createtable24))
-					echo "<li>".creation_table." commentaires</li>";
+					echo "<li> commentaires</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." commentaires</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> commentaires</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -374,9 +374,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable25 = "CREATE TABLE `" . $tblprefix . "behavior_notes` (id_behavior_note int(10) unsigned NOT NULL auto_increment, mois_note int(2) unsigned NOT NULL default '0', annee_note int(4) unsigned NOT NULL default '0', id_apprenant int(10) unsigned NOT NULL default '0', behavior_note float(10,5) unsigned NOT NULL default '0', PRIMARY KEY (id_behavior_note)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable25);
 				if ($connect->query($createtable25))
-					echo "<li>".creation_table." behavior_notes</li>";
+					echo "<li> behavior_notes</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." behavior_notes</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> behavior_notes</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -385,9 +385,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable26 = "CREATE TABLE `" . $tblprefix . "infos_acces` (id_acces int(10) unsigned NOT NULL auto_increment, type_user enum('l','u') NOT NULL default 'l', id_user int(10) unsigned NOT NULL default '0', ip_user varchar(16) NOT NULL default '', date_acces int(10) unsigned NOT NULL default '0', PRIMARY KEY (id_acces)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable26);
 				if ($connect->query($createtable26))
-					echo "<li>".creation_table." infos_acces</li>";
+					echo "<li> infos_acces</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." infos_acces</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> infos_acces</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -396,9 +396,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable27 = "CREATE TABLE `" . $tblprefix . "reset_pass` (id_reset int(10) unsigned NOT NULL auto_increment, type_user enum('l','u') NOT NULL default 'l', id_user int(10) unsigned NOT NULL default '0', key_reset varchar(16) NOT NULL default '', date_reset int(10) unsigned NOT NULL default '0', PRIMARY KEY (id_reset)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable27);
 				if ($connect->query($createtable27))
-					echo "<li>".creation_table." reset_pass</li>";
+					echo "<li> reset_pass</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." reset_pass</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> reset_pass</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
@@ -407,33 +407,33 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 				$createtable28 = "CREATE TABLE `" . $tblprefix . "folders` (id_folder int(10) unsigned NOT NULL auto_increment, id_user int(10) unsigned NOT NULL default '0', nom_folder varchar(100) NOT NULL default '', acces_folder varchar(200) NOT NULL default '0', date_folder int(10) unsigned NOT NULL default '0', publie_folder enum('1','0') NOT NULL default '1', apps_upload enum('0','1') NOT NULL default '0', PRIMARY KEY (id_folder)) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;";
 				$connect->query($deletetable28);
 				if ($connect->query($createtable28))
-					echo "<li>".creation_table." folders</li>";
+					echo "<li> folders</li>";
 				else {
-					echo "<font color=\"red\"><li><b>".erreur." : </b>".creation_table." folders</li></font>";
+					echo "<font color=\"red\"><li><b> : </b> folders</li></font>";
 					$error_create_table = 1;
 				}
 				flush();
 								
         $doinsertsite_infos = "INSERT INTO `" . $tblprefix . "site_infos` VALUES (1, 'website name', 'website title', 'http://www.manhali.com', 'Manhali - Free Learning Management System', 'manhali,Manhali,e-learning,e-formation,LMS,LCMS,Learning Management System,Managed Learning Environment,Virtual Learning Environment,Open Distance Learning,Computer Assisted Learning,Course Management System,Learning Support System,Tutorial Management System,Learning Content Management System,plate-forme d\'apprentissage en ligne,formation ouverte et à distance,enseignement assisté par ordinateur', '".$language."', 'website title','1','1','0','1','0','0',10,500);";
         if ($connect->query($doinsertsite_infos))
-        	echo "<li>".insertion_valeur." site_infos</li>";
+        	echo "<li> site_infos</li>";
         else {
-        	echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." site_infos</li></font>";
+        	echo "<font color=\"red\"><li><b> : </b> site_infos</li></font>";
         	$error_create_table = 1;
         }
         flush();
 
-        $doinsert1 = "INSERT INTO `" . $tblprefix . "composants` VALUES (1, 'horizontal_menu', '".horizontal_menu."', '', '1',0);";
-        $doinsert2 = "INSERT INTO `" . $tblprefix . "composants` VALUES (2, 'contact', '".contact_us."', '', '1',0);";
-        $doinsert3 = "INSERT INTO `" . $tblprefix . "composants` VALUES (3, 'breadcrumbs', '".breadcrumbs."', '', '1',0);";
-        $doinsert4 = "INSERT INTO `" . $tblprefix . "composants` VALUES (4, 'search', '".search."', '', '1',0);";
-        $doinsert5 = "INSERT INTO `" . $tblprefix . "composants` VALUES (5, 'comments', '".comments."', '', '1',0);";
-        $doinsert6 = "INSERT INTO `" . $tblprefix . "composants` VALUES (6, 'documents', '".document_sharing."', '', '1',0);";
-        $doinsert7 = "INSERT INTO `" . $tblprefix . "composants` VALUES (7, 'courses', '".tutoriels2."', '', '1',2);";
-        $doinsert8 = "INSERT INTO `" . $tblprefix . "composants` VALUES (8, 'vertical_menu', '".vertical_menu."', '', '1',3);";
-        $doinsert9 = "INSERT INTO `" . $tblprefix . "composants` VALUES (9, 'identification', '".identification."', '', '1',1);";
-        $doinsert10 = "INSERT INTO `" . $tblprefix . "composants` VALUES (10, 'poll', '".poll."', '', '1',4);";
-        $doinsert11 = "INSERT INTO `" . $tblprefix . "composants` VALUES (11, 'additional_block', '".additional_block."', '<b>Powered by Manhali</b>', '0',5);";
+        $doinsert1 = "INSERT INTO `" . $tblprefix . "composants` VALUES (1, 'horizontal_menu', 'horizontal_menu', '', '1',0);";
+        $doinsert2 = "INSERT INTO `" . $tblprefix . "composants` VALUES (2, 'contact', 'contact_us', '', '1',0);";
+        $doinsert3 = "INSERT INTO `" . $tblprefix . "composants` VALUES (3, 'breadcrumbs', 'breadcrumbs', '', '1',0);";
+        $doinsert4 = "INSERT INTO `" . $tblprefix . "composants` VALUES (4, 'search', 'search', '', '1',0);";
+        $doinsert5 = "INSERT INTO `" . $tblprefix . "composants` VALUES (5, 'comments', 'comments', '', '1',0);";
+        $doinsert6 = "INSERT INTO `" . $tblprefix . "composants` VALUES (6, 'documents', 'document_sharing', '', '1',0);";
+        $doinsert7 = "INSERT INTO `" . $tblprefix . "composants` VALUES (7, 'courses', 'tutoriels2', '', '1',2);";
+        $doinsert8 = "INSERT INTO `" . $tblprefix . "composants` VALUES (8, 'vertical_menu', 'vertical_menu', '', '1',3);";
+        $doinsert9 = "INSERT INTO `" . $tblprefix . "composants` VALUES (9, 'identification', 'identification', '', '1',1);";
+        $doinsert10 = "INSERT INTO `" . $tblprefix . "composants` VALUES (10, 'poll', 'poll', '', '1',4);";
+        $doinsert11 = "INSERT INTO `" . $tblprefix . "composants` VALUES (11, 'additional_block', 'additional_block', '<b>Powered by Manhali</b>', '0',5);";
         				
         $connect->query($doinsert1);
         $connect->query($doinsert2);
@@ -446,9 +446,9 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         $connect->query($doinsert9);
         $connect->query($doinsert10);
         if ($connect->query($doinsert11))
-        	echo "<li>".insertion_valeur." composants</li>";
+        	echo "<li> composants</li>";
         else {
-        	echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." composants</li></font>";
+        	echo "<font color=\"red\"><li><b> : </b> composants</li></font>";
         	$error_create_table = 1;
         }
         flush();
@@ -460,8 +460,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 							$insert_tutoriels_1 = "INSERT INTO `" . $tblprefix . "tutoriels` VALUES (1, 1, 'Qu’est ce que Manhali ?', '', '<p><strong>Manhali </strong>is a free and adaptive Learning Management System (LMS). It is installable and multi-language. Licensed under the GNU-GPL 3 and written in PHP and MySQL. Manhali can track and evaluate learners&rsquo; behavior and learning styles by clustering all learners in profiles (A, B, C, D and E) according to their behavior on the platform to allow educators to personalize courses for each profile.</p>\r\n\r\n<p style=\"text-align: center;\"><br />\r\n<img alt=\"Logo de Manhali\" src=\"".$initial_path2."images/logo.gif\" style=\"width: 200px; height: 200px;\" /></p>\r\n\r\n<p style=\"text-align: center;\"><strong>&quot;When teaching becomes amusing&quot;</strong></p>', '', 'by', '', '2', 1, ".time().", ".time().", 1, '*', 3, 15);";
         			
         			if ($connect->query($insert_tutoriels_1))
-        				echo "<li>".insertion_valeur." tutoriels</li>";
-        			else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." tutoriels</li></font>";
+        				echo "<li> tutoriels</li>";
+        			else echo "<font color=\"red\"><li><b> : </b> tutoriels</li></font>";
         			flush();
         			
 						//************************** parties ***********************************
@@ -471,8 +471,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 
         			$connect->query($insert_parties_1);
         			if ($connect->query($insert_parties_2))
-								echo "<li>".insertion_valeur." parties</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." parties</li></font>";
+								echo "<li> parties</li>";
+							else echo "<font color=\"red\"><li><b> : </b> parties</li></font>";
 							flush();
 							
 						//************************** chapitres ***********************************
@@ -490,8 +490,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$connect->query($insert_chapitres_4);
         			$connect->query($insert_chapitres_5);
         			if ($connect->query($insert_chapitres_6))
-								echo "<li>".insertion_valeur." chapitres</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." chapitres</li></font>";
+								echo "<li> chapitres</li>";
+							else echo "<font color=\"red\"><li><b> : </b> chapitres</li></font>";
 							flush();
 							
 						//************************** blocs ***********************************
@@ -517,8 +517,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$connect->query($insert_blocs_8);
         			$connect->query($insert_blocs_9);
         			if ($connect->query($insert_blocs_10))
-								echo "<li>".insertion_valeur." blocs</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." blocs</li></font>";
+								echo "<li> blocs</li>";
+							else echo "<font color=\"red\"><li><b> : </b> blocs</li></font>";
 							flush();
 							
 						//************************** articles ***********************************
@@ -532,8 +532,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$connect->query($insert_articles_2);
         			$connect->query($insert_articles_3);
         			if ($connect->query($insert_articles_4))
-								echo "<li>".insertion_valeur." articles</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." articles</li></font>";
+								echo "<li> articles</li>";
+							else echo "<font color=\"red\"><li><b> : </b> articles</li></font>";
 							flush();
 							
 						//************************** hormenu ***********************************
@@ -551,8 +551,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$connect->query($insert_hormenu_4);
         			$connect->query($insert_hormenu_5);
         			if ($connect->query($insert_hormenu_6))
-								echo "<li>".insertion_valeur." hormenu</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." hormenu</li></font>";
+								echo "<li> hormenu</li>";
+							else echo "<font color=\"red\"><li><b> : </b> hormenu</li></font>";
 							flush();
 
 						//************************** vermenu ***********************************
@@ -564,8 +564,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$connect->query($insert_vermenu_1);
         			$connect->query($insert_vermenu_2);
         			if ($connect->query($insert_vermenu_3))
-								echo "<li>".insertion_valeur." vermenu</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." vermenu</li></font>";
+								echo "<li> vermenu</li>";
+							else echo "<font color=\"red\"><li><b> : </b> vermenu</li></font>";
 							flush();
 							
 						//************************** qcm ***********************************
@@ -579,8 +579,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$connect->query($insert_qcm_2);
         			$connect->query($insert_qcm_3);
         			if ($connect->query($insert_qcm_4))
-								echo "<li>".insertion_valeur." qcm</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." qcm</li></font>";
+								echo "<li> qcm</li>";
+							else echo "<font color=\"red\"><li><b> : </b> qcm</li></font>";
 							flush();
 							
 						//************************** messages ***********************************
@@ -588,8 +588,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$insert_messages_1 = "INSERT INTO `" . $tblprefix . "messages` VALUES (1,0,0,'Visitor 1','visitor1@mail.com','*','*','Message subject 1','Messsage content 1','-','-',".time().",'*','*','1');";
         			
         			if ($connect->query($insert_messages_1))
-								echo "<li>".insertion_valeur." messages</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." messages</li></font>";
+								echo "<li> messages</li>";
+							else echo "<font color=\"red\"><li><b> : </b> messages</li></font>";
 							flush();
 							
 						//************************** users ***********************************
@@ -597,8 +597,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$insert_users_1 = "INSERT INTO `" . $tblprefix . "users` VALUES (2,'trainer name','trainer','8446c9a974f3e57149b864682572bb75p4krx71s','trainer@manhali.com','0','0','woman.jpg','F',".time().",0,'0','".$language."','-','-',0,0,0,0);";
         			
         			if ($connect->query($insert_users_1))
-        				echo "<li>".insertion_valeur." users</li>";
-        			else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." users</li></font>";
+        				echo "<li> users</li>";
+        			else echo "<font color=\"red\"><li><b> : </b> users</li></font>";
         			flush();
 
 						//************************** apprenants ***********************************
@@ -606,8 +606,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$insert_apprenants_1 = "INSERT INTO `" . $tblprefix . "apprenants` VALUES (1,1,'Student name','student','c177263d7ccd730a04b2fdc809ed2e9b22oy4qr4','student@manhali.com','1/7/1985','0','man.jpg','M',".time().",0,'0','-','-','".$language."',0,0,0,0,0,0,1,'-','E','','-');";
         			
         			if ($connect->query($insert_apprenants_1))
-        				echo "<li>".insertion_valeur." apprenants</li>";
-        			else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." apprenants</li></font>";
+        				echo "<li> apprenants</li>";
+        			else echo "<font color=\"red\"><li><b> : </b> apprenants</li></font>";
         			flush();
 
 						//************************** classes ***********************************
@@ -615,8 +615,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$insert_classes_1 = "INSERT INTO `" . $tblprefix . "classes` VALUES (1,'Class 1');";
         			
         			if ($connect->query($insert_classes_1))
-        				echo "<li>".insertion_valeur." classes</li>";
-        			else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." classes</li></font>";
+        				echo "<li> classes</li>";
+        			else echo "<font color=\"red\"><li><b> : </b> classes</li></font>";
         			flush();
 
 						//************************** files ***********************************
@@ -624,8 +624,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 							$insert_files_1 = "INSERT INTO `" . $tblprefix . "files` VALUES (1, 1, 'Manhali.txt', 393, '8olq86qur0udopffipvaqoox.txt', ".time().", '0', 'u', 1);";
 
         			if ($connect->query($insert_files_1))
-								echo "<li>".insertion_valeur." files</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." files</li></font>";
+								echo "<li> files</li>";
+							else echo "<font color=\"red\"><li><b> : </b> files</li></font>";
 							flush();
 
 						//************************** folders ***********************************
@@ -633,8 +633,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 							$insert_folders_1 = "INSERT INTO `" . $tblprefix . "folders` VALUES (1, 1, 'Public folder', '*', ".time().", '1', '0');";
 
         			if ($connect->query($insert_folders_1))
-								echo "<li>".insertion_valeur." folders</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." folders</li></font>";
+								echo "<li> folders</li>";
+							else echo "<font color=\"red\"><li><b> : </b> folders</li></font>";
 							flush();
 							
 						//************************** sondage_questions ***********************************
@@ -644,8 +644,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 
         			$connect->query($insert_sondage_questions_1);
         			if ($connect->query($insert_sondage_questions_2))
-								echo "<li>".insertion_valeur." sondage_questions</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." sondage_questions</li></font>";
+								echo "<li> sondage_questions</li>";
+							else echo "<font color=\"red\"><li><b> : </b> sondage_questions</li></font>";
 							flush();
 
 						//************************** sondage_reponses ***********************************
@@ -671,8 +671,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$connect->query($insert_sondage_reponses_8);
         			$connect->query($insert_sondage_reponses_9);
         			if ($connect->query($insert_sondage_reponses_10))
-								echo "<li>".insertion_valeur." sondage_reponses</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." sondage_reponses</li></font>";
+								echo "<li> sondage_reponses</li>";
+							else echo "<font color=\"red\"><li><b> : </b> sondage_reponses</li></font>";
 							flush();
 
 						//************************** sondage_votes ***********************************
@@ -728,8 +728,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$connect->query($insert_sondage_votes_23);
         			$connect->query($insert_sondage_votes_24);
         			if ($connect->query($insert_sondage_votes_25))
-								echo "<li>".insertion_valeur." sondage_votes</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." sondage_votes</li></font>";
+								echo "<li> sondage_votes</li>";
+							else echo "<font color=\"red\"><li><b> : </b> sondage_votes</li></font>";
 							flush();
 
 						//************************** devoirs ***********************************
@@ -737,8 +737,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$insert_devoirs_1 = "INSERT INTO `" . $tblprefix . "devoirs` VALUES (1,1,'*','Homework 1','Homework 1 content',".time().", ".time()."+2592000,'1',1);";
         			
         			if ($connect->query($insert_devoirs_1))
-        				echo "<li>".insertion_valeur." devoirs</li>";
-        			else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." devoirs</li></font>";
+        				echo "<li> devoirs</li>";
+        			else echo "<font color=\"red\"><li><b> : </b> devoirs</li></font>";
         			flush();
 							
 						//************************** devoirs_rendus ***********************************
@@ -746,8 +746,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$insert_devoirs_rendus_1 = "INSERT INTO `" . $tblprefix . "devoirs_rendus` VALUES (1,1,1,'Homework 1 Student.docx',10171,'1_Class_1_1_student.docx',".time()."+60);";
         			
         			if ($connect->query($insert_devoirs_rendus_1))
-        				echo "<li>".insertion_valeur." devoirs_rendus</li>";
-        			else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." devoirs_rendus</li></font>";
+        				echo "<li> devoirs_rendus</li>";
+        			else echo "<font color=\"red\"><li><b> : </b> devoirs_rendus</li></font>";
         			flush();
 
 						//************************** devoirs_notes ***********************************
@@ -755,8 +755,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$insert_devoirs_notes_1 = "INSERT INTO `" . $tblprefix . "devoirs_notes` VALUES (1,1,1,15.75);";
         			
         			if ($connect->query($connect,$insert_devoirs_notes_1,))
-        				echo "<li>".insertion_valeur." devoirs_notes</li>";
-        			else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." devoirs_notes</li></font>";
+        				echo "<li> devoirs_notes</li>";
+        			else echo "<font color=\"red\"><li><b> : </b> devoirs_notes</li></font>";
         			flush();
         			
 						//************************** commentaires ***********************************
@@ -768,8 +768,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$connect->query($insert_commentaires_1);
         			$connect->query($insert_commentaires_2);
         			if ($connect->query($insert_commentaires_3))
-								echo "<li>".insertion_valeur." commentaires</li>";
-							else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." commentaires</li></font>";
+								echo "<li> commentaires</li>";
+							else echo "<font color=\"red\"><li><b> : </b> commentaires</li></font>";
 							flush();
 
 						//************************** behavior_notes ***********************************
@@ -777,8 +777,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$insert_behavior_notes_1 = "INSERT INTO `" . $tblprefix . "behavior_notes` VALUES (1,".date("m",time()).",".date("Y",time()).",1,13);";
 
         			if ($connect->query($insert_behavior_notes_1))
-        				echo "<li>".insertion_valeur." behavior_notes</li>";
-        			else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." behavior_notes</li></font>";
+        				echo "<li> behavior_notes</li>";
+        			else echo "<font color=\"red\"><li><b> : </b> behavior_notes</li></font>";
         			flush();
 
 						//************************** infos_acces ***********************************
@@ -786,8 +786,8 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         			$insert_infos_acces_1 = "INSERT INTO `" . $tblprefix . "infos_acces` VALUES (1,'l',1,'100.100.100.100',".time().");";
         			
         			if ($connect->query($insert_infos_acces_1))
-        				echo "<li>".insertion_valeur." infos_acces</li>";
-        			else echo "<font color=\"red\"><li><b>".erreur." : </b>".insertion_valeur." infos_acces</li></font>";
+        				echo "<li> infos_acces</li>";
+        			else echo "<font color=\"red\"><li><b> : </b> infos_acces</li></font>";
         			flush();
         			
   					//***********************************************************************
@@ -795,28 +795,28 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
         
         echo "</ul>";
         if ($error_create_table == 0)
-					echo "<p><form name=\"form2\" method=\"POST\"><input type=\"hidden\" name=\"pass\" value=\"".$pass."\"><input type=\"hidden\" name=\"etape\" value=\"3\"><input type=\"submit\" class=\"button\" value=\"" .install_step3. "\"></form></p>";
+					echo "<p><form name=\"form2\" method=\"POST\"><input type=\"hidden\" name=\"pass\" value=\"".$pass."\"><input type=\"hidden\" name=\"etape\" value=\"3\"><input type=\"submit\" class=\"button\" value=\"install_step3\"></form></p>";
 				else
-					echo "<p><form name=\"form\" method=\"POST\"><input type=\"hidden\" name=\"etape\" value=\"1\"><input type=\"hidden\" name=\"pass\" value=\"".$pass."\"><input type=\"hidden\" name=\"lang\" value=\"".$language."\"><input type=\"submit\" class=\"button\" value=\"" .retour. "\"></form></p>";
+					echo "<p><form name=\"form\" method=\"POST\"><input type=\"hidden\" name=\"etape\" value=\"1\"><input type=\"hidden\" name=\"pass\" value=\"".$pass."\"><input type=\"hidden\" name=\"lang\" value=\"".$language."\"><input type=\"submit\" class=\"button\" value=\"retour\"></form></p>";
 	}
 	break;
 	
 	//*****************************************************************************
 	
 	case "3" : {
-						echo "<h4>" .administration. "</h4>";
+						echo "<h4>administration</h4>";
 	        	echo "<form method=\"POST\" action=\"\">";
-	        	echo "<p><b>" .identifiant. " : </b><br /><br /><input name=\"login\" type=\"text\" maxlength=\"30\" size=\"30\" value=\"\"></p>";
-	        	echo "<p><b>" .password. " : </b><br /><br /><input name=\"password\" type=\"password\" maxlength=\"30\" size=\"30\" value=\"\"> " .carac5_min. "</p>";
-	        	echo "<p><b>" .confirmpassword. " : </b><br /><br /><input name=\"pass_conf\" type=\"password\" maxlength=\"30\" size=\"30\" value=\"\"></p>";
-	        	echo "<p><b>" .email. " : </b><br /><br /><input name=\"email\" type=\"text\" maxlength=\"50\" size=\"30\" value=\"\"></p>";
-	        	echo "<p><b>" .select_sex." : </b><br /><select name=\"sexe\">";
+	        	echo "<p><b>identifiant : </b><br /><br /><input name=\"login\" type=\"text\" maxlength=\"30\" size=\"30\" value=\"\"></p>";
+	        	echo "<p><b>password : </b><br /><br /><input name=\"password\" type=\"password\" maxlength=\"30\" size=\"30\" value=\"\"> carac5_min</p>";
+	        	echo "<p><b>confirmpassword : </b><br /><br /><input name=\"pass_conf\" type=\"password\" maxlength=\"30\" size=\"30\" value=\"\"></p>";
+	        	echo "<p><b>email : </b><br /><br /><input name=\"email\" type=\"text\" maxlength=\"50\" size=\"30\" value=\"\"></p>";
+	        	echo "<p><b>select_sex : </b><br /><select name=\"sexe\">";
 						echo "<option value=\"0\"></option>";
-						echo "<option value=\"F\">".female."</option>";
-						echo "<option value=\"M\">".male."</option>";
+						echo "<option value=\"F\">female</option>";
+						echo "<option value=\"M\">male</option>";
 						echo "</select>";
-	        	echo "<p><font color=\"red\"><b>".tous_champs_obligatoires."</b></font><br /><br /><input type=\"hidden\" name=\"pass\" value=\"".$pass."\"><input type=\"hidden\" name=\"etape\" value=\"4\">";
-	        	echo "<input type=\"submit\" class=\"button\" value=\"" .install_step4. "\"></form></p>";
+	        	echo "<p><font color=\"red\"><b>tous_champs_obligatoires</b></font><br /><br /><input type=\"hidden\" name=\"pass\" value=\"".$pass."\"><input type=\"hidden\" name=\"etape\" value=\"4\">";
+	        	echo "<input type=\"submit\" class=\"button\" value=\"install_step4\"></form></p>";
 	} break;
 	
 	//*****************************************************************************
@@ -847,21 +847,21 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 	                    		$mdp = $crypt.$rndm;
 	                				$insertadmin = "INSERT INTO `" . $tblprefix . "users` VALUES (1,'Super Administrator','".$login."','".$mdp."','".$email."','1','3','".$photo_user."','".$sexe."',".time().",0,'0','".$language."','-','-',0,0,0,0);";
 	                    		$connect->query($insertadmin);
-	                    		echo "<h4><img src=\"../images/icones/tips.png\" />" .operation_ok. "<br />".identifiant." : ".$login."</h4>";
-	                    		echo "<p><form name=\"form4\" method=\"POST\"><input type=\"hidden\" name=\"pass\" value=\"".$pass."\"><input type=\"hidden\" name=\"etape\" value=\"5\"><input type=\"submit\" class=\"button\" value=\"" .install_step5. "\"></form></p>";
-	                    	} else goback(pass_court,2,"error",1);
-	                  	} else goback(confirm_pass_err,2,"error",1);
-	                  } else goback(format_mail_err,2,"error",1);
-	                } else goback(login_existe,2,"error",1);
-	              } else goback(tous_champs,2,"error",1);
+	                    		echo "<h4><img src=\"../images/icones/tips.png\" />operation_ok<br />identifiant : ".$login."</h4>";
+	                    		echo "<p><form name=\"form4\" method=\"POST\"><input type=\"hidden\" name=\"pass\" value=\"".$pass."\"><input type=\"hidden\" name=\"etape\" value=\"5\"><input type=\"submit\" class=\"button\" value=\"install_step5\"></form></p>";
+	                    	} else goback("pass_court",2,"error",1);
+	                  	} else goback("confirm_pass_err",2,"error",1);
+	                  } else goback("format_mail_err",2,"error",1);
+	                } else goback("login_existe",2,"error",1);
+	              } else goback("tous_champs",2,"error",1);
 	} break;
 	
 	//*****************************************************************************
 		
 	case "5" : {
-      echo "<br /><br /><br /><center><h3><img src=\"../images/icones/tips.png\" />" .install_done. "</h3>";
-			echo "<br /><br /><h2><font color=\"red\">" .del_folder. " install</font></h2>";
-			echo "<br /><br /><h4><a href=\"../?\">" .link_done. "</a></h4></center>";
+      echo "<br /><br /><br /><center><h3><img src=\"../images/icones/tips.png\" />install_done</h3>";
+			echo "<br /><br /><h2><font color=\"red\">del_folderinstall</font></h2>";
+			echo "<br /><br /><h4><a href=\"../?\">link_done</a></h4></center>";
 	} break;
 	
 	//*****************************************************************************
@@ -878,7 +878,7 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
 			echo "<h4><img src=\"../images/icones/error.png\" /><font color=\"red\"></font></h4>";
 		}
 		else if (!$db){
-				echo "<h4><img src=\"../images/icones/warning.png\" /><font color=\"red\">" .bd_introuvable. "</font></h4>";
+				echo "<h4><img src=\"../images/icones/warning.png\" /><font color=\"red\">bd_introuvable</font></h4>";
 				echo "<h4></h4>";
 		}
 		else {
@@ -889,7 +889,7 @@ if (isset($_POST['pass']) && $_POST['pass'] == md5($installpass)){
  }
 }
 else {
-	goback(installmdp_incorrect,2,"error",1);
+	goback("installmdp_incorrect",2,"error",1);
 }
 
 
