@@ -36,12 +36,12 @@ if (file_exists($langfolder)){
 			$selectlanguage = mysqli_query($connect,"select langue_user from `" . $tblprefix . "users` where id_user = $this_user_id;",);
 		} else 
 			$selectlanguage = mysqli_query($connect,"select langue_site from `" . $tblprefix . "site_infos`;");
-		
 		if ($selectlanguage){
 			if (mysqli_num_rows($selectlanguage) > 0)
-				$language = mysql_result($selectlanguage,0);
+				$language = $selectlanguage->fetch_assoc()['langue_site'];
 			else $language = "en";
 		} else $language = "en";
+
 	}
 	
 	if (isset($language) && !empty($language) && file_exists($langfolder.$language."/admin.ini"))

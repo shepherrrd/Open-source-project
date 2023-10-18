@@ -63,14 +63,14 @@ if (isset($_POST['login']) && !empty($_POST['login']) && isset($_POST['password'
 		$password = escape_string($_POST['password']);
 
 		$seluser = "SELECT * from `" . $tblprefix . "users` WHERE identifiant_user = '" . $login . "';";
-		$resultat = mysql_query($seluser,$connect);
+		$resultat = $connect->query($seluser);
 
-		if ($resultat && mysql_num_rows($resultat) == 1) {
-			
-			$id = mysql_result($resultat, 0, "id_user");
-			$pass = mysql_result($resultat, 0, "mdp_user");
-			$statut = mysql_result($resultat, 0, "active_user");
-			$grade = mysql_result($resultat, 0, "grade_user");
+		if ($resultat && mysqli_num_rows($resultat) == 1) {
+			$row= $resultat->fetch_assoc();
+			$id =$row["id_user"];
+			$pass = $row["mdp_user"];
+			$statut = $row["active_user"];
+			$grade = $row["grade_user"];
 
 			if ($statut == 1) {
 						$passpart1 = substr($pass,0,32);
@@ -83,16 +83,16 @@ if (isset($_POST['login']) && !empty($_POST['login']) && isset($_POST['password'
 								$_SESSION['grade'] = $grade;
 								$_SESSION['key'] = fonc_rand(16);
 								
-								$update_conn = mysql_query("update `" . $tblprefix . "users` set last_connect = ".time().", connected_now = '1', last_duration = 0, nbr_connexion = nbr_connexion + 1 where id_user = $id;");
+								$update_conn = $connect->query("update `" . $tblprefix . "users` set last_connect = ".time().", connected_now = '1', last_duration = 0, nbr_connexion = nbr_connexion + 1 where id_user = $id;");
 
 								$ip_user = $_SERVER['REMOTE_ADDR'];
-								$select_acces = mysql_query("select id_acces from `" . $tblprefix . "infos_acces` where type_user = 'u' and id_user = $id and ip_user = '$ip_user';");
-								if (mysql_num_rows($select_acces) > 0){
-									$id_this_acces = mysql_result($select_acces,0);
-									$update_acces = mysql_query("update `" . $tblprefix . "infos_acces` set date_acces = ".time()." where id_acces = $id_this_acces;");
+								$select_acces = $connect->query("select id_acces from `" . $tblprefix . "infos_acces` where type_user = 'u' and id_user = $id and ip_user = '$ip_user';");
+								if (mysqli_num_rows($select_acces) > 0){
+									$id_this_acces = $select_acces->fetch_assoc();
+									$update_acces = $connect->query("update `" . $tblprefix . "infos_acces` set date_acces = ".time()." where id_acces = $id_this_acces;");
 								}
 								else {
-									$insert_acces = mysql_query("INSERT INTO `" . $tblprefix . "infos_acces` VALUES (NULL,'u',$id,'$ip_user',".time().");");
+									$insert_acces = $connect->query("INSERT INTO `" . $tblprefix . "infos_acces` VALUES (NULL,'u',$id,'$ip_user',".time().");");
 								}
 								
 								redirection(merci_connexion,"admin_home.php",3,"tips",1);
@@ -100,8 +100,6 @@ if (isset($_POST['login']) && !empty($_POST['login']) && isset($_POST['password'
 			} else goback(compte_desac,2,"error",1);
 		} else goback(login_invalide,2,"error",1);
 } else goback(champ_manq,2,"error",1);
-
-@mysql_close($connect);
 ?>
 
 </body>

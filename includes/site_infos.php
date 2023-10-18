@@ -32,10 +32,10 @@ $description_site = "";
 $keywords_site = "";
 $footer_site = "";
 	
-$select_site_infos = mysql_query("select * from `" . $tblprefix . "site_infos`;");
+$select_site_infos = $connect->query("select * from `" . $tblprefix . "site_infos`;");
 
-if ($select_site_infos && mysql_num_rows($select_site_infos) > 0) {
-	$site_infos = mysql_fetch_row($select_site_infos);
+if ($select_site_infos && mysqli_num_rows($select_site_infos) > 0) {
+	$site_infos = mysqli_fetch_row($select_site_infos);
 	
 	$title = $site_infos[2];
 	$url_site = $site_infos[3];

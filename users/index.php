@@ -23,7 +23,6 @@ You should have received a copy of the GNU General Public License
 along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-
 	define("access_const","access_const");
 
 	header('Content-type: text/html; charset=UTF-8');
@@ -33,7 +32,6 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 	open_session($adminfolder);
 	include_once ("admin_language.php");
 	include_once ("../includes/display_functions.php");
-	@mysql_close($connect);
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -60,7 +58,7 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 <?php
 
 		if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
-    	redirection(connect,"admin_home.php",3,"tips",1);
+    	redirection("connect","admin_home.php",3,"tips",1);
     }
     else {
 ?>

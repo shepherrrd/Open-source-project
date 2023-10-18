@@ -63,33 +63,33 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($_SESSION['id']) &
   $id_user_session = escape_string($_SESSION['id']);
   $key = $_SESSION['key'];
 	$grade_user_session = $_SESSION['grade'];
-	$select_pseudo_user = mysql_query("select identifiant_user, last_connect from `" . $tblprefix . "users` where id_user = $id_user_session;");
-  if (mysql_num_rows($select_pseudo_user) == 1){
-    $pseudo = mysql_result($select_pseudo_user,0,0);
-    $last_connect = mysql_result($select_pseudo_user,0,1);
+	$select_pseudo_user = $connect->query("select identifiant_user, last_connect from `" . $tblprefix . "users` where id_user = $id_user_session;");
+  if (mysqli_num_rows($select_pseudo_user) == 1){
+    $pseudo = $select_pseudo_user->fetch_assoc(0);
+    $last_connect = $select_pseudo_user->fetch_assoc()[1];
   }
 	else {
     $pseudo = "";
     $last_connect = time();
   }
-	$update_connectednow1 = mysql_query("update `" . $tblprefix . "users` set connected_now = '0' where last_connect + 900 < ".time().";");
-	$update_connectednow2 = mysql_query("update `" . $tblprefix . "users` set connected_now = '1', nbr_pages = nbr_pages + 1 where id_user = $id_user_session;");
+	$update_connectednow1 = $connect->query("update `" . $tblprefix . "users` set connected_now = '0' where last_connect + 900 < ".time().";");
+	$update_connectednow2 = $connect->query("update `" . $tblprefix . "users` set connected_now = '1', nbr_pages = nbr_pages + 1 where id_user = $id_user_session;");
 	
 	if (isset($_GET['task']) && $_GET['task'] == "logout") {
 				
-        $update_connectednow = mysql_query("update `" . $tblprefix . "users` set connected_now = '0' where id_user = $id_user_session;");
+        $update_connectednow = $connect->query("update `" . $tblprefix . "users` set connected_now = '0' where id_user = $id_user_session;");
         close_session();
         if (isset($_GET['ses']))
-        	redirection(exsession,"../index.php",3,"forbidden",1);
+        	redirection("exsession","../index.php",3,"forbidden",1);
         else
-        	redirection(deconnect,"../index.php",3,"tips",1);
+        	redirection("deconnect","../index.php",3,"tips",1);
 	}
 	else {
 				if (!isset($_SESSION['timeout'])) $_SESSION['timeout']=time();
 				if(time() - $_SESSION['timeout'] > 900) locationhref_admin("?task=logout&ses=1");
 				else {
 					$last_duration = time() - $_SESSION['timeout'];
-					$update_connectednow = mysql_query("update `" . $tblprefix . "users` set last_duration = last_duration + $last_duration, total_duration = total_duration + $last_duration where id_user = $id_user_session;");
+					$update_connectednow = $connect->query("update `" . $tblprefix . "users` set last_duration = last_duration + $last_duration, total_duration = total_duration + $last_duration where id_user = $id_user_session;");
 					$_SESSION['timeout']=time();
 				}
 ?>
@@ -113,24 +113,24 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($_SESSION['id']) &
 									<table width="98%" height="62" border="0" cellpadding="0" cellspacing="0">
 										<tr>
 											<td width="15%" align="left">
-											<?php echo "<b>".page_administration."</b>"; ?>
+											<?php echo "<b>"."page_administration"."</b>"; ?>
 											</td>
 											<td width="15%" align="center">
-												<?php echo "<a href=\"../\" class=\"menu_admin\" target=\"_blank\">".previsualisation."</a>"; ?>
+												<?php echo "<a href=\"../\" class=\"menu_admin\" target=\"_blank\">"."previsualisation"."</a>"; ?>
 											</td>
 											<td width="25%" align="center">
 												<?php
 													if (!empty($_POST['langue'])){
 														$langue = escape_string($_POST['langue']);
 														if (file_exists("../language/".$langue."/admin.ini"))
-															$update_site = mysql_query("update `" . $tblprefix . "users` SET langue_user = '$langue' where id_user = $id_user_session;");
+															$update_site = $connect->query("update `" . $tblprefix . "users` SET langue_user = '$langue' where id_user = $id_user_session;");
 														if(stristr($_SERVER['HTTP_REFERER'],$_SERVER['SERVER_NAME']))
 															$redir_link = $_SERVER['HTTP_REFERER'];
 														else $redir_link = "admin_home.php";
 														locationhref_admin($redir_link);
 													}
 													if($dir = opendir("../language")){
-														echo "\n<form method=\"POST\" action=\"\"><b>".change_language."</b> ";
+														echo "\n<form method=\"POST\" action=\"\"><b>"."change_language"."</b> ";
     												echo "<select name=\"langue\" onchange=\"this.form.submit();\">";
     												while($lang = readdir($dir)) {
 															if ($lang != ".." && $lang != "." && strtolower(substr($lang,0,5) != "index")) {
@@ -157,7 +157,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($_SESSION['id']) &
 												<?php
         									echo "<b>".$pseudo."</b> (";
 													echo $grade_tab[$grade_user_session];
-        									echo ") <a href=\"?task=logout\" class=\"menu_admin\">" .linkdeconnection. "</a>";
+        									echo ") <a href=\"?task=logout\" class=\"menu_admin\">" ."linkdeconnection". "</a>";
 												?>
 											</td>
 										</tr>
@@ -200,13 +200,13 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($_SESSION['id']) &
 								<td bgcolor="#FFFFFF" valign="top" height="430">
 									<br />
 									<?php
-										$select_nombre_elements_page = mysql_query("select nombre_elements_page from `" . $tblprefix . "site_infos`;");
-										if (mysql_num_rows($select_nombre_elements_page) == 1 && mysql_result($select_nombre_elements_page,0) > 0)
-											$nbr_resultats = mysql_result($select_nombre_elements_page,0);
+										$select_nombre_elements_page = $connect->query("select nombre_elements_page from `" . $tblprefix . "site_infos`;");
+										if (mysqli_num_rows($select_nombre_elements_page) == 1 && $select_nombre_elements_page->fetch_row() > 0)
+											$nbr_resultats = $select_nombre_elements_page->fetch_row()[0];
 										else $nbr_resultats = 10;
 										
 										if (file_exists("../install/next_install.php")) {
-											echo "<h3><center><img src=\"../images/icones/critical.png\" /><font color=\"red\">".del_admin_folder." install</font></center></h3>";
+											echo "<h3><center><img src=\"../images/icones/critical.png\" /><font color=\"red\">"."del_admin_folder"." install</font></center></h3>";
 										}
 										$pages_interdites = array("admin_home","admin_language","admin_menu","auth","calculate_behavior_note","index","ckeditor_init","print","ziplib");
 										if (isset($_GET['inc']) && file_exists($_GET['inc'].".php") && substr($_GET['inc'],0,1) != "." && !in_array($_GET['inc'],$pages_interdites))
@@ -233,7 +233,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($_SESSION['id']) &
 				</tr>
 				<tr>
 					<td height="40" width="100%" align="center">
-						<?php echo $footer_site; @mysql_close($connect); ?>
+						<?php echo $footer_site; $connect->close(); ?>
 					</td>
 				</tr>
 			</table>
@@ -243,7 +243,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($_SESSION['id']) &
 </table>
 <?php
 	}
-} else redirection(exsession,"../index.php",3,"forbidden",1);
+} else redirection("exsession","../index.php",3,"forbidden",1);
 ?>
 </body>
 
