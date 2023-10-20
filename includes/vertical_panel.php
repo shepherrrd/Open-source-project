@@ -31,17 +31,17 @@ if (!empty($_SESSION['log']) && !empty($_SESSION['id']) && !empty($_SESSION['key
   $key = $_SESSION['key'];
 }
 if (!empty($_SESSION['log']) && $_SESSION['log'] == 2){
-	$select_grade_app = mysql_query("select grade_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
-	if (mysql_num_rows($select_grade_app) == 1)
-		$grade_app_session = mysql_result($select_grade_app,0);
+	$select_grade_app = $connect->query("select grade_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
+	if (mysqli_num_rows($select_grade_app) == 1)
+		$grade_app_session = $select_grade_app->fetch_row();
 	else $grade_app_session = "None";
 } else $grade_app_session = "None";
 
-$select_composants = mysql_query("select * from `" . $tblprefix . "composants` where ordre_composant != 0 order by ordre_composant;");
-if (mysql_num_rows($select_composants) > 0) {
+$select_composants = $connect->query("select * from `" . $tblprefix . "composants` where ordre_composant != 0 order by ordre_composant;");
+if (mysqli_num_rows($select_composants) > 0) {
 	echo "<table align=\"center\" width=\"181\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">";
 	$not_first = 0;
-	while($composant = mysql_fetch_row($select_composants)){
+	while($composant = mysqli_fetch_row($select_composants)){
 		$nom_composant = html_ent($composant[1]);
 		if ($composant[4] == '1'){
 			echo "<tr><td width=\"100%\" align=\"center\" valign=\"top\">";

@@ -26,20 +26,20 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 
 defined("access_const") or die( 'Restricted access' );
 
-$select_statut_menu = mysql_query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'horizontal_menu';");
-if (mysql_num_rows($select_statut_menu) == 1) {
-	$statut_menu = mysql_result($select_statut_menu,0);
+$select_statut_menu = $connect->query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'horizontal_menu';");
+if (mysqli_num_rows($select_statut_menu) == 1) {
+	$statut_menu = $select_statut_menu->fetch_row()[0];
 	if ($statut_menu == 1) {
 
-		$selectmenus = mysql_query("select * from `" . $tblprefix . "hormenu` where active_hormenu = '1' order by ordre_hormenu;");
+		$selectmenus = $connect->query("select * from `" . $tblprefix . "hormenu` where active_hormenu = '1' order by ordre_hormenu;");
 
-		if (mysql_num_rows($selectmenus)> 0) {
+		if (mysqli_num_rows($selectmenus)> 0) {
 		
-			$cellulewidth = round(100 / mysql_num_rows($selectmenus));
+			$cellulewidth = round(100 / mysqli_num_rows($selectmenus));
 			
 			echo "<table cellpadding=\"0\" cellspacing=\"0\" align=\"center\" width=\"100%\"><tr>";
 
-			while($mymenu = mysql_fetch_row($selectmenus)){
+			while($mymenu = mysqli_fetch_row($selectmenus)){
 				
 				$titre_menu = html_ent($mymenu[1]);
 				$titre_menu = readmore($titre_menu,50);

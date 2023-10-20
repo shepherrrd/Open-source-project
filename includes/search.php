@@ -26,9 +26,9 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 
 defined("access_const") or die( 'Restricted access' );
 
-$select_statut_search = mysql_query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'search';");
-if (mysql_num_rows($select_statut_search) == 1) {
-	$statut_search = mysql_result($select_statut_search,0);
+$select_statut_search = $connect->query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'search';");
+if (mysqli_num_rows($select_statut_search) == 1) {
+	$statut_search = $select_statut_search->fetch_row();
 	if ($statut_search == 1) {
 
 		echo "<form method=\"GET\" name=\"form1\" class=\"form\">";
@@ -37,7 +37,7 @@ if (mysql_num_rows($select_statut_search) == 1) {
 		if(isset($_GET['search']))
 			echo html_ent($_GET['search']);
 	
-		echo "\"> <input type=\"submit\" class=\"searchbtn\" value=\"".rechercher."\"></form>";
+		echo "\"> <input type=\"submit\" class=\"searchbtn\" value=\""."rechercher"."\"></form>";
 	}
 }
 ?>

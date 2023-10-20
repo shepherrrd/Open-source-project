@@ -26,13 +26,13 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 
 defined("access_const") or die( 'Restricted access' );
 
-@mysql_query("DELETE FROM `" . $tblprefix . "sondage_ip` WHERE HOUR(heure_vote)<>".date('H',time())." and heure_vote <> '00:00:00';");
-@mysql_query("DELETE FROM `" . $tblprefix . "sondage_ip` WHERE MINUTE(heure_vote)<>".date('i',time())." and id_question = 0;");
+@$connect->query("DELETE FROM `" . $tblprefix . "sondage_ip` WHERE HOUR(heure_vote)<>".date('H',time())." and heure_vote <> '00:00:00';");
+@$connect->query("DELETE FROM `" . $tblprefix . "sondage_ip` WHERE MINUTE(heure_vote)<>".date('i',time())." and id_question = 0;");
 
 $ip_user = $_SERVER['REMOTE_ADDR'];
-$select_id_question = mysql_query("select * from `" . $tblprefix . "sondage_ip` where ip_vote='$ip_user';");
-if (mysql_num_rows($select_id_question) > 0) {
-	while($ip_question = mysql_fetch_row($select_id_question)){
+$select_id_question = $connect->query("select * from `" . $tblprefix . "sondage_ip` where ip_vote='$ip_user';");
+if (mysqli_num_rows($select_id_question) > 0) {
+	while($ip_question = mysqli_fetch_row($select_id_question)){
 		$cookie_question = "poll".$ip_question[3];
 		if (!isset($_COOKIE[$cookie_question]))
 			@setcookie($cookie_question, "1", time()+60*60*24*30);

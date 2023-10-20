@@ -34,13 +34,13 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 	include_once ("includes/security_functions.php");
 	open_session("");
 
-	if (!$db || !$setnames || !$bd_test_req) {
-		close_session();
-		if (file_exists("install/next_install.php"))
-			header("Location: install.php");
-		else
-			header("Location: error.php?err=db");
-	}
+	// if (!$db || !$setnames || !$bd_test_req) {
+	// 	close_session();
+	// 	if (file_exists("install/next_install.php"))
+	// 		header("Location: install.php");
+	// 	else
+	// 		header("Location: error.php?err=db");
+	// }
 	
 	include_once ("includes/language.php");
 	include_once ("includes/anti_aspiration.php");

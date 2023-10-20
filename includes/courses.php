@@ -25,25 +25,25 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 defined("access_const") or die( 'Restricted access' );
-
+error_reporting(E_ERROR | E_PARSE);
 echo "<script type=\"text/javascript\" src=\"styles/dynMenu.js\"></script>";
 echo "<script type=\"text/javascript\" src=\"styles/browserdetect.js\"></script>";
 
 // ******** titre menu vertical ********
-$selmenucourses = mysql_query("select titre_composant, active_composant from `" . $tblprefix . "composants` where nom_composant = 'courses';");
-if (mysql_num_rows($selmenucourses) == 1) {
-	$titre_courses = mysql_result($selmenucourses,0,0);
-	$statut_courses = mysql_result($selmenucourses,0,1);
+$selmenucourses = $connect->query("select titre_composant, active_composant from `" . $tblprefix . "composants` where nom_composant = 'courses';");
+if (mysqli_num_rows($selmenucourses) == 1) {
+	$titre_courses = $selmenucourses->fetch_row()[0];
+	$statut_courses = $selmenucourses->fetch_row()[1];
 	if ($statut_courses == 1) {
 
 // ******** tutoriels ********
-$selecttutoriel = mysql_query("select * from `" . $tblprefix . "tutoriels` where publie_tutoriel = '2' order by ordre_tutoriel;");
+$selecttutoriel = $connect->query("select * from `" . $tblprefix . "tutoriels` where publie_tutoriel = '2' order by ordre_tutoriel;");
 
-if (mysql_num_rows($selecttutoriel)> 0) {
+if (mysqli_num_rows($selecttutoriel)> 0) {
  echo "<h3><u>".html_ent($titre_courses)."</u></h3>";
  echo "<ul id=\"menu_courses\">\n";
 
- while($tutoriel = mysql_fetch_row($selecttutoriel)){
+ while($tutoriel = mysqli_fetch_row($selecttutoriel)){
 
 	$idtutoriel = $tutoriel[0];
 
@@ -57,9 +57,9 @@ if (mysql_num_rows($selecttutoriel)> 0) {
 	else if (!empty($_SESSION['log']) && $_SESSION['log'] == 1)
 			$acces_valide = 1;
 	else if (!empty($_SESSION['log']) && $_SESSION['log'] == 2){
-		$select_classe = mysql_query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
-    if (mysql_num_rows($select_classe) == 1){
-			$id_classe = mysql_result($select_classe,0);
+		$select_classe = $connect->query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
+    if (mysqli_num_rows($select_classe) == 1){
+			$id_classe = $select_classe->fetch_row()[0];
 			$tab_classes = explode("-",trim($acces,"-"));
 			if (in_array($id_classe,$tab_classes))
 				$acces_valide = 1;
@@ -71,13 +71,13 @@ if (mysql_num_rows($selecttutoriel)> 0) {
 		echo "\t<li><a href=\"?tutorial=".$idtutoriel."\">".$tutoriel_name."</a>\n";
 
 // ******** parties ********
-		$selectpartie = mysql_query("select * from `" . $tblprefix . "parties` where id_tutoriel = $idtutoriel and publie_partie = '1' order by ordre_partie;");
+		$selectpartie = $connect->query("select * from `" . $tblprefix . "parties` where id_tutoriel = $idtutoriel and publie_partie = '1' order by ordre_partie;");
 	
-		if (mysql_num_rows($selectpartie)> 0) {
+		if (mysqli_num_rows($selectpartie)> 0) {
 	
 			echo "\t\t<ul>\n";
 	
-			while($partie = mysql_fetch_row($selectpartie)){
+			while($partie = mysqli_fetch_row($selectpartie)){
 			
 				$idpartie = $partie[0];
 				
@@ -88,17 +88,17 @@ if (mysql_num_rows($selecttutoriel)> 0) {
 // ******** chapitres ********
 
 				if (!empty($_SESSION['log']) && $_SESSION['log'] == 1)
-					$selectchapitre = mysql_query("select * from `" . $tblprefix . "chapitres` where id_partie = $idpartie and publie_chapitre = '1' order by ordre_chapitre;");
+					$selectchapitre = $connect->query("select * from `" . $tblprefix . "chapitres` where id_partie = $idpartie and publie_chapitre = '1' order by ordre_chapitre;");
 				else if (!empty($_SESSION['log']) && $_SESSION['log'] == 2)
-					$selectchapitre = mysql_query("select * from `" . $tblprefix . "chapitres` where id_partie = $idpartie and publie_chapitre = '1' and (grade_chapitre = '*' or grade_chapitre = '0' or grade_chapitre like '%-$grade_app_session-%') order by ordre_chapitre;");
+					$selectchapitre = $connect->query("select * from `" . $tblprefix . "chapitres` where id_partie = $idpartie and publie_chapitre = '1' and (grade_chapitre = '*' or grade_chapitre = '0' or grade_chapitre like '%-$grade_app_session-%') order by ordre_chapitre;");
 				else
-					$selectchapitre = mysql_query("select * from `" . $tblprefix . "chapitres` where id_partie = $idpartie and publie_chapitre = '1' and grade_chapitre = '*' order by ordre_chapitre;");
+					$selectchapitre = $connect->query("select * from `" . $tblprefix . "chapitres` where id_partie = $idpartie and publie_chapitre = '1' and grade_chapitre = '*' order by ordre_chapitre;");
 
-				if (mysql_num_rows($selectchapitre)> 0) {
+				if (mysqli_num_rows($selectchapitre)> 0) {
 	
 					echo "\t\t\t\t<ul>\n";
 	
-					while($chapitre = mysql_fetch_row($selectchapitre)){
+					while($chapitre = mysqli_fetch_row($selectchapitre)){
 			
 						$idchapitre = $chapitre[0];
 						
@@ -108,13 +108,13 @@ if (mysql_num_rows($selecttutoriel)> 0) {
 
 // ******** blocs ********
 						
-						$selectbloc = mysql_query("select * from `" . $tblprefix . "blocs` where id_chapitre = $idchapitre and publie_bloc = '1' order by ordre_bloc;");
+						$selectbloc = $connect->query("select * from `" . $tblprefix . "blocs` where id_chapitre = $idchapitre and publie_bloc = '1' order by ordre_bloc;");
 	
-						if (mysql_num_rows($selectbloc)> 0) {
+						if (mysqli_num_rows($selectbloc)> 0) {
 							
 							echo "\t\t\t\t\t\t<ul>\n";
 							
-							while($bloc = mysql_fetch_row($selectbloc)){
+							while($bloc = mysqli_fetch_row($selectbloc)){
 			
 								$idbloc = $bloc[0];
 								
@@ -126,23 +126,23 @@ if (mysql_num_rows($selecttutoriel)> 0) {
 
 // ******** devoir ********
 
-						$selectdevoir = mysql_query("select id_devoir from `" . $tblprefix . "devoirs` where id_chapitre = $idchapitre and publie_devoir = '1' and date_publie_devoir < ".time()." and date_expire_devoir > ".time().";");
-						if (mysql_num_rows($selectdevoir)> 0){
-							if (mysql_num_rows($selectbloc)== 0 && mysql_num_rows($selectqcm)== 0) echo "\t\t\t\t\t\t<ul>\n";
-							echo "\t\t\t\t\t\t\t<li><a class=\"bloc\" href=\"?chapter=".$idchapitre."#devoir\">".devoir."</a></li>\n";
+						$selectdevoir = $connect->query("select id_devoir from `" . $tblprefix . "devoirs` where id_chapitre = $idchapitre and publie_devoir = '1' and date_publie_devoir < ".time()." and date_expire_devoir > ".time().";");
+						if (mysqli_num_rows($selectdevoir)> 0){
+							if (mysqli_num_rows($selectbloc)== 0 && mysqli_num_rows($selectqcm)== 0) echo "\t\t\t\t\t\t<ul>\n";
+							echo "\t\t\t\t\t\t\t<li><a class=\"bloc\" href=\"?chapter=".$idchapitre."#devoir\">"."devoir"."</a></li>\n";
 						}
 						
 // ******** qcm ********
 
-						$selectqcm = mysql_query("select id_qcm from `" . $tblprefix . "qcm` where id_chapitre = $idchapitre and publie_qcm = '1';");
-						if (mysql_num_rows($selectqcm)> 0){
-							if (mysql_num_rows($selectbloc)== 0) echo "\t\t\t\t\t\t<ul>\n";
-							echo "\t\t\t\t\t\t\t<li><a class=\"bloc\" href=\"?chapter=".$idchapitre."#qcm\">".qcm."</a></li>\n";
+						$selectqcm = $connect->query("select id_qcm from `" . $tblprefix . "qcm` where id_chapitre = $idchapitre and publie_qcm = '1';");
+						if (mysqli_num_rows($selectqcm)> 0){
+							if (mysqli_num_rows($selectbloc)== 0) echo "\t\t\t\t\t\t<ul>\n";
+							echo "\t\t\t\t\t\t\t<li><a class=\"bloc\" href=\"?chapter=".$idchapitre."#qcm\">"."qcm"."</a></li>\n";
 						}
 
 //***********************
 
-						if (mysql_num_rows($selectbloc)> 0 || mysql_num_rows($selectqcm)> 0 || mysql_num_rows($selectdevoir)> 0)
+						if (mysqli_num_rows($selectbloc)> 0 || mysqli_num_rows($selectqcm)> 0 || mysqli_num_rows($selectdevoir)> 0)
 							echo "\t\t\t\t\t\t</ul>\n";
 						
 						echo "\t\t\t\t\t</li>\n";

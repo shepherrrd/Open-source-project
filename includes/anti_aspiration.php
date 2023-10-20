@@ -26,23 +26,22 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 
 defined("access_const") or die( 'Restricted access' );
 
-	@mysql_query("DELETE FROM `" . $tblprefix . "antiaspirateur` WHERE MINUTE(heure_aspi)<>".date('i',time()));
+	@$connect->query("DELETE FROM `" . $tblprefix . "antiaspirateur` WHERE MINUTE(heure_aspi)<>".date('i',time()));
 
-	$select_compt = @mysql_query("SELECT compteur_aspi FROM `" . $tblprefix . "antiaspirateur` WHERE ip_aspi ='".$_SERVER['REMOTE_ADDR']."'");
+	$select_compt = @$connect->query("SELECT compteur_aspi FROM `" . $tblprefix . "antiaspirateur` WHERE ip_aspi ='".$_SERVER['REMOTE_ADDR']."'");
 
-	if (mysql_num_rows($select_compt) > 0) {
-		$iCmpt = mysql_result($select_compt,0);
-		
+	if (mysqli_num_rows($select_compt) > 0) {
+		$iCmpt = $select_compt->fetch_row()[0];		
 		if($iCmpt < 20)
-			@mysql_query("UPDATE `" . $tblprefix . "antiaspirateur` SET compteur_aspi = compteur_aspi+1 WHERE ip_aspi ='".$_SERVER['REMOTE_ADDR']."'");
+			@$connect->query("UPDATE `" . $tblprefix . "antiaspirateur` SET compteur_aspi = compteur_aspi+1 WHERE ip_aspi ='".$_SERVER['REMOTE_ADDR']."'");
 
 		else {
 			header("Location: error.php?err=aspiration");
-			@mysql_close($connect);
+			$connect->close();
 			exit;
 		}
 	}
 	else
-		@mysql_query("INSERT INTO `" . $tblprefix . "antiaspirateur` (ip_aspi,heure_aspi) VALUES ('".$_SERVER['REMOTE_ADDR']."',Now())");
+		@$connect->query("INSERT INTO `" . $tblprefix . "antiaspirateur` (ip_aspi,heure_aspi) VALUES ('".$_SERVER['REMOTE_ADDR']."',Now())");
 
 ?>

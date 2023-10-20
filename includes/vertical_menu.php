@@ -29,24 +29,24 @@ defined("access_const") or die( 'Restricted access' );
 echo "<script type=\"text/javascript\" src=\"styles/dynMenu.js\"></script>";
 echo "<script type=\"text/javascript\" src=\"styles/browserdetect.js\"></script>";
 
-$select_statut_menu = mysql_query("select titre_composant, active_composant from `" . $tblprefix . "composants` where nom_composant = 'vertical_menu';");
-if (mysql_num_rows($select_statut_menu) == 1) {
-	$titre_menu = mysql_result($select_statut_menu,0,0);
-	$statut_menu = mysql_result($select_statut_menu,0,1);
+$select_statut_menu = $connect->query("select titre_composant, active_composant from `" . $tblprefix . "composants` where nom_composant = 'vertical_menu';");
+if (mysqli_num_rows($select_statut_menu) == 1) {
+	$titre_menu = $select_statut_menu->fetch_row()[0];
+	$statut_menu = $select_statut_menu->fetch_row()[1];
 	if ($statut_menu == 1) {
 
-		$selectmenus = mysql_query("select * from `" . $tblprefix . "vermenu` where active_vermenu = '1' order by ordre_vermenu;");
-		if (mysql_num_rows($selectmenus)> 0) {
+		$selectmenus = $connect->query("select * from `" . $tblprefix . "vermenu` where active_vermenu = '1' order by ordre_vermenu;");
+		if (mysqli_num_rows($selectmenus)> 0) {
 			echo "<h3><u>".html_ent($titre_menu)."</u></h3>";
 			echo "<ul id=\"menu_articles\">\n";
-			while($mymenu = mysql_fetch_row($selectmenus)){
+			while($mymenu = mysqli_fetch_row($selectmenus)){
 				$idvermenu = $mymenu[0];
 				echo "\t<li><a href=\"?vermenu=".$idvermenu."\">".html_ent($mymenu[1])."</a>\n";		
-				$selectarticles = mysql_query("select * from `" . $tblprefix . "articles` where id_menu_ver = $idvermenu and publie_article = '1' order by ordre_article_ver;");
+				$selectarticles = $connect->query("select * from `" . $tblprefix . "articles` where id_menu_ver = $idvermenu and publie_article = '1' order by ordre_article_ver;");
 
-				if (mysql_num_rows($selectarticles)> 0) {
+				if (mysqli_num_rows($selectarticles)> 0) {
 					echo "\t\t<ul>\n";
-					while($article = mysql_fetch_row($selectarticles)){
+					while($article = mysqli_fetch_row($selectarticles)){
 						echo "\t\t\t<li><a href=\"?article=".$article[0]."\">".html_ent($article[3])."</a>\n";
 						echo "\t\t\t</li>\n";
 					}
