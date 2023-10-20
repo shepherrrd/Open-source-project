@@ -25,10 +25,20 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 */
 defined("access_const") or die( 'Restricted access' );
 
+function mysqli_result($res, $row, $field=0) {
+
+    $res->data_seek($row);
+
+    $datarow = $res->fetch_array();
+
+    return $datarow[$field];
+
+}
+
 $select_statut_poll = $connect->query("select titre_composant, active_composant from `" . $tblprefix . "composants` where nom_composant = 'poll';");
 if (mysqli_num_rows($select_statut_poll) == 1) {
-	$titre_poll = mysql_result($select_statut_poll,0,0);
-	$statut_poll = mysql_result($select_statut_poll,0,1);
+	$titre_poll = mysqli_result($select_statut_poll,0,0);
+	$statut_poll = mysqli_result($select_statut_poll,0,1);
 	if ($statut_poll == 1) {
 		
 	 $select_questions = $connect->query("select * from `" . $tblprefix . "sondage_questions` where active_question = '1';");
@@ -38,7 +48,7 @@ if (mysqli_num_rows($select_statut_poll) == 1) {
 
 		$select_identification = $connect->query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'identification';");
 		if (mysqli_num_rows($select_identification) == 1)
-			$identification = mysql_result($select_identification,0);
+			$identification = mysqli_result($select_identification,0);
 		else $identification = 0;
 
 		if (!empty($_SESSION['log']) && !empty($_SESSION['id']) && $identification == 1){
@@ -55,8 +65,8 @@ if (mysqli_num_rows($select_statut_poll) == 1) {
 		//*********** One question *******************
 		
 		if (mysqli_num_rows($select_questions) == 1){
-			$id_question1 = mysql_result($select_questions,0,0);
-			$question1 = html_ent(mysql_result($select_questions,0,2));
+			$id_question1 = mysqli_result($select_questions,0,0);
+			$question1 = html_ent(mysqli_result($select_questions,0,2));
 			$question1 = bbcode_br($question1);
 			$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question1;");
 			if (mysqli_num_rows($select_reponses1) > 0){
@@ -107,14 +117,14 @@ if (mysqli_num_rows($select_statut_poll) == 1) {
 		else if (mysqli_num_rows($select_questions) > 1){
 			$select_question1 = $connect->query("select * from `" . $tblprefix . "sondage_questions` where active_question = '1' and id_conjoint != 0;");
 			
-			$id_question1 = mysql_result($select_question1,0,0);
-			$id_conjoint1 = mysql_result($select_question1,0,1);
-			$question1 = html_ent(mysql_result($select_question1,0,2));
+			$id_question1 = mysqli_result($select_question1,0,0);
+			$id_conjoint1 = mysqli_result($select_question1,0,1);
+			$question1 = html_ent(mysqli_result($select_question1,0,2));
 			$question1 = bbcode_br($question1);
 			
 			$select_question2 = $connect->query("select * from `" . $tblprefix . "sondage_questions` where id_question = $id_conjoint1;");
-			$id_question2 = mysql_result($select_question2,0,0);
-			$question2 = html_ent(mysql_result($select_question2,0,2));
+			$id_question2 = mysqli_result($select_question2,0,0);
+			$question2 = html_ent(mysqli_result($select_question2,0,2));
 			$question2 = bbcode_br($question2);
 		
 			$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question1;");
