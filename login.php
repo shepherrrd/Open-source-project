@@ -58,9 +58,19 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 
 <?php
 
+function mysqli_result($res, $row, $field=0) {
+
+    $res->data_seek($row);
+
+    $datarow = $res->fetch_array();
+
+    return $datarow[$field];
+
+}
+
 $select_statut_identification = $connect->query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'identification';");
 if (mysqli_num_rows($select_statut_identification) == 1) {
- $statut_identification = $select_statut_identification->fetch_row();
+ $statut_identification = mysqli_result($select_statut_identification,0);
  if ($statut_identification == 1) {
 	if (isset($_POST['login']) && !empty($_POST['login']) && isset($_POST['password']) && !empty($_POST['password'])) {
 
@@ -68,14 +78,14 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
 		$password = escape_string($_POST['password']);
 
 		$seluser = "SELECT * from `" . $tblprefix . "users` WHERE identifiant_user = '" . $login . "';";
-		$resultat = $connect->query($seluser,$connect);
+		$resultat = $connect->query($seluser);
 
 		if ($resultat && mysqli_num_rows($resultat) == 1) {
 			
-			$id = $resultat->fetch_assoc()["id_user"];
-			$pass = $resultat->fetch_assoc()["mdp_user"];
-			$statut = $resultat->fetch_assoc()["active_user"];
-			$grade = $resultat->fetch_assoc()["grade_user"];
+			$id = mysqli_result($resultat, 0, "id_user");
+			$pass = mysqli_result($resultat, 0, "mdp_user");
+			$statut = mysqli_result($resultat, 0, "active_user");
+			$grade = mysqli_result($resultat, 0, "grade_user");
 
 			if ($statut == 1) {
 						$passpart1 = substr($pass,0,32);
@@ -93,7 +103,7 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
 								$ip_user = escape_string($_SERVER['REMOTE_ADDR']);
 								$select_acces = $connect->query("select id_acces from `" . $tblprefix . "infos_acces` where type_user = 'u' and id_user = $id and ip_user = '$ip_user';");
 								if (mysqli_num_rows($select_acces) > 0){
-									$id_this_acces = $select_acces->fetch_row();
+									$id_this_acces = mysqli_result($select_acces,0);
 									$update_acces = $connect->query("update `" . $tblprefix . "infos_acces` set date_acces = ".time()." where id_acces = $id_this_acces;");
 								}
 								else {
@@ -109,7 +119,7 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
 		}
 		else {
 			$selapp = "SELECT * from `" . $tblprefix . "apprenants` WHERE identifiant_apprenant = '" . $login . "';";
-			$resultat2 = $connect->query($selapp,$connect);
+			$resultat2 = $connect->query($selapp);
 
 			if ($resultat2 && mysqli_num_rows($resultat2) == 1) {
 				$id = mysql_result($resultat2, 0, "id_apprenant");
@@ -218,7 +228,7 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
 	} else goback(champ_manq,2,"error",0);
  }
 }
-$connect->close();
+mysqli_close($connect);
 ?>
 
 </body>

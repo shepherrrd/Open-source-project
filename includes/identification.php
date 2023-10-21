@@ -47,8 +47,8 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
     		if (mysqli_num_rows($select_pseudo_user) == 1){
     			$pseudo = html_ent($select_pseudo_user->fetch_row()[0]);
     			$pseudo = wordwrap($pseudo,20,"<br />",true);
-    			$photo = $select_pseudo_user->fetch_row()[1];
-    			$last_connect = $select_pseudo_user->fetch_row()[2];
+    			$photo = $select_pseudo_user->fetch_row()[1] ?? null;
+    			$last_connect = $select_pseudo_user->fetch_row()[2] ?? null;
     		}
     		else {
     			$pseudo = "";
