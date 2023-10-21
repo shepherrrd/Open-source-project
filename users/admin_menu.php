@@ -26,6 +26,16 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 
 defined("access_const") or die( 'Restricted access' );
 
+function mysqli_result($res, $row, $field=0) {
+
+    $res->data_seek($row);
+
+    $datarow = $res->fetch_array();
+
+    return $datarow[$field];
+
+}
+
 if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_session)){
 
 	function class_menu($var_inc){
@@ -42,12 +52,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	echo "<a href=\"?inc=messages\" class=\"".class_menu("messages")."\">".messagerie;
 
 	if ($grade_user_session == "3" || $grade_user_session == "2")
-		$select_msg_nonlus = mysql_query("select count(id_message) from `" . $tblprefix . "messages` where lu_message not like '%-$id_user_session-%' and (id_destinataires like '%-$id_user_session-%' or (id_destinataires = '*' and id_destinataires_app = '*'));");
+		$select_msg_nonlus = $connect->query("select count(id_message) from `" . $tblprefix . "messages` where lu_message not like '%-$id_user_session-%' and (id_destinataires like '%-$id_user_session-%' or (id_destinataires = '*' and id_destinataires_app = '*'));");
 	else
-		$select_msg_nonlus = mysql_query("select count(id_message) from `" . $tblprefix . "messages` where lu_message not like '%-$id_user_session-%' and id_destinataires like '%-$id_user_session-%';"); 
+		$select_msg_nonlus = $connect->query("select count(id_message) from `" . $tblprefix . "messages` where lu_message not like '%-$id_user_session-%' and id_destinataires like '%-$id_user_session-%';"); 
 
 	if ($select_msg_nonlus){
-		$nbr_msg = mysql_result($select_msg_nonlus,0);
+		$nbr_msg = mysqli_result($select_msg_nonlus,0);
 		if (ctype_digit($nbr_msg) && $nbr_msg > 0)
 			echo " (".$nbr_msg.")";
 	}

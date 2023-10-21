@@ -38,7 +38,7 @@ if (file_exists($langfolder)){
 			$selectlanguage = mysqli_query($connect,"select langue_site from `" . $tblprefix . "site_infos`;");
 		if ($selectlanguage){
 			if (mysqli_num_rows($selectlanguage) > 0)
-				$language = $selectlanguage->fetch_assoc()['langue_site'];
+				$language = $selectlanguage->fetch_assoc()['langue_site'] ?? null;
 			else $language = "en";
 		} else $language = "en";
 

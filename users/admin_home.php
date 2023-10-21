@@ -65,8 +65,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($_SESSION['id']) &
 	$grade_user_session = $_SESSION['grade'];
 	$select_pseudo_user = $connect->query("select identifiant_user, last_connect from `" . $tblprefix . "users` where id_user = $id_user_session;");
   if (mysqli_num_rows($select_pseudo_user) == 1){
-    $pseudo = $select_pseudo_user->fetch_assoc(0);
-    $last_connect = $select_pseudo_user->fetch_assoc()[1];
+    $pseudo = $select_pseudo_user->fetch_assoc()[0] ?? null;
+    $last_connect = $select_pseudo_user->fetch_assoc()[1] ?? null;
   }
 	else {
     $pseudo = "";
