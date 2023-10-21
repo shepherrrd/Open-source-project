@@ -44,7 +44,7 @@ if (file_exists($langfolder)){
 		
 		if ($selectlanguage){
 			if (mysqli_num_rows($selectlanguage) > 0)
-				$language = $selectlanguage->fetch_assoc()['langue_site'];
+				$language = $selectlanguage->fetch_assoc()['langue_site'] ?? null;
 			else $language = "en";
 		} else $language = "en";
 	}
