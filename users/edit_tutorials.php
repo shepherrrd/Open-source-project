@@ -26,13 +26,23 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 
 defined("access_const") or die( 'Restricted access' );
 
+/* function mysqli_result($res, $row, $field=0) {
+
+    $res->data_seek($row);
+
+    $datarow = $res->fetch_array();
+
+    return $datarow[$field];
+
+} */
+
 if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_session) && ($grade_user_session == "3" || $grade_user_session == "2" || $grade_user_session == "1")){
 
 	echo "<div id=\"titre\">".gestion_tutoriels."</div>";
 
-	$select_statut_comp = mysql_query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'courses';");
-	if (mysql_num_rows($select_statut_comp) == 1) {
- 		$statut_comp = mysql_result($select_statut_comp,0);
+	$select_statut_comp = $connect->query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'courses';");
+	if (mysqli_num_rows($select_statut_comp) == 1) {
+ 		$statut_comp = mysqli_result($select_statut_comp,0);
 		if ($statut_comp == 0)
 		 echo "<h3><img src=\"../images/icones/warning.png\" /><font color=\"red\">".component_disabled." ".enable_it_now." : </font><a href=\"?inc=components\"\">".gestion_composants."</a></h3>";
 	}
@@ -82,15 +92,15 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     	 $tuto_titre = trim($_POST['tuto_titre']);
     	 if (!empty($tuto_titre)){
     		$tuto_titre = escape_string($tuto_titre);
-    		$select_tuto_titre = mysql_query("select id_tutoriel from `" . $tblprefix . "tutoriels` where titre_tutoriel = '$tuto_titre';");
- 					if (mysql_num_rows($select_tuto_titre) == 0) {
- 						$select_max_order = mysql_query("select max(ordre_tutoriel) from `" . $tblprefix . "tutoriels`;");
- 						if (mysql_num_rows($select_max_order) == 1)
- 							$ordre_tuto = mysql_result($select_max_order,0) + 1;
+    		$select_tuto_titre = $connect->query("select id_tutoriel from `" . $tblprefix . "tutoriels` where titre_tutoriel = '$tuto_titre';");
+ 					if (mysqli_num_rows($select_tuto_titre) == 0) {
+ 						$select_max_order = $connect->query("select max(ordre_tutoriel) from `" . $tblprefix . "tutoriels`;");
+ 						if (mysqli_num_rows($select_max_order) == 1)
+ 							$ordre_tuto = mysqli_result($select_max_order,0) + 1;
  						else $ordre_tuto = 1;
  						$time_insert_tuto = time();
  						$inserttuto = "INSERT INTO `" . $tblprefix . "tutoriels` VALUES (NULL,$id_user_session,'$tuto_titre','','','','by','','1',$ordre_tuto,$time_insert_tuto,$time_insert_tuto,0,'*',0,0);";
-	          mysql_query($inserttuto,$connect);
+	          $connect->query($inserttuto,$connect);
 	          if ($this_tuto_insert = mysql_insert_id())
 	          	$link = "?inc=edit_tutorials&do=update_tuto&id_tuto=".$this_tuto_insert;
 	          else $link = "?inc=edit_tutorials";
@@ -108,8 +118,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
    	
    	// ****************** update_tuto **************************
     case "update_tuto" : {
-    		$select_tuto_complet = mysql_query("select * from `" . $tblprefix . "tutoriels` where id_tutoriel = $id_tuto;");
-    		if (mysql_num_rows($select_tuto_complet) == 1) {
+    		$select_tuto_complet = $connect->query("select * from `" . $tblprefix . "tutoriels` where id_tutoriel = $id_tuto;");
+    		if (mysqli_num_rows($select_tuto_complet) == 1) {
     			$tutoriel = mysql_fetch_row($select_tuto_complet);
     			
     			$titre_tuto = html_ent($tutoriel[2]);
@@ -138,10 +148,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     						}
     						else $tuto_acces = "*";
     						
-    						$select_tuto_titre = mysql_query("select id_tutoriel from `" . $tblprefix . "tutoriels` where titre_tutoriel = '$tuto_titre';");
- 								if ((mysql_num_rows($select_tuto_titre) == 0) || (mysql_num_rows($select_tuto_titre) == 1 && mysql_result($select_tuto_titre,0) == $id_tuto)) {
+    						$select_tuto_titre = $connect->query("select id_tutoriel from `" . $tblprefix . "tutoriels` where titre_tutoriel = '$tuto_titre';");
+ 								if ((mysqli_num_rows($select_tuto_titre) == 0) || (mysqli_num_rows($select_tuto_titre) == 1 && mysqli_result($select_tuto_titre,0) == $id_tuto)) {
  									$update_tuto = "update `" . $tblprefix . "tutoriels` SET titre_tutoriel = '$tuto_titre', objectifs_tutoriel = '$tuto_objectifs', introduction_tutoriel = '$tuto_introduction', conclusion_tutoriel = '$tuto_conclusion', licence_tutoriel = '$tuto_licence', notes_tutoriel = '$tuto_notes', date_modification_tutoriel = ".time().", acces_tutoriel = '$tuto_acces' where id_tutoriel = $id_tuto;";
- 									mysql_query($update_tuto);
+ 									$connect->query($update_tuto);
  									redirection(tutoriel_modifie,"?inc=edit_tutorials",3,"tips",1);
  								} else goback(titre_existe,2,"error",1);
     					} else goback(titre_vide,2,"error",1);
@@ -167,8 +177,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							 echo " checked=\"checked\"";
 							echo " /><b>".acces_classes." :</b>";
 							$tab_classes = explode("-",$acces_tuto);
-    					$select_classes = mysql_query("select * from `" . $tblprefix . "classes`;");
-					 		if (mysql_num_rows($select_classes) > 0){
+    					$select_classes = $connect->query("select * from `" . $tblprefix . "classes`;");
+					 		if (mysqli_num_rows($select_classes) > 0){
 					 			echo "<table border=\"0\"><tr><td align=\"center\">";
 					 			echo "<table border=\"0\"><tr><td><a href=\"?inc=site_config&do=registration#classe\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=site_config&do=registration#classe\"><b>".ajouter_classe."</b></a></td></tr></table>";
 								echo "<select size=\"5\" name=\"classes[]\" id=\"classes\" multiple=\"multiple\">";
@@ -214,29 +224,29 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** delete_tuto **************************
     case "delete_tuto" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    			$select_parties = mysql_query("select id_partie from `" . $tblprefix . "parties` where id_tutoriel = $id_tuto;");
-    			if (mysql_num_rows($select_parties) > 0){
+    			$select_parties = $connect->query("select id_partie from `" . $tblprefix . "parties` where id_tutoriel = $id_tuto;");
+    			if (mysqli_num_rows($select_parties) > 0){
     				while($partie = mysql_fetch_row($select_parties)){
-    					$select_chapitres = mysql_query("select id_chapitre from `" . $tblprefix . "chapitres` where id_partie = $partie[0];");
-    					if (mysql_num_rows($select_chapitres) > 0){
+    					$select_chapitres = $connect->query("select id_chapitre from `" . $tblprefix . "chapitres` where id_partie = $partie[0];");
+    					if (mysqli_num_rows($select_chapitres) > 0){
     						while($chapitre = mysql_fetch_row($select_chapitres)){
-    							$delete_bloc = mysql_query("delete from `" . $tblprefix . "blocs` where id_chapitre = $chapitre[0];");
-									$delete_qcm = mysql_query("delete from `" . $tblprefix . "qcm` where id_chapitre = $chapitre[0];");
-    							$select_devoirs_rendus = mysql_query("select id_devoir from `" . $tblprefix . "devoirs` where id_chapitre = $chapitre[0];");
-    							if (mysql_num_rows($select_devoirs_rendus) > 0){
+    							$delete_bloc = $connect->query("delete from `" . $tblprefix . "blocs` where id_chapitre = $chapitre[0];");
+									$delete_qcm = $connect->query("delete from `" . $tblprefix . "qcm` where id_chapitre = $chapitre[0];");
+    							$select_devoirs_rendus = $connect->query("select id_devoir from `" . $tblprefix . "devoirs` where id_chapitre = $chapitre[0];");
+    							if (mysqli_num_rows($select_devoirs_rendus) > 0){
     								while($devoir = mysql_fetch_row($select_devoirs_rendus)){
-    									$delete_devoirs_rendus = mysql_query("delete from `" . $tblprefix . "devoirs_rendus` where id_devoir = $devoir[0];");
-    									$delete_devoirs_notes = mysql_query("delete from `" . $tblprefix . "devoirs_notes` where id_devoir = $devoir[0];");
+    									$delete_devoirs_rendus = $connect->query("delete from `" . $tblprefix . "devoirs_rendus` where id_devoir = $devoir[0];");
+    									$delete_devoirs_notes = $connect->query("delete from `" . $tblprefix . "devoirs_notes` where id_devoir = $devoir[0];");
     								}
 									}
-									$delete_devoir = mysql_query("delete from `" . $tblprefix . "devoirs` where id_chapitre = $chapitre[0];");
+									$delete_devoir = $connect->query("delete from `" . $tblprefix . "devoirs` where id_chapitre = $chapitre[0];");
     						}
 							}
-							$delete_chapitre = mysql_query("delete from `" . $tblprefix . "chapitres` where id_partie = $partie[0];");					
+							$delete_chapitre = $connect->query("delete from `" . $tblprefix . "chapitres` where id_partie = $partie[0];");					
 						}
     			}
-    			$delete_partie = mysql_query("delete from `" . $tblprefix . "parties` where id_tutoriel = $id_tuto;");
-    			$delete_tuto = mysql_query("delete from `" . $tblprefix . "tutoriels` where id_tutoriel = $id_tuto;");
+    			$delete_partie = $connect->query("delete from `" . $tblprefix . "parties` where id_tutoriel = $id_tuto;");
+    			$delete_tuto = $connect->query("delete from `" . $tblprefix . "tutoriels` where id_tutoriel = $id_tuto;");
     	}
     	locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -245,17 +255,17 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** orderup_tuto **********************
     case "orderup_tuto" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$ce_tuto = mysql_query ("select ordre_tutoriel from `" . $tblprefix . "tutoriels` where id_tutoriel = $id_tuto;");
-				if (mysql_num_rows($ce_tuto) == 1) {
-					$ordre_tuto = mysql_result($ce_tuto,0,0);
+    		$ce_tuto = $connect->query ("select ordre_tutoriel from `" . $tblprefix . "tutoriels` where id_tutoriel = $id_tuto;");
+				if (mysqli_num_rows($ce_tuto) == 1) {
+					$ordre_tuto = mysqli_result($ce_tuto,0,0);
 
-    			$tuto_precedent = mysql_query ("select id_tutoriel, ordre_tutoriel from `" . $tblprefix . "tutoriels` where ordre_tutoriel < $ordre_tuto and publie_tutoriel = '2' order by ordre_tutoriel desc;");
-					if (mysql_num_rows($tuto_precedent) > 0) {
-						$idtuto_precedent = mysql_result($tuto_precedent,0,0);
-						$ordretuto_precedent = mysql_result($tuto_precedent,0,1);
+    			$tuto_precedent = $connect->query ("select id_tutoriel, ordre_tutoriel from `" . $tblprefix . "tutoriels` where ordre_tutoriel < $ordre_tuto and publie_tutoriel = '2' order by ordre_tutoriel desc;");
+					if (mysqli_num_rows($tuto_precedent) > 0) {
+						$idtuto_precedent = mysqli_result($tuto_precedent,0,0);
+						$ordretuto_precedent = mysqli_result($tuto_precedent,0,1);
 
-						$order_this_tuto = mysql_query("update `" . $tblprefix . "tutoriels` set ordre_tutoriel = $ordretuto_precedent where id_tutoriel = $id_tuto;");
-						$order_tuto_precedent = mysql_query("update `" . $tblprefix . "tutoriels` set ordre_tutoriel = $ordre_tuto where id_tutoriel = $idtuto_precedent;");
+						$order_this_tuto = $connect->query("update `" . $tblprefix . "tutoriels` set ordre_tutoriel = $ordretuto_precedent where id_tutoriel = $id_tuto;");
+						$order_tuto_precedent = $connect->query("update `" . $tblprefix . "tutoriels` set ordre_tutoriel = $ordre_tuto where id_tutoriel = $idtuto_precedent;");
 					}
     		}
     	}
@@ -265,17 +275,17 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** orderdown_tuto **********************
     case "orderdown_tuto" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$ce_tuto = mysql_query ("select ordre_tutoriel from `" . $tblprefix . "tutoriels` where id_tutoriel = $id_tuto;");
-				if (mysql_num_rows($ce_tuto) == 1) {
-					$ordre_tuto = mysql_result($ce_tuto,0,0);
+    		$ce_tuto = $connect->query ("select ordre_tutoriel from `" . $tblprefix . "tutoriels` where id_tutoriel = $id_tuto;");
+				if (mysqli_num_rows($ce_tuto) == 1) {
+					$ordre_tuto = mysqli_result($ce_tuto,0,0);
 
-    			$tuto_suivant = mysql_query ("select id_tutoriel, ordre_tutoriel from `" . $tblprefix . "tutoriels` where ordre_tutoriel > $ordre_tuto and publie_tutoriel = '2' order by ordre_tutoriel;");
-					if (mysql_num_rows($tuto_suivant) > 0) {
-						$idtuto_suivant = mysql_result($tuto_suivant,0,0);
-						$ordretuto_suivant = mysql_result($tuto_suivant,0,1);
+    			$tuto_suivant = $connect->query ("select id_tutoriel, ordre_tutoriel from `" . $tblprefix . "tutoriels` where ordre_tutoriel > $ordre_tuto and publie_tutoriel = '2' order by ordre_tutoriel;");
+					if (mysqli_num_rows($tuto_suivant) > 0) {
+						$idtuto_suivant = mysqli_result($tuto_suivant,0,0);
+						$ordretuto_suivant = mysqli_result($tuto_suivant,0,1);
 							
-						$order_this_tuto = mysql_query("update `" . $tblprefix . "tutoriels` set ordre_tutoriel = $ordretuto_suivant where id_tutoriel = $id_tuto;");
-						$order_tuto_suivant = mysql_query("update `" . $tblprefix . "tutoriels` set ordre_tutoriel = $ordre_tuto where id_tutoriel = $idtuto_suivant;");
+						$order_this_tuto = $connect->query("update `" . $tblprefix . "tutoriels` set ordre_tutoriel = $ordretuto_suivant where id_tutoriel = $id_tuto;");
+						$order_tuto_suivant = $connect->query("update `" . $tblprefix . "tutoriels` set ordre_tutoriel = $ordre_tuto where id_tutoriel = $idtuto_suivant;");
 					}
     		}
     	}
@@ -285,7 +295,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** publier_tuto *************************
     case "publier_tuto" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$publier_tuto = mysql_query("update `" . $tblprefix . "tutoriels` set publie_tutoriel = '2', id_validateur = $id_user_session where id_tutoriel = $id_tuto;");
+    		$publier_tuto = $connect->query("update `" . $tblprefix . "tutoriels` set publie_tutoriel = '2', id_validateur = $id_user_session where id_tutoriel = $id_tuto;");
     	}
     	locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -293,7 +303,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** depublier_tuto ***********************
     case "depublier_tuto" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$depublier_tuto = mysql_query("update `" . $tblprefix . "tutoriels` set publie_tutoriel = '1' where id_tutoriel = $id_tuto;");
+    		$depublier_tuto = $connect->query("update `" . $tblprefix . "tutoriels` set publie_tutoriel = '1' where id_tutoriel = $id_tuto;");
     	}
     	locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -302,10 +312,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     case "open_tuto" : {
     	
 		 goback_lien("?inc=edit_tutorials");
-     $select_tuto = mysql_query("select titre_tutoriel, notes_tutoriel from `" . $tblprefix . "tutoriels` where id_tutoriel = $id_tuto;");
-     if (mysql_num_rows($select_tuto) == 1) {
-    	$titre_tuto = mysql_result($select_tuto,0,0);
-    	$notes_tuto = mysql_result($select_tuto,0,1);
+     $select_tuto = $connect->query("select titre_tutoriel, notes_tutoriel from `" . $tblprefix . "tutoriels` where id_tutoriel = $id_tuto;");
+     if (mysqli_num_rows($select_tuto) == 1) {
+    	$titre_tuto = mysqli_result($select_tuto,0,0);
+    	$notes_tuto = mysqli_result($select_tuto,0,1);
 
 			$titre_tuto = html_ent($titre_tuto);
 			$titre_tuto = readmore($titre_tuto,$max_len2);
@@ -314,8 +324,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			
  			echo "<table border=\"0\"><tr><td><a href=\"?inc=edit_tutorials&do=create_partie&id_tuto=".$id_tuto."\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=edit_tutorials&do=create_partie&id_tuto=".$id_tuto."\"><b>".creer_partie."</b></a></td></tr></table><br />";
 
-  $select_my_parties = mysql_query("select id_partie, titre_partie, publie_partie, ordre_partie from `" . $tblprefix . "parties` where id_tutoriel = $id_tuto order by ordre_partie;");
-	$nbr_trouve = mysql_num_rows($select_my_parties);
+  $select_my_parties = $connect->query("select id_partie, titre_partie, publie_partie, ordre_partie from `" . $tblprefix . "parties` where id_tutoriel = $id_tuto order by ordre_partie;");
+	$nbr_trouve = mysqli_num_rows($select_my_parties);
   if ($nbr_trouve > 0){
 		$page_max = ceil($nbr_trouve / $nbr_resultats);
 		if ($page <= $page_max && $page > 1 && $page_max > 1)
@@ -325,7 +335,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			$page = 1;
 		}
 
-    	$select_my_parties_limit = mysql_query("select id_partie, titre_partie, publie_partie, ordre_partie from `" . $tblprefix . "parties` where id_tutoriel = $id_tuto order by ordre_partie limit $limit, $nbr_resultats;");
+    	$select_my_parties_limit = $connect->query("select id_partie, titre_partie, publie_partie, ordre_partie from `" . $tblprefix . "parties` where id_tutoriel = $id_tuto order by ordre_partie limit $limit, $nbr_resultats;");
 
     		echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".partie."</b></td>";
@@ -355,15 +365,15 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					echo "\n<td class=\"affichage_table\"><a target=\"_blank\" href=\"../?tutorial=".$id_tuto."#".$partie[0]."\" title=\"".previsualiser."\"><img border=\"0\" src=\"../images/others/view.png\" width=\"32\" height=\"32\" /></a></td>";
 
 					echo "\n<td class=\"affichage_table\" nowrap=\"nowrap\">";
-					$partie_precedent = mysql_query ("select id_partie from `" . $tblprefix . "parties` where ordre_partie < $partie[3] and id_tutoriel = $id_tuto order by ordre_partie desc;");
-					if (mysql_num_rows($partie_precedent) > 0)
+					$partie_precedent = $connect->query ("select id_partie from `" . $tblprefix . "parties` where ordre_partie < $partie[3] and id_tutoriel = $id_tuto order by ordre_partie desc;");
+					if (mysqli_num_rows($partie_precedent) > 0)
 						echo "<a href=\"?inc=edit_tutorials&do=orderup_partie&id_part=".$partie[0]."&key=".$key."\" title=\"".deplacer_haut."\"><img border=\"0\" src=\"../images/others/up.png\" width=\"15\" height=\"15\" /></a>";
 					else
 						echo "<img border=\"0\" src=\"../images/others/up2.png\" width=\"15\" height=\"15\" />";
 					echo "<b> ".$i_ordre." </b>";
 					$i_ordre++;
-					$partie_suivant = mysql_query ("select id_partie from `" . $tblprefix . "parties` where ordre_partie > $partie[3] and id_tutoriel = $id_tuto order by ordre_partie;");
-					if (mysql_num_rows($partie_suivant) > 0)
+					$partie_suivant = $connect->query ("select id_partie from `" . $tblprefix . "parties` where ordre_partie > $partie[3] and id_tutoriel = $id_tuto order by ordre_partie;");
+					if (mysqli_num_rows($partie_suivant) > 0)
 						echo "<a href=\"?inc=edit_tutorials&do=orderdown_partie&id_part=".$partie[0]."&key=".$key."\" title=\"".deplacer_bas."\"><img border=\"0\" src=\"../images/others/down.png\" width=\"15\" height=\"15\" /></a>";
 					else echo "<img border=\"0\" src=\"../images/others/down2.png\" width=\"15\" height=\"15\" />";
 					echo "</td>";
@@ -410,21 +420,21 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     	 $partie_titre = trim($_POST['partie_titre']);
     	 if (!empty($partie_titre)){
     		$partie_titre = escape_string($partie_titre);
-    		$select_partie_titre = mysql_query("select id_partie from `" . $tblprefix . "parties` where titre_partie = '$partie_titre' and id_tutoriel= $id_tuto;");
- 					if (mysql_num_rows($select_partie_titre) == 0) {
- 						$select_max_order = mysql_query("select max(ordre_partie) from `" . $tblprefix . "parties` where id_tutoriel = $id_tuto;");
- 						if (mysql_num_rows($select_max_order) == 1)
- 							$ordre_partie = mysql_result($select_max_order,0) + 1;
+    		$select_partie_titre = $connect->query("select id_partie from `" . $tblprefix . "parties` where titre_partie = '$partie_titre' and id_tutoriel= $id_tuto;");
+ 					if (mysqli_num_rows($select_partie_titre) == 0) {
+ 						$select_max_order = $connect->query("select max(ordre_partie) from `" . $tblprefix . "parties` where id_tutoriel = $id_tuto;");
+ 						if (mysqli_num_rows($select_max_order) == 1)
+ 							$ordre_partie = mysqli_result($select_max_order,0) + 1;
  						else $ordre_partie = 1;
  						$insertpartie = "INSERT INTO `" . $tblprefix . "parties` VALUES (NULL,$id_tuto,'$partie_titre','','','','1',$ordre_partie);";
-	          mysql_query($insertpartie,$connect);
+	          $connect->query($insertpartie,$connect);
 	          
 	          $date_modification_tuto = time();
-	          $update_tuto_date_modification = mysql_query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto where id_tutoriel = $id_tuto;");
+	          $update_tuto_date_modification = $connect->query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto where id_tutoriel = $id_tuto;");
 
-	          $select_this_partie = mysql_query("select id_partie from `" . $tblprefix . "parties` where titre_partie = '$partie_titre' and id_tutoriel = $id_tuto;");
-	          if (mysql_num_rows($select_this_partie) == 1) {
-	          	$id_part = mysql_result($select_this_partie,0);
+	          $select_this_partie = $connect->query("select id_partie from `" . $tblprefix . "parties` where titre_partie = '$partie_titre' and id_tutoriel = $id_tuto;");
+	          if (mysqli_num_rows($select_this_partie) == 1) {
+	          	$id_part = mysqli_result($select_this_partie,0);
 	          	$link = "?inc=edit_tutorials&do=update_partie&id_part=".$id_part;
 						}
 	          else $link = "?inc=edit_tutorials&do=open_tuto&id_tuto=".$id_tuto;
@@ -443,8 +453,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** update_partie ************************
     case "update_partie" : {
      	
-    		$select_partie_complet = mysql_query("select * from `" . $tblprefix . "parties` where id_partie = $id_part;");
-    		if (mysql_num_rows($select_partie_complet) == 1) {
+    		$select_partie_complet = $connect->query("select * from `" . $tblprefix . "parties` where id_partie = $id_part;");
+    		if (mysqli_num_rows($select_partie_complet) == 1) {
     			$partie = mysql_fetch_row($select_partie_complet);
     			
     			$titre_partie = html_ent($partie[2]);
@@ -461,13 +471,13 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     						$partie_objectifs = escape_string(trim($_POST['partie_objectifs']));
     						$partie_introduction = escape_string(trim($_POST['partie_introduction']));
     						$partie_conclusion = escape_string(trim($_POST['partie_conclusion']));
-    						$select_partie_titre = mysql_query("select id_partie from `" . $tblprefix . "parties` where titre_partie = '$partie_titre' and id_tutoriel = $id_tuto;");
- 								if ((mysql_num_rows($select_partie_titre) == 0) || (mysql_num_rows($select_partie_titre) == 1 && mysql_result($select_partie_titre,0) == $id_part)) {
+    						$select_partie_titre = $connect->query("select id_partie from `" . $tblprefix . "parties` where titre_partie = '$partie_titre' and id_tutoriel = $id_tuto;");
+ 								if ((mysqli_num_rows($select_partie_titre) == 0) || (mysqli_num_rows($select_partie_titre) == 1 && mysqli_result($select_partie_titre,0) == $id_part)) {
  									$update_partie = "update `" . $tblprefix . "parties` SET titre_partie = '$partie_titre', objectifs_partie = '$partie_objectifs', introduction_partie = '$partie_introduction', conclusion_partie = '$partie_conclusion' where id_partie = $id_part;";
- 									mysql_query($update_partie);
+ 									$connect->query($update_partie);
  									
 	          			$date_modification_tuto = time();
-	          			$update_tuto_date_modification = mysql_query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto where id_tutoriel = $id_tuto;");
+	          			$update_tuto_date_modification = $connect->query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto where id_tutoriel = $id_tuto;");
  									
  									redirection(partie_modifie,"?inc=edit_tutorials&do=open_tuto&id_tuto=".$id_tuto."",3,"tips",1);
  								} else goback(titre_existe,2,"error",1);
@@ -493,25 +503,25 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** delete_partie ************************
     case "delete_partie" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_user_idtuto = mysql_query("select `" . $tblprefix . "tutoriels`.id_tutoriel from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and id_partie = $id_part;");
-    		$id_tutoriel = mysql_result($select_user_idtuto,0,0);
-    		$select_chapitres = mysql_query("select id_chapitre from `" . $tblprefix . "chapitres` where id_partie = $id_part;");
-    		if (mysql_num_rows($select_chapitres) > 0){
+    		$select_user_idtuto = $connect->query("select `" . $tblprefix . "tutoriels`.id_tutoriel from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and id_partie = $id_part;");
+    		$id_tutoriel = mysqli_result($select_user_idtuto,0,0);
+    		$select_chapitres = $connect->query("select id_chapitre from `" . $tblprefix . "chapitres` where id_partie = $id_part;");
+    		if (mysqli_num_rows($select_chapitres) > 0){
     			while($chapitre = mysql_fetch_row($select_chapitres)){
-    				$delete_bloc = mysql_query("delete from `" . $tblprefix . "blocs` where id_chapitre = $chapitre[0];");
-						$delete_qcm = mysql_query("delete from `" . $tblprefix . "qcm` where id_chapitre = $chapitre[0];");
-    				$select_devoirs_rendus = mysql_query("select id_devoir from `" . $tblprefix . "devoirs` where id_chapitre = $chapitre[0];");
-    				if (mysql_num_rows($select_devoirs_rendus) > 0){
+    				$delete_bloc = $connect->query("delete from `" . $tblprefix . "blocs` where id_chapitre = $chapitre[0];");
+						$delete_qcm = $connect->query("delete from `" . $tblprefix . "qcm` where id_chapitre = $chapitre[0];");
+    				$select_devoirs_rendus = $connect->query("select id_devoir from `" . $tblprefix . "devoirs` where id_chapitre = $chapitre[0];");
+    				if (mysqli_num_rows($select_devoirs_rendus) > 0){
     					while($devoir = mysql_fetch_row($select_devoirs_rendus)){
-    						$delete_devoirs_rendus = mysql_query("delete from `" . $tblprefix . "devoirs_rendus` where id_devoir = $devoir[0];");
-    						$delete_devoirs_notes = mysql_query("delete from `" . $tblprefix . "devoirs_notes` where id_devoir = $devoir[0];");
+    						$delete_devoirs_rendus = $connect->query("delete from `" . $tblprefix . "devoirs_rendus` where id_devoir = $devoir[0];");
+    						$delete_devoirs_notes = $connect->query("delete from `" . $tblprefix . "devoirs_notes` where id_devoir = $devoir[0];");
     					}
 						}
-						$delete_devoir = mysql_query("delete from `" . $tblprefix . "devoirs` where id_chapitre = $chapitre[0];");
+						$delete_devoir = $connect->query("delete from `" . $tblprefix . "devoirs` where id_chapitre = $chapitre[0];");
     			}
 				}
-				$delete_chapitre = mysql_query("delete from `" . $tblprefix . "chapitres` where id_partie = $id_part;");					
-    		$delete_partie = mysql_query("delete from `" . $tblprefix . "parties` where id_partie = $id_part;");
+				$delete_chapitre = $connect->query("delete from `" . $tblprefix . "chapitres` where id_partie = $id_part;");					
+    		$delete_partie = $connect->query("delete from `" . $tblprefix . "parties` where id_partie = $id_part;");
 				
 				locationhref_admin("?inc=edit_tutorials&do=open_tuto&id_tuto=".$id_tutoriel);
     	} else locationhref_admin("?inc=edit_tutorials");
@@ -520,18 +530,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** orderup_partie **********************
     case "orderup_partie" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$cette_partie = mysql_query ("select id_tutoriel, ordre_partie from `" . $tblprefix . "parties` where id_partie = $id_part;");
-				if (mysql_num_rows($cette_partie) == 1) {
-					$id_tutoriel = mysql_result($cette_partie,0,0);
-					$ordre_partie = mysql_result($cette_partie,0,1);
+    		$cette_partie = $connect->query ("select id_tutoriel, ordre_partie from `" . $tblprefix . "parties` where id_partie = $id_part;");
+				if (mysqli_num_rows($cette_partie) == 1) {
+					$id_tutoriel = mysqli_result($cette_partie,0,0);
+					$ordre_partie = mysqli_result($cette_partie,0,1);
 
-    			$partie_precedente = mysql_query ("select id_partie, ordre_partie from `" . $tblprefix . "parties` where ordre_partie < $ordre_partie and id_tutoriel = $id_tutoriel order by ordre_partie desc;");
-					if (mysql_num_rows($partie_precedente) > 0) {
-						$idpartie_precedente = mysql_result($partie_precedente,0,0);
-						$ordrepartie_precedente = mysql_result($partie_precedente,0,1);
+    			$partie_precedente = $connect->query ("select id_partie, ordre_partie from `" . $tblprefix . "parties` where ordre_partie < $ordre_partie and id_tutoriel = $id_tutoriel order by ordre_partie desc;");
+					if (mysqli_num_rows($partie_precedente) > 0) {
+						$idpartie_precedente = mysqli_result($partie_precedente,0,0);
+						$ordrepartie_precedente = mysqli_result($partie_precedente,0,1);
 							
-						$order_this_partie = mysql_query("update `" . $tblprefix . "parties` set ordre_partie = $ordrepartie_precedente where id_partie = $id_part;");
-						$order_partie_precedente = mysql_query("update `" . $tblprefix . "parties` set ordre_partie = $ordre_partie where id_partie = $idpartie_precedente;");
+						$order_this_partie = $connect->query("update `" . $tblprefix . "parties` set ordre_partie = $ordrepartie_precedente where id_partie = $id_part;");
+						$order_partie_precedente = $connect->query("update `" . $tblprefix . "parties` set ordre_partie = $ordre_partie where id_partie = $idpartie_precedente;");
 					}
     			locationhref_admin("?inc=edit_tutorials&do=open_tuto&id_tuto=".$id_tutoriel);
     		} else locationhref_admin("?inc=edit_tutorials");
@@ -541,18 +551,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** orderdown_partie **********************
     case "orderdown_partie" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$cette_partie = mysql_query ("select id_tutoriel, ordre_partie from `" . $tblprefix . "parties` where id_partie = $id_part;");
-				if (mysql_num_rows($cette_partie) == 1) {
-					$id_tutoriel = mysql_result($cette_partie,0,0);
-					$ordre_partie = mysql_result($cette_partie,0,1);
+    		$cette_partie = $connect->query ("select id_tutoriel, ordre_partie from `" . $tblprefix . "parties` where id_partie = $id_part;");
+				if (mysqli_num_rows($cette_partie) == 1) {
+					$id_tutoriel = mysqli_result($cette_partie,0,0);
+					$ordre_partie = mysqli_result($cette_partie,0,1);
 			
-    			$partie_suivante = mysql_query ("select id_partie, ordre_partie from `" . $tblprefix . "parties` where ordre_partie > $ordre_partie and id_tutoriel = $id_tutoriel order by ordre_partie;");
-					if (mysql_num_rows($partie_suivante) > 0) {
-						$idpartie_suivante = mysql_result($partie_suivante,0,0);
-						$ordrepartie_suivante = mysql_result($partie_suivante,0,1);
+    			$partie_suivante = $connect->query ("select id_partie, ordre_partie from `" . $tblprefix . "parties` where ordre_partie > $ordre_partie and id_tutoriel = $id_tutoriel order by ordre_partie;");
+					if (mysqli_num_rows($partie_suivante) > 0) {
+						$idpartie_suivante = mysqli_result($partie_suivante,0,0);
+						$ordrepartie_suivante = mysqli_result($partie_suivante,0,1);
 							
-						$order_this_partie = mysql_query("update `" . $tblprefix . "parties` set ordre_partie = $ordrepartie_suivante where id_partie = $id_part;");
-						$order_partie_suivante = mysql_query("update `" . $tblprefix . "parties` set ordre_partie = $ordre_partie where id_partie = $idpartie_suivante;");
+						$order_this_partie = $connect->query("update `" . $tblprefix . "parties` set ordre_partie = $ordrepartie_suivante where id_partie = $id_part;");
+						$order_partie_suivante = $connect->query("update `" . $tblprefix . "parties` set ordre_partie = $ordre_partie where id_partie = $idpartie_suivante;");
 					}
     			locationhref_admin("?inc=edit_tutorials&do=open_tuto&id_tuto=".$id_tutoriel);
     		} else locationhref_admin("?inc=edit_tutorials");
@@ -562,9 +572,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** publier_partie ***********************
     case "publier_partie" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_user_idtuto = mysql_query("select `" . $tblprefix . "tutoriels`.id_tutoriel from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and id_partie = $id_part;");
-    		$id_tutoriel = mysql_result($select_user_idtuto,0,0);
-    		$publier_partie = mysql_query("update `" . $tblprefix . "parties` set publie_partie = '1' where id_partie = $id_part;");
+    		$select_user_idtuto = $connect->query("select `" . $tblprefix . "tutoriels`.id_tutoriel from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and id_partie = $id_part;");
+    		$id_tutoriel = mysqli_result($select_user_idtuto,0,0);
+    		$publier_partie = $connect->query("update `" . $tblprefix . "parties` set publie_partie = '1' where id_partie = $id_part;");
     		locationhref_admin("?inc=edit_tutorials&do=open_tuto&id_tuto=".$id_tutoriel);
     	} else locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -572,9 +582,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** depublier_partie *********************
     case "depublier_partie" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_user_idtuto = mysql_query("select `" . $tblprefix . "tutoriels`.id_tutoriel from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and id_partie = $id_part;");
-    		$id_tutoriel = mysql_result($select_user_idtuto,0,0);
-    		$depublier_partie = mysql_query("update `" . $tblprefix . "parties` set publie_partie = '0' where id_partie = $id_part;");
+    		$select_user_idtuto = $connect->query("select `" . $tblprefix . "tutoriels`.id_tutoriel from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and id_partie = $id_part;");
+    		$id_tutoriel = mysqli_result($select_user_idtuto,0,0);
+    		$depublier_partie = $connect->query("update `" . $tblprefix . "parties` set publie_partie = '0' where id_partie = $id_part;");
     		locationhref_admin("?inc=edit_tutorials&do=open_tuto&id_tuto=".$id_tutoriel);
     	} else locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -582,26 +592,26 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** open_partie **************************
     case "open_partie" : {
      if (!empty($_POST['send'])){
-    		$select_chapitre_ordre = mysql_query("select id_chapitre from `" . $tblprefix . "chapitres` where id_partie = $id_part;");
-    		if (mysql_num_rows($select_chapitre_ordre) > 0){
+    		$select_chapitre_ordre = $connect->query("select id_chapitre from `" . $tblprefix . "chapitres` where id_partie = $id_part;");
+    		if (mysqli_num_rows($select_chapitre_ordre) > 0){
     			while($thechap = mysql_fetch_row($select_chapitre_ordre)){
     				$id_chap_order = $thechap[0];
     				$var_input_order = "order_".$id_chap_order;
 						if (isset($_POST[$var_input_order]) && !empty($_POST[$var_input_order])){
 							$order_this_chap = intval($_POST[$var_input_order]);
-							$order_this_chapitre = mysql_query("update `" . $tblprefix . "chapitres` set ordre_chapitre = $order_this_chap where id_chapitre = $id_chap_order;");
+							$order_this_chapitre = $connect->query("update `" . $tblprefix . "chapitres` set ordre_chapitre = $order_this_chap where id_chapitre = $id_chap_order;");
 						}
     			}
     		}
     		locationhref_admin("?inc=edit_tutorials&do=open_partie&id_part=".$id_part);
      }
      else {
-     $select_tuto = mysql_query("select `" . $tblprefix . "parties`.id_tutoriel, titre_tutoriel, titre_partie from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and id_partie = $id_part;");
-     if (mysql_num_rows($select_tuto) == 1) {
-    	$id_tuto = mysql_result($select_tuto,0,0);
-    	$titre_tuto = html_ent(mysql_result($select_tuto,0,1));
+     $select_tuto = $connect->query("select `" . $tblprefix . "parties`.id_tutoriel, titre_tutoriel, titre_partie from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and id_partie = $id_part;");
+     if (mysqli_num_rows($select_tuto) == 1) {
+    	$id_tuto = mysqli_result($select_tuto,0,0);
+    	$titre_tuto = html_ent(mysqli_result($select_tuto,0,1));
     	$titre_tuto = readmore($titre_tuto,$max_len2);
-			$titre_part = html_ent(mysql_result($select_tuto,0,2));
+			$titre_part = html_ent(mysqli_result($select_tuto,0,2));
 			$titre_part = readmore($titre_part,$max_len2);
     	goback_lien("?inc=edit_tutorials&do=open_tuto&id_tuto=".$id_tuto);
 
@@ -610,8 +620,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						
  			echo "<table border=\"0\"><tr><td><a href=\"?inc=edit_tutorials&do=create_chapitre&id_part=".$id_part."\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=edit_tutorials&do=create_chapitre&id_part=".$id_part."\"><b>".creer_chap."</b></a></td></tr></table><br />";
 
-  $select_my_chapitres = mysql_query("select id_chapitre, titre_chapitre, publie_chapitre, ordre_chapitre, grade_chapitre from `" . $tblprefix . "chapitres` where id_partie = $id_part order by ordre_chapitre;");
-	$nbr_trouve = mysql_num_rows($select_my_chapitres);
+  $select_my_chapitres = $connect->query("select id_chapitre, titre_chapitre, publie_chapitre, ordre_chapitre, grade_chapitre from `" . $tblprefix . "chapitres` where id_partie = $id_part order by ordre_chapitre;");
+	$nbr_trouve = mysqli_num_rows($select_my_chapitres);
   if ($nbr_trouve > 0){
 		$page_max = ceil($nbr_trouve / $nbr_resultats);
 		if ($page <= $page_max && $page > 1 && $page_max > 1)
@@ -621,7 +631,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			$page = 1;
 		}
 
-    	$select_my_chapitres_limit = mysql_query("select id_chapitre, titre_chapitre, publie_chapitre, ordre_chapitre, grade_chapitre from `" . $tblprefix . "chapitres` where id_partie = $id_part order by ordre_chapitre limit $limit, $nbr_resultats;");
+    	$select_my_chapitres_limit = $connect->query("select id_chapitre, titre_chapitre, publie_chapitre, ordre_chapitre, grade_chapitre from `" . $tblprefix . "chapitres` where id_partie = $id_part order by ordre_chapitre limit $limit, $nbr_resultats;");
 				echo "<form method=\"POST\" action=\"\">";
     		echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".chapitre."</b></td>";
@@ -656,8 +666,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							}
 							$acces_chap = substr($acces_chap,0,-2);
 							$chaine_grades_req = implode(",",$tab_rech_count);
-							$select_count_apps_grade = mysql_query("select count(id_apprenant) from `" . $tblprefix . "apprenants` where active_apprenant = '1' and grade_apprenant in ($chaine_grades_req);");
-							$nbr_apps_grade = mysql_result($select_count_apps_grade,0);
+							$select_count_apps_grade = $connect->query("select count(id_apprenant) from `" . $tblprefix . "apprenants` where active_apprenant = '1' and grade_apprenant in ($chaine_grades_req);");
+							$nbr_apps_grade = mysqli_result($select_count_apps_grade,0);
 							$acces_chap.= " (".$nbr_apps_grade." ".number_active_learners.")";
     				}
 					}
@@ -678,16 +688,16 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					echo "\n<td class=\"affichage_table\"><a target=\"_blank\" href=\"../?chapter=".$chapitre[0]."\" title=\"".previsualiser."\"><img border=\"0\" src=\"../images/others/view.png\" width=\"32\" height=\"32\" /></a></td>";
 					
 					echo "\n<td class=\"affichage_table\" nowrap=\"nowrap\">";
-					$chapitre_precedent = mysql_query ("select id_chapitre from `" . $tblprefix . "chapitres` where ordre_chapitre < $chapitre[3] and id_partie = $id_part order by ordre_chapitre desc;");
-					if (mysql_num_rows($chapitre_precedent) > 0)
+					$chapitre_precedent = $connect->query ("select id_chapitre from `" . $tblprefix . "chapitres` where ordre_chapitre < $chapitre[3] and id_partie = $id_part order by ordre_chapitre desc;");
+					if (mysqli_num_rows($chapitre_precedent) > 0)
 						echo "<a href=\"?inc=edit_tutorials&do=orderup_chapitre&id_chap=".$chapitre[0]."&key=".$key."\" title=\"".deplacer_haut."\"><img border=\"0\" src=\"../images/others/up.png\" width=\"15\" height=\"15\" /></a>";
 					else
 						echo "<img border=\"0\" src=\"../images/others/up2.png\" width=\"15\" height=\"15\" />";
 					
 					echo "<b> <input name=\"order_".$chapitre[0]."\" value=\"".$chapitre[3]."\" type=\"text\" size=\"1\" maxlength=\"3\"> </b>";
 
-					$chapitre_suivant = mysql_query ("select id_chapitre from `" . $tblprefix . "chapitres` where ordre_chapitre > $chapitre[3] and id_partie = $id_part order by ordre_chapitre;");
-					if (mysql_num_rows($chapitre_suivant) > 0)
+					$chapitre_suivant = $connect->query ("select id_chapitre from `" . $tblprefix . "chapitres` where ordre_chapitre > $chapitre[3] and id_partie = $id_part order by ordre_chapitre;");
+					if (mysqli_num_rows($chapitre_suivant) > 0)
 						echo "<a href=\"?inc=edit_tutorials&do=orderdown_chapitre&id_chap=".$chapitre[0]."&key=".$key."\" title=\"".deplacer_bas."\"><img border=\"0\" src=\"../images/others/down.png\" width=\"15\" height=\"15\" /></a>";
 					else echo "<img border=\"0\" src=\"../images/others/down2.png\" width=\"15\" height=\"15\" />";
 					echo "</td>";
@@ -731,25 +741,25 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     	 	$chapitre_titre = trim($_POST['chapitre_titre']);
     		if (!empty($chapitre_titre)){
     			$chapitre_titre = escape_string($chapitre_titre);
-    			$select_chapitre_titre = mysql_query("select id_chapitre from `" . $tblprefix . "chapitres` where titre_chapitre = '$chapitre_titre' and id_partie = $id_part;");
- 					if (mysql_num_rows($select_chapitre_titre) == 0) {
- 						$select_max_order = mysql_query("select max(ordre_chapitre) from `" . $tblprefix . "chapitres` where id_partie = $id_part;");
- 						if (mysql_num_rows($select_max_order) == 1)
- 							$ordre_chapitre = mysql_result($select_max_order,0) + 1;
+    			$select_chapitre_titre = $connect->query("select id_chapitre from `" . $tblprefix . "chapitres` where titre_chapitre = '$chapitre_titre' and id_partie = $id_part;");
+ 					if (mysqli_num_rows($select_chapitre_titre) == 0) {
+ 						$select_max_order = $connect->query("select max(ordre_chapitre) from `" . $tblprefix . "chapitres` where id_partie = $id_part;");
+ 						if (mysqli_num_rows($select_max_order) == 1)
+ 							$ordre_chapitre = mysqli_result($select_max_order,0) + 1;
  						else $ordre_chapitre = 1;
  						
  						$time_insert_chapitre = time();
  						$insertchapitre = "INSERT INTO `" . $tblprefix . "chapitres` VALUES (NULL,$id_part,'$chapitre_titre','',0,'1',$ordre_chapitre,$time_insert_chapitre,$time_insert_chapitre,0,0,'*');";
-	          mysql_query($insertchapitre,$connect);
+	          $connect->query($insertchapitre,$connect);
 
-						$select_tuto_id= mysql_query("select id_tutoriel from `" . $tblprefix . "parties` where id_partie = $id_part;");
-						$id_tuto = mysql_result($select_tuto_id,0,0);
+						$select_tuto_id= $connect->query("select id_tutoriel from `" . $tblprefix . "parties` where id_partie = $id_part;");
+						$id_tuto = mysqli_result($select_tuto_id,0,0);
 	          $date_modification_tuto = time();
-	          $update_tuto_date_modification = mysql_query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto where id_tutoriel = $id_tuto;");
+	          $update_tuto_date_modification = $connect->query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto where id_tutoriel = $id_tuto;");
 	          
-	          $select_this_chapitre = mysql_query("select id_chapitre from `" . $tblprefix . "chapitres` where titre_chapitre = '$chapitre_titre' and date_creation_chapitre = $time_insert_chapitre;");
-	          if (mysql_num_rows($select_this_chapitre) == 1) {
-	          	$id_chap = mysql_result($select_this_chapitre,0);
+	          $select_this_chapitre = $connect->query("select id_chapitre from `" . $tblprefix . "chapitres` where titre_chapitre = '$chapitre_titre' and date_creation_chapitre = $time_insert_chapitre;");
+	          if (mysqli_num_rows($select_this_chapitre) == 1) {
+	          	$id_chap = mysqli_result($select_this_chapitre,0);
 	          	$link = "?inc=edit_tutorials&do=update_chapitre&id_chap=".$id_chap;
 						}
 	          else $link = "?inc=edit_tutorials&do=open_partie&id_part=".$id_part;
@@ -768,8 +778,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** update_chapitre **********************
     case "update_chapitre" : {
      	
-    		$select_chapitre_complet = mysql_query("select * from `" . $tblprefix . "chapitres` where id_chapitre = $id_chap;");
-    		if (mysql_num_rows($select_chapitre_complet) == 1) {
+    		$select_chapitre_complet = $connect->query("select * from `" . $tblprefix . "chapitres` where id_chapitre = $id_chap;");
+    		if (mysqli_num_rows($select_chapitre_complet) == 1) {
     			$chapitre = mysql_fetch_row($select_chapitre_complet);
     			
     			$titre_chapitre = html_ent($chapitre[2]);
@@ -793,15 +803,15 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     						}
     						else $chap_acces = "*";
 
-    						$select_chapitre_titre = mysql_query("select id_chapitre from `" . $tblprefix . "chapitres` where titre_chapitre = '$chapitre_titre' and id_partie = $id_partie;");
- 								if ((mysql_num_rows($select_chapitre_titre) == 0) || (mysql_num_rows($select_chapitre_titre) == 1 && mysql_result($select_chapitre_titre,0) == $id_chap)) {
+    						$select_chapitre_titre = $connect->query("select id_chapitre from `" . $tblprefix . "chapitres` where titre_chapitre = '$chapitre_titre' and id_partie = $id_partie;");
+ 								if ((mysqli_num_rows($select_chapitre_titre) == 0) || (mysqli_num_rows($select_chapitre_titre) == 1 && mysqli_result($select_chapitre_titre,0) == $id_chap)) {
  									$update_chapitre = "update `" . $tblprefix . "chapitres` SET titre_chapitre = '$chapitre_titre', objectifs_chapitre = '$chapitre_objectifs', date_modification_chapitre = ".time().", grade_chapitre = '$chap_acces' where id_chapitre = $id_chap;";
- 									mysql_query($update_chapitre);
+ 									$connect->query($update_chapitre);
  									
-									$select_tuto_id= mysql_query("select id_tutoriel from `" . $tblprefix . "parties` where id_partie = $id_partie;");
-									$id_tuto = mysql_result($select_tuto_id,0,0);
+									$select_tuto_id= $connect->query("select id_tutoriel from `" . $tblprefix . "parties` where id_partie = $id_partie;");
+									$id_tuto = mysqli_result($select_tuto_id,0,0);
 	          			$date_modification_tuto = time();
-	          			$update_tuto_date_modification = mysql_query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto where id_tutoriel = $id_tuto;");
+	          			$update_tuto_date_modification = $connect->query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto where id_tutoriel = $id_tuto;");
 
  									redirection(chapitre_modifie,"?inc=edit_tutorials&do=open_partie&id_part=".$id_partie."",3,"tips",1);
  								} else goback(titre_existe,2,"error",1);
@@ -831,8 +841,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							echo "<select size=\"5\" name=\"grades[]\" id=\"grades\" multiple=\"multiple\">";
 							$tab_all_grades = array("A","B","C","D","E");
 							foreach ($tab_all_grades as $this_grade){
-								$select_count_apps_grade = mysql_query("select count(id_apprenant) from `" . $tblprefix . "apprenants` where active_apprenant = '1' and grade_apprenant = '$this_grade';");
-								$nbr_apps_grade = mysql_result($select_count_apps_grade,0);
+								$select_count_apps_grade = $connect->query("select count(id_apprenant) from `" . $tblprefix . "apprenants` where active_apprenant = '1' and grade_apprenant = '$this_grade';");
+								$nbr_apps_grade = mysqli_result($select_count_apps_grade,0);
     						echo "\n<option value=\"".$this_grade."\"";
     						if (in_array($this_grade,$tab_grades))
     							echo " selected=\"selected\"";
@@ -856,21 +866,21 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** delete_chapitre **********************
     case "delete_chapitre" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_user_idpartie = mysql_query("select `" . $tblprefix . "parties`.id_partie from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
-    		$id_partie = mysql_result($select_user_idpartie,0,0);
-				$delete_bloc = mysql_query("delete from `" . $tblprefix . "blocs` where id_chapitre = $id_chap;");
-				$delete_qcm = mysql_query("delete from `" . $tblprefix . "qcm` where id_chapitre = $id_chap;");
+    		$select_user_idpartie = $connect->query("select `" . $tblprefix . "parties`.id_partie from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
+    		$id_partie = mysqli_result($select_user_idpartie,0,0);
+				$delete_bloc = $connect->query("delete from `" . $tblprefix . "blocs` where id_chapitre = $id_chap;");
+				$delete_qcm = $connect->query("delete from `" . $tblprefix . "qcm` where id_chapitre = $id_chap;");
 
-    		$select_devoirs_rendus = mysql_query("select id_devoir from `" . $tblprefix . "devoirs` where id_chapitre = $id_chap;");
-    		if (mysql_num_rows($select_devoirs_rendus) > 0){
+    		$select_devoirs_rendus = $connect->query("select id_devoir from `" . $tblprefix . "devoirs` where id_chapitre = $id_chap;");
+    		if (mysqli_num_rows($select_devoirs_rendus) > 0){
     			while($devoir = mysql_fetch_row($select_devoirs_rendus)){
-    				$delete_devoirs_rendus = mysql_query("delete from `" . $tblprefix . "devoirs_rendus` where id_devoir = $devoir[0];");
-    				$delete_devoirs_notes = mysql_query("delete from `" . $tblprefix . "devoirs_notes` where id_devoir = $devoir[0];");
+    				$delete_devoirs_rendus = $connect->query("delete from `" . $tblprefix . "devoirs_rendus` where id_devoir = $devoir[0];");
+    				$delete_devoirs_notes = $connect->query("delete from `" . $tblprefix . "devoirs_notes` where id_devoir = $devoir[0];");
     			}
 				}
-				$delete_devoir = mysql_query("delete from `" . $tblprefix . "devoirs` where id_chapitre = $id_chap;");
+				$delete_devoir = $connect->query("delete from `" . $tblprefix . "devoirs` where id_chapitre = $id_chap;");
 
-    		$delete_chapitre = mysql_query("delete from `" . $tblprefix . "chapitres` where id_chapitre = $id_chap;");
+    		$delete_chapitre = $connect->query("delete from `" . $tblprefix . "chapitres` where id_chapitre = $id_chap;");
 				
 				locationhref_admin("?inc=edit_tutorials&do=open_partie&id_part=".$id_partie);
     	} else locationhref_admin("?inc=edit_tutorials");
@@ -879,19 +889,19 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** orderup_chapitre *********************
     case "orderup_chapitre" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$ce_chapitre = mysql_query ("select id_tutoriel, `" . $tblprefix . "parties`.id_partie, ordre_chapitre from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "chapitres`.id_partie = `" . $tblprefix . "parties`.id_partie and id_chapitre = $id_chap;");
-				if (mysql_num_rows($ce_chapitre) == 1) {
-					$id_tutoriel = mysql_result($ce_chapitre,0,0);
-					$id_partie = mysql_result($ce_chapitre,0,1);
-					$ordre_chapitre = mysql_result($ce_chapitre,0,2);
+    		$ce_chapitre = $connect->query ("select id_tutoriel, `" . $tblprefix . "parties`.id_partie, ordre_chapitre from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "chapitres`.id_partie = `" . $tblprefix . "parties`.id_partie and id_chapitre = $id_chap;");
+				if (mysqli_num_rows($ce_chapitre) == 1) {
+					$id_tutoriel = mysqli_result($ce_chapitre,0,0);
+					$id_partie = mysqli_result($ce_chapitre,0,1);
+					$ordre_chapitre = mysqli_result($ce_chapitre,0,2);
 
-    			$chapitre_precedent = mysql_query ("select id_chapitre, ordre_chapitre from `" . $tblprefix . "chapitres` where ordre_chapitre < $ordre_chapitre and id_partie = $id_partie order by ordre_chapitre desc;");
-					if (mysql_num_rows($chapitre_precedent) > 0) {
-						$idchapitre_precedent = mysql_result($chapitre_precedent,0,0);
-						$ordrechapitre_precedent = mysql_result($chapitre_precedent,0,1);
+    			$chapitre_precedent = $connect->query ("select id_chapitre, ordre_chapitre from `" . $tblprefix . "chapitres` where ordre_chapitre < $ordre_chapitre and id_partie = $id_partie order by ordre_chapitre desc;");
+					if (mysqli_num_rows($chapitre_precedent) > 0) {
+						$idchapitre_precedent = mysqli_result($chapitre_precedent,0,0);
+						$ordrechapitre_precedent = mysqli_result($chapitre_precedent,0,1);
 							
-						$order_this_chapitre = mysql_query("update `" . $tblprefix . "chapitres` set ordre_chapitre = $ordrechapitre_precedent where id_chapitre = $id_chap;");
-						$order_chapitre_precedent = mysql_query("update `" . $tblprefix . "chapitres` set ordre_chapitre = $ordre_chapitre where id_chapitre = $idchapitre_precedent;");
+						$order_this_chapitre = $connect->query("update `" . $tblprefix . "chapitres` set ordre_chapitre = $ordrechapitre_precedent where id_chapitre = $id_chap;");
+						$order_chapitre_precedent = $connect->query("update `" . $tblprefix . "chapitres` set ordre_chapitre = $ordre_chapitre where id_chapitre = $idchapitre_precedent;");
 					}
     			locationhref_admin("?inc=edit_tutorials&do=open_partie&id_part=".$id_partie);
     		} else locationhref_admin("?inc=edit_tutorials");
@@ -901,19 +911,19 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** orderdown_chapitre *********************
     case "orderdown_chapitre" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$ce_chapitre = mysql_query ("select id_tutoriel, `" . $tblprefix . "parties`.id_partie, ordre_chapitre from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "chapitres`.id_partie = `" . $tblprefix . "parties`.id_partie and id_chapitre = $id_chap;");
-				if (mysql_num_rows($ce_chapitre) == 1) {
-					$id_tutoriel = mysql_result($ce_chapitre,0,0);
-					$id_partie = mysql_result($ce_chapitre,0,1);
-					$ordre_chapitre = mysql_result($ce_chapitre,0,2);
+    		$ce_chapitre = $connect->query ("select id_tutoriel, `" . $tblprefix . "parties`.id_partie, ordre_chapitre from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "chapitres`.id_partie = `" . $tblprefix . "parties`.id_partie and id_chapitre = $id_chap;");
+				if (mysqli_num_rows($ce_chapitre) == 1) {
+					$id_tutoriel = mysqli_result($ce_chapitre,0,0);
+					$id_partie = mysqli_result($ce_chapitre,0,1);
+					$ordre_chapitre = mysqli_result($ce_chapitre,0,2);
 
-    			$chapitre_suivant = mysql_query ("select id_chapitre, ordre_chapitre from `" . $tblprefix . "chapitres` where ordre_chapitre > $ordre_chapitre and id_partie = $id_partie order by ordre_chapitre;");
-					if (mysql_num_rows($chapitre_suivant) > 0) {
-						$idchapitre_suivant = mysql_result($chapitre_suivant,0,0);
-						$ordrechapitre_suivant = mysql_result($chapitre_suivant,0,1);
+    			$chapitre_suivant = $connect->query ("select id_chapitre, ordre_chapitre from `" . $tblprefix . "chapitres` where ordre_chapitre > $ordre_chapitre and id_partie = $id_partie order by ordre_chapitre;");
+					if (mysqli_num_rows($chapitre_suivant) > 0) {
+						$idchapitre_suivant = mysqli_result($chapitre_suivant,0,0);
+						$ordrechapitre_suivant = mysqli_result($chapitre_suivant,0,1);
 							
-						$order_this_chapitre = mysql_query("update `" . $tblprefix . "chapitres` set ordre_chapitre = $ordrechapitre_suivant where id_chapitre = $id_chap;");
-						$order_chapitre_suivant = mysql_query("update `" . $tblprefix . "chapitres` set ordre_chapitre = $ordre_chapitre where id_chapitre = $idchapitre_suivant;");
+						$order_this_chapitre = $connect->query("update `" . $tblprefix . "chapitres` set ordre_chapitre = $ordrechapitre_suivant where id_chapitre = $id_chap;");
+						$order_chapitre_suivant = $connect->query("update `" . $tblprefix . "chapitres` set ordre_chapitre = $ordre_chapitre where id_chapitre = $idchapitre_suivant;");
 					}
 					locationhref_admin("?inc=edit_tutorials&do=open_partie&id_part=".$id_partie);
     		} else locationhref_admin("?inc=edit_tutorials");
@@ -923,9 +933,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** publier_chapitre *********************
     case "publier_chapitre" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_user_idpartie = mysql_query("select `" . $tblprefix . "parties`.id_partie from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
-    		$id_partie = mysql_result($select_user_idpartie,0,0);
-    		$publier_chapitre = mysql_query("update `" . $tblprefix . "chapitres` set publie_chapitre = '1' where id_chapitre = $id_chap;");
+    		$select_user_idpartie = $connect->query("select `" . $tblprefix . "parties`.id_partie from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
+    		$id_partie = mysqli_result($select_user_idpartie,0,0);
+    		$publier_chapitre = $connect->query("update `" . $tblprefix . "chapitres` set publie_chapitre = '1' where id_chapitre = $id_chap;");
 				locationhref_admin("?inc=edit_tutorials&do=open_partie&id_part=".$id_partie);
     	} else locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -933,24 +943,24 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** depublier_chapitre *******************
     case "depublier_chapitre" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_user_idpartie = mysql_query("select `" . $tblprefix . "parties`.id_partie from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
-    		$id_partie = mysql_result($select_user_idpartie,0,0);
-    		$depublier_chapitre = mysql_query("update `" . $tblprefix . "chapitres` set publie_chapitre = '0' where id_chapitre = $id_chap;");
+    		$select_user_idpartie = $connect->query("select `" . $tblprefix . "parties`.id_partie from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
+    		$id_partie = mysqli_result($select_user_idpartie,0,0);
+    		$depublier_chapitre = $connect->query("update `" . $tblprefix . "chapitres` set publie_chapitre = '0' where id_chapitre = $id_chap;");
 				locationhref_admin("?inc=edit_tutorials&do=open_partie&id_part=".$id_partie);
     	} else locationhref_admin("?inc=edit_tutorials");
     } break;
 
     // ****************** open_chapitre ************************
     case "open_chapitre" : {
-     $select_tuto = mysql_query("select `" . $tblprefix . "chapitres`.id_partie, `" . $tblprefix . "tutoriels`.id_tutoriel, titre_tutoriel, titre_partie, titre_chapitre from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
-     if (mysql_num_rows($select_tuto) == 1) {
-    	$id_part = mysql_result($select_tuto,0,0);
-    	$id_tuto = mysql_result($select_tuto,0,1);
-    	$titre_tuto = html_ent(mysql_result($select_tuto,0,2));
+     $select_tuto = $connect->query("select `" . $tblprefix . "chapitres`.id_partie, `" . $tblprefix . "tutoriels`.id_tutoriel, titre_tutoriel, titre_partie, titre_chapitre from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
+     if (mysqli_num_rows($select_tuto) == 1) {
+    	$id_part = mysqli_result($select_tuto,0,0);
+    	$id_tuto = mysqli_result($select_tuto,0,1);
+    	$titre_tuto = html_ent(mysqli_result($select_tuto,0,2));
     	$titre_tuto = readmore($titre_tuto,$max_len2);
-    	$titre_part = html_ent(mysql_result($select_tuto,0,3));
+    	$titre_part = html_ent(mysqli_result($select_tuto,0,3));
     	$titre_part = readmore($titre_part,$max_len2);
-			$titre_chap = html_ent(mysql_result($select_tuto,0,4));
+			$titre_chap = html_ent(mysqli_result($select_tuto,0,4));
 			$titre_chap = readmore($titre_chap,$max_len2);
 			
 			goback_lien("?inc=edit_tutorials&do=open_partie&id_part=".$id_part);
@@ -971,8 +981,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			echo "<hr /><h2><a name=\"blocs\"><font color=\"black\"><u>".blocs."</u></font></a></h2>";
  			echo "<table border=\"0\"><tr><td><a href=\"?inc=edit_tutorials&do=create_bloc&id_chap=".$id_chap."\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=edit_tutorials&do=create_bloc&id_chap=".$id_chap."\"><b>".creer_bloc."</b></a></td></tr></table><br />";
 
-  $select_my_blocs = mysql_query("select id_bloc, titre_bloc, publie_bloc, ordre_bloc from `" . $tblprefix . "blocs` where id_chapitre = $id_chap order by ordre_bloc;");
-	$nbr_trouve = mysql_num_rows($select_my_blocs);
+  $select_my_blocs = $connect->query("select id_bloc, titre_bloc, publie_bloc, ordre_bloc from `" . $tblprefix . "blocs` where id_chapitre = $id_chap order by ordre_bloc;");
+	$nbr_trouve = mysqli_num_rows($select_my_blocs);
   if ($nbr_trouve > 0){
 		$page_max = ceil($nbr_trouve / $nbr_resultats);
 		if ($page <= $page_max && $page > 1 && $page_max > 1)
@@ -982,7 +992,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			$page = 1;
 		}
 
-    	$select_my_blocs_limit = mysql_query("select id_bloc, titre_bloc, publie_bloc, ordre_bloc from `" . $tblprefix . "blocs` where id_chapitre = $id_chap order by ordre_bloc limit $limit, $nbr_resultats;");
+    	$select_my_blocs_limit = $connect->query("select id_bloc, titre_bloc, publie_bloc, ordre_bloc from `" . $tblprefix . "blocs` where id_chapitre = $id_chap order by ordre_bloc limit $limit, $nbr_resultats;");
 
     		echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".bloc."</b></td>";
@@ -1012,15 +1022,15 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					echo "\n<td class=\"affichage_table\"><a target=\"_blank\" href=\"../?chapter=".$id_chap."#".$bloc[0]."\" title=\"".previsualiser."\"><img border=\"0\" src=\"../images/others/view.png\" width=\"32\" height=\"32\" /></a></td>";
 					
 					echo "\n<td class=\"affichage_table\" nowrap=\"nowrap\">";
-					$bloc_precedent = mysql_query ("select id_bloc from `" . $tblprefix . "blocs` where ordre_bloc < $bloc[3] and id_chapitre = $id_chap order by ordre_bloc desc;");
-					if (mysql_num_rows($bloc_precedent) > 0)
+					$bloc_precedent = $connect->query ("select id_bloc from `" . $tblprefix . "blocs` where ordre_bloc < $bloc[3] and id_chapitre = $id_chap order by ordre_bloc desc;");
+					if (mysqli_num_rows($bloc_precedent) > 0)
 						echo "<a href=\"?inc=edit_tutorials&do=orderup_bloc&id_bloc=".$bloc[0]."&key=".$key."\" title=\"".deplacer_haut."\"><img border=\"0\" src=\"../images/others/up.png\" width=\"15\" height=\"15\" /></a>";
 					else
 						echo "<img border=\"0\" src=\"../images/others/up2.png\" width=\"15\" height=\"15\" />";
 					echo "<b> ".$j_ordre." </b>";
 					$j_ordre++;
-					$bloc_suivant = mysql_query ("select id_bloc from `" . $tblprefix . "blocs` where ordre_bloc > $bloc[3] and id_chapitre = $id_chap order by ordre_bloc;");
-					if (mysql_num_rows($bloc_suivant) > 0)
+					$bloc_suivant = $connect->query ("select id_bloc from `" . $tblprefix . "blocs` where ordre_bloc > $bloc[3] and id_chapitre = $id_chap order by ordre_bloc;");
+					if (mysqli_num_rows($bloc_suivant) > 0)
 						echo "<a href=\"?inc=edit_tutorials&do=orderdown_bloc&id_bloc=".$bloc[0]."&key=".$key."\" title=\"".deplacer_bas."\"><img border=\"0\" src=\"../images/others/down.png\" width=\"15\" height=\"15\" /></a>";
 					else echo "<img border=\"0\" src=\"../images/others/down2.png\" width=\"15\" height=\"15\" />";
 					echo "</td>";
@@ -1060,8 +1070,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			echo "<br /><hr /><h2><a name=\"qcm\"><font color=\"black\"><u>".qcm."</u></font></a></h2>";	
  			echo "<table border=\"0\"><tr><td><a href=\"?inc=edit_tutorials&do=create_qcm&id_chap=".$id_chap."\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=edit_tutorials&do=create_qcm&id_chap=".$id_chap."\"><b>".creer_qcm."</b></a></td></tr></table><br />";
 
-    	$select_my_qcm = mysql_query("select * from `" . $tblprefix . "qcm` where id_chapitre = $id_chap order by ordre_qcm;");
-			 $nbr_trouve = mysql_num_rows($select_my_qcm);
+    	$select_my_qcm = $connect->query("select * from `" . $tblprefix . "qcm` where id_chapitre = $id_chap order by ordre_qcm;");
+			 $nbr_trouve = mysqli_num_rows($select_my_qcm);
   		 if ($nbr_trouve > 0){
 				$page_max = ceil($nbr_trouve / $nbr_resultats);
 				if ($page2 <= $page_max && $page2 > 1 && $page_max > 1)
@@ -1071,7 +1081,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					$page2 = 1;
 				}
 
-    	$select_my_qcm_limit = mysql_query("select * from `" . $tblprefix . "qcm` where id_chapitre = $id_chap order by ordre_qcm limit $limit, $nbr_resultats;");
+    	$select_my_qcm_limit = $connect->query("select * from `" . $tblprefix . "qcm` where id_chapitre = $id_chap order by ordre_qcm limit $limit, $nbr_resultats;");
 
     		echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".question."</b></td>";
@@ -1108,15 +1118,15 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					echo "\n<td class=\"affichage_table\"><a target=\"_blank\" href=\"../?chapter=".$id_chap."#qcm\" title=\"".previsualiser."\"><img border=\"0\" src=\"../images/others/view.png\" width=\"32\" height=\"32\" /></a></td>";
 
 					echo "\n<td class=\"affichage_table\" nowrap=\"nowrap\">";
-					$qcm_precedent = mysql_query ("select id_qcm from `" . $tblprefix . "qcm` where ordre_qcm < $qcm[13] and id_chapitre = $id_chap order by ordre_qcm desc;");
-					if (mysql_num_rows($qcm_precedent) > 0)
+					$qcm_precedent = $connect->query ("select id_qcm from `" . $tblprefix . "qcm` where ordre_qcm < $qcm[13] and id_chapitre = $id_chap order by ordre_qcm desc;");
+					if (mysqli_num_rows($qcm_precedent) > 0)
 						echo "<a href=\"?inc=edit_tutorials&do=orderup_qcm&id_qcm=".$qcm[0]."&key=".$key."\" title=\"".deplacer_haut."\"><img border=\"0\" src=\"../images/others/up.png\" width=\"15\" height=\"15\" /></a>";
 					else
 						echo "<img border=\"0\" src=\"../images/others/up2.png\" width=\"15\" height=\"15\" />";
 					echo "<b> ".$i_ordre." </b>";
 					$i_ordre++;
-					$qcm_suivant = mysql_query ("select id_qcm from `" . $tblprefix . "qcm` where ordre_qcm > $qcm[13] and id_chapitre = $id_chap order by ordre_qcm;");
-					if (mysql_num_rows($qcm_suivant) > 0)
+					$qcm_suivant = $connect->query ("select id_qcm from `" . $tblprefix . "qcm` where ordre_qcm > $qcm[13] and id_chapitre = $id_chap order by ordre_qcm;");
+					if (mysqli_num_rows($qcm_suivant) > 0)
 						echo "<a href=\"?inc=edit_tutorials&do=orderdown_qcm&id_qcm=".$qcm[0]."&key=".$key."\" title=\"".deplacer_bas."\"><img border=\"0\" src=\"../images/others/down.png\" width=\"15\" height=\"15\" /></a>";
 					else echo "<img border=\"0\" src=\"../images/others/down2.png\" width=\"15\" height=\"15\" />";
 					echo "</td>";
@@ -1156,8 +1166,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			echo "<br /><hr /><h2><a name=\"devoir\"><font color=\"black\"><u>".homework_assignments."</u></font></a></h2>";	
  			echo "<table border=\"0\"><tr><td><a href=\"?inc=edit_tutorials&do=create_devoir&id_chap=".$id_chap."\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=edit_tutorials&do=create_devoir&id_chap=".$id_chap."\"><b>".creer_devoir."</b></a></td></tr></table><br />";
 
-    	$select_my_devoir = mysql_query("select * from `" . $tblprefix . "devoirs` where id_chapitre = $id_chap order by ordre_devoir;");
-			 $nbr_trouve = mysql_num_rows($select_my_devoir);
+    	$select_my_devoir = $connect->query("select * from `" . $tblprefix . "devoirs` where id_chapitre = $id_chap order by ordre_devoir;");
+			 $nbr_trouve = mysqli_num_rows($select_my_devoir);
   		 if ($nbr_trouve > 0){
 				$page_max = ceil($nbr_trouve / $nbr_resultats);
 				if ($page3 <= $page_max && $page3 > 1 && $page_max > 1)
@@ -1167,7 +1177,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					$page3 = 1;
 				}
 
-    	$select_my_devoir_limit = mysql_query("select * from `" . $tblprefix . "devoirs` where id_chapitre = $id_chap order by ordre_devoir limit $limit, $nbr_resultats;");
+    	$select_my_devoir_limit = $connect->query("select * from `" . $tblprefix . "devoirs` where id_chapitre = $id_chap order by ordre_devoir limit $limit, $nbr_resultats;");
 
     		echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".titre_devoir."</b></td>";
@@ -1204,8 +1214,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						$tab_acces_devoir = explode("-",trim($devoir[2],"-"));
 						if (!empty($tab_acces_devoir[0])){
 							$chaine_acces_devoir = implode(",",$tab_acces_devoir);
-							$select_classes = mysql_query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_devoir.");");
-							if (mysql_num_rows($select_classes) > 0){
+							$select_classes = $connect->query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_devoir.");");
+							if (mysqli_num_rows($select_classes) > 0){
     						while($classe = mysql_fetch_row($select_classes))
     							$acces_devoir .= "<u>".$classe[1]."</u>, ";
     					}
@@ -1229,15 +1239,15 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					echo "\n<td class=\"affichage_table\"><a target=\"_blank\" href=\"../?chapter=".$id_chap."#devoir\" title=\"".previsualiser."\"><img border=\"0\" src=\"../images/others/view.png\" width=\"32\" height=\"32\" /></a></td>";
 
 					echo "\n<td class=\"affichage_table\" nowrap=\"nowrap\">";
-					$devoir_precedent = mysql_query ("select id_devoir from `" . $tblprefix . "devoirs` where ordre_devoir < $devoir[8] and id_chapitre = $id_chap order by ordre_devoir desc;");
-					if (mysql_num_rows($devoir_precedent) > 0)
+					$devoir_precedent = $connect->query ("select id_devoir from `" . $tblprefix . "devoirs` where ordre_devoir < $devoir[8] and id_chapitre = $id_chap order by ordre_devoir desc;");
+					if (mysqli_num_rows($devoir_precedent) > 0)
 						echo "<a href=\"?inc=edit_tutorials&do=orderup_devoir&id_devoir=".$devoir[0]."&key=".$key."\" title=\"".deplacer_haut."\"><img border=\"0\" src=\"../images/others/up.png\" width=\"15\" height=\"15\" /></a>";
 					else
 						echo "<img border=\"0\" src=\"../images/others/up2.png\" width=\"15\" height=\"15\" />";
 					echo "<b> ".$d_ordre." </b>";
 					$d_ordre++;
-					$devoir_suivant = mysql_query ("select id_devoir from `" . $tblprefix . "devoirs` where ordre_devoir > $devoir[8] and id_chapitre = $id_chap order by ordre_devoir;");
-					if (mysql_num_rows($devoir_suivant) > 0)
+					$devoir_suivant = $connect->query ("select id_devoir from `" . $tblprefix . "devoirs` where ordre_devoir > $devoir[8] and id_chapitre = $id_chap order by ordre_devoir;");
+					if (mysqli_num_rows($devoir_suivant) > 0)
 						echo "<a href=\"?inc=edit_tutorials&do=orderdown_devoir&id_devoir=".$devoir[0]."&key=".$key."\" title=\"".deplacer_bas."\"><img border=\"0\" src=\"../images/others/down.png\" width=\"15\" height=\"15\" /></a>";
 					else echo "<img border=\"0\" src=\"../images/others/down2.png\" width=\"15\" height=\"15\" />";
 					echo "</td>";
@@ -1286,25 +1296,25 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     			$bloc_titre = escape_string($bloc_titre);
     			$bloc_contenu = escape_string($bloc_contenu);
     			
-    			$select_bloc_titre = mysql_query("select id_bloc from `" . $tblprefix . "blocs` where titre_bloc = '$bloc_titre' and id_chapitre = $id_chap;");
- 					if (mysql_num_rows($select_bloc_titre) == 0) {
- 						$select_max_order = mysql_query("select max(ordre_bloc) from `" . $tblprefix . "blocs` where id_chapitre = $id_chap;");
- 						if (mysql_num_rows($select_max_order) == 1)
- 							$ordre_bloc= mysql_result($select_max_order,0) + 1;
+    			$select_bloc_titre = $connect->query("select id_bloc from `" . $tblprefix . "blocs` where titre_bloc = '$bloc_titre' and id_chapitre = $id_chap;");
+ 					if (mysqli_num_rows($select_bloc_titre) == 0) {
+ 						$select_max_order = $connect->query("select max(ordre_bloc) from `" . $tblprefix . "blocs` where id_chapitre = $id_chap;");
+ 						if (mysqli_num_rows($select_max_order) == 1)
+ 							$ordre_bloc= mysqli_result($select_max_order,0) + 1;
  						else $ordre_bloc = 1;
  						
  						$insertbloc = "INSERT INTO `" . $tblprefix . "blocs` VALUES (NULL,$id_chap,'$bloc_titre','$bloc_contenu','1',$ordre_bloc);";
-	          mysql_query($insertbloc,$connect);
+	          $connect->query($insertbloc,$connect);
 
-						$select_tuto_id= mysql_query("select id_tutoriel from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
-						$id_tuto = mysql_result($select_tuto_id,0,0);
+						$select_tuto_id= $connect->query("select id_tutoriel from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
+						$id_tuto = mysqli_result($select_tuto_id,0,0);
 	          $date_modification_tuto_chap = time();
-	          $update_tuto_date_modification = mysql_query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto_chap where id_tutoriel = $id_tuto;");
-						$update_chap_date_modification = mysql_query("update `" . $tblprefix . "chapitres` set date_modification_chapitre = $date_modification_tuto_chap where id_chapitre = $id_chap;");
+	          $update_tuto_date_modification = $connect->query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto_chap where id_tutoriel = $id_tuto;");
+						$update_chap_date_modification = $connect->query("update `" . $tblprefix . "chapitres` set date_modification_chapitre = $date_modification_tuto_chap where id_chapitre = $id_chap;");
 
-	          $select_this_bloc = mysql_query("select id_bloc from `" . $tblprefix . "blocs` where titre_bloc = '$bloc_titre' and contenu_bloc= '$bloc_contenu' and id_chapitre = $id_chap;");
-	          if (mysql_num_rows($select_this_bloc) == 1 && $_POST['exit'] == 0) {
-	          	$id_bloc = mysql_result($select_this_bloc,0);
+	          $select_this_bloc = $connect->query("select id_bloc from `" . $tblprefix . "blocs` where titre_bloc = '$bloc_titre' and contenu_bloc= '$bloc_contenu' and id_chapitre = $id_chap;");
+	          if (mysqli_num_rows($select_this_bloc) == 1 && $_POST['exit'] == 0) {
+	          	$id_bloc = mysqli_result($select_this_bloc,0);
 	          	$link = "?inc=edit_tutorials&do=update_bloc&id_bloc=".$id_bloc;
 	          	locationhref_admin($link);
 						}
@@ -1329,8 +1339,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** update_bloc **************************
     case "update_bloc" : {
      	
-    		$select_bloc_complet = mysql_query("select * from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
-    		if (mysql_num_rows($select_bloc_complet) == 1) {
+    		$select_bloc_complet = $connect->query("select * from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
+    		if (mysqli_num_rows($select_bloc_complet) == 1) {
     			$bloc = mysql_fetch_row($select_bloc_complet);
     			
     			$titre_bloc = html_ent($bloc[2]);
@@ -1343,20 +1353,20 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     					if (!empty($bloc_titre) && !empty($bloc_contenu)){
     						$bloc_titre = escape_string($bloc_titre);
     						$bloc_contenu = escape_string($bloc_contenu);
-    						$select_bloc_titre = mysql_query("select id_bloc from `" . $tblprefix . "blocs` where titre_bloc = '$bloc_titre' and id_chapitre = $id_chapitre;");
- 								if ((mysql_num_rows($select_bloc_titre) == 0) || (mysql_num_rows($select_bloc_titre) == 1 && mysql_result($select_bloc_titre,0) == $id_bloc)) {
+    						$select_bloc_titre = $connect->query("select id_bloc from `" . $tblprefix . "blocs` where titre_bloc = '$bloc_titre' and id_chapitre = $id_chapitre;");
+ 								if ((mysqli_num_rows($select_bloc_titre) == 0) || (mysqli_num_rows($select_bloc_titre) == 1 && mysqli_result($select_bloc_titre,0) == $id_bloc)) {
  									$update_bloc = "update `" . $tblprefix . "blocs` SET titre_bloc = '$bloc_titre', contenu_bloc = '$bloc_contenu' where id_bloc = $id_bloc;";
- 									mysql_query($update_bloc);
+ 									$connect->query($update_bloc);
  									
-									$select_tuto_id= mysql_query("select id_tutoriel from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chapitre;");
-									$id_tuto = mysql_result($select_tuto_id,0,0);
+									$select_tuto_id= $connect->query("select id_tutoriel from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chapitre;");
+									$id_tuto = mysqli_result($select_tuto_id,0,0);
 	          			$date_modification_tuto_chap = time();
-	          			$update_tuto_date_modification = mysql_query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto_chap where id_tutoriel = $id_tuto;");
-									$update_chap_date_modification = mysql_query("update `" . $tblprefix . "chapitres` set date_modification_chapitre = $date_modification_tuto_chap where id_chapitre = $id_chapitre;");
+	          			$update_tuto_date_modification = $connect->query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto_chap where id_tutoriel = $id_tuto;");
+									$update_chap_date_modification = $connect->query("update `" . $tblprefix . "chapitres` set date_modification_chapitre = $date_modification_tuto_chap where id_chapitre = $id_chapitre;");
 
-	          			$select_this_bloc = mysql_query("select id_bloc from `" . $tblprefix . "blocs` where titre_bloc = '$bloc_titre' and contenu_bloc= '$bloc_contenu' and id_chapitre = $id_chapitre;");
-	          			if (mysql_num_rows($select_this_bloc) == 1 && $_POST['exit'] == 0) {
-	          				$id_bloc = mysql_result($select_this_bloc,0);
+	          			$select_this_bloc = $connect->query("select id_bloc from `" . $tblprefix . "blocs` where titre_bloc = '$bloc_titre' and contenu_bloc= '$bloc_contenu' and id_chapitre = $id_chapitre;");
+	          			if (mysqli_num_rows($select_this_bloc) == 1 && $_POST['exit'] == 0) {
+	          				$id_bloc = mysqli_result($select_this_bloc,0);
 	          				$link = "?inc=edit_tutorials&do=update_bloc&id_bloc=".$id_bloc;
 	          				locationhref_admin($link);
 									}
@@ -1381,9 +1391,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** delete_bloc **************************
     case "delete_bloc" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-   			$select_user_idchap = mysql_query("select id_chapitre from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
-    		$id_chapitre = mysql_result($select_user_idchap,0,0);
-				$delete_bloc = mysql_query("delete from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
+   			$select_user_idchap = $connect->query("select id_chapitre from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
+    		$id_chapitre = mysqli_result($select_user_idchap,0,0);
+				$delete_bloc = $connect->query("delete from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
 				locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre);
     	} else locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -1391,18 +1401,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** orderup_bloc *********************
     case "orderup_bloc" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-   			$select_order_idchap = mysql_query("select id_chapitre, ordre_bloc from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
-				if (mysql_num_rows($select_order_idchap) == 1) {
-					$id_chapitre = mysql_result($select_order_idchap,0,0);
-					$ordre_bloc = mysql_result($select_order_idchap,0,1);
+   			$select_order_idchap = $connect->query("select id_chapitre, ordre_bloc from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
+				if (mysqli_num_rows($select_order_idchap) == 1) {
+					$id_chapitre = mysqli_result($select_order_idchap,0,0);
+					$ordre_bloc = mysqli_result($select_order_idchap,0,1);
 
-    			$bloc_precedent = mysql_query ("select id_bloc, ordre_bloc from `" . $tblprefix . "blocs` where ordre_bloc < $ordre_bloc and id_chapitre = $id_chapitre order by ordre_bloc desc;");
-					if (mysql_num_rows($bloc_precedent) > 0) {
-						$idbloc_precedent = mysql_result($bloc_precedent,0,0);
-						$ordrebloc_precedent = mysql_result($bloc_precedent,0,1);
+    			$bloc_precedent = $connect->query ("select id_bloc, ordre_bloc from `" . $tblprefix . "blocs` where ordre_bloc < $ordre_bloc and id_chapitre = $id_chapitre order by ordre_bloc desc;");
+					if (mysqli_num_rows($bloc_precedent) > 0) {
+						$idbloc_precedent = mysqli_result($bloc_precedent,0,0);
+						$ordrebloc_precedent = mysqli_result($bloc_precedent,0,1);
 							
-						$order_this_bloc = mysql_query("update `" . $tblprefix . "blocs` set ordre_bloc = $ordrebloc_precedent where id_bloc = $id_bloc;");
-						$order_bloc_precedent = mysql_query("update `" . $tblprefix . "blocs` set ordre_bloc = $ordre_bloc where id_bloc = $idbloc_precedent;");
+						$order_this_bloc = $connect->query("update `" . $tblprefix . "blocs` set ordre_bloc = $ordrebloc_precedent where id_bloc = $id_bloc;");
+						$order_bloc_precedent = $connect->query("update `" . $tblprefix . "blocs` set ordre_bloc = $ordre_bloc where id_bloc = $idbloc_precedent;");
 					}
 					locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre);
     		} else locationhref_admin("?inc=edit_tutorials");
@@ -1412,18 +1422,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** orderdown_bloc *********************
     case "orderdown_bloc" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-   			$select_order_idchap = mysql_query("select id_chapitre, ordre_bloc from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
-				if (mysql_num_rows($select_order_idchap) == 1) {
-					$id_chapitre = mysql_result($select_order_idchap,0,0);
-					$ordre_bloc = mysql_result($select_order_idchap,0,1);
+   			$select_order_idchap = $connect->query("select id_chapitre, ordre_bloc from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
+				if (mysqli_num_rows($select_order_idchap) == 1) {
+					$id_chapitre = mysqli_result($select_order_idchap,0,0);
+					$ordre_bloc = mysqli_result($select_order_idchap,0,1);
 
-    			$bloc_suivant = mysql_query ("select id_bloc, ordre_bloc from `" . $tblprefix . "blocs` where ordre_bloc > $ordre_bloc and id_chapitre = $id_chapitre order by ordre_bloc;");
-					if (mysql_num_rows($bloc_suivant) > 0) {
-						$idbloc_suivant = mysql_result($bloc_suivant,0,0);
-						$ordrebloc_suivant = mysql_result($bloc_suivant,0,1);
+    			$bloc_suivant = $connect->query ("select id_bloc, ordre_bloc from `" . $tblprefix . "blocs` where ordre_bloc > $ordre_bloc and id_chapitre = $id_chapitre order by ordre_bloc;");
+					if (mysqli_num_rows($bloc_suivant) > 0) {
+						$idbloc_suivant = mysqli_result($bloc_suivant,0,0);
+						$ordrebloc_suivant = mysqli_result($bloc_suivant,0,1);
 							
-						$order_this_bloc = mysql_query("update `" . $tblprefix . "blocs` set ordre_bloc = $ordrebloc_suivant where id_bloc = $id_bloc;");
-						$order_bloc_suivant = mysql_query("update `" . $tblprefix . "blocs` set ordre_bloc = $ordre_bloc where id_bloc = $idbloc_suivant;");
+						$order_this_bloc = $connect->query("update `" . $tblprefix . "blocs` set ordre_bloc = $ordrebloc_suivant where id_bloc = $id_bloc;");
+						$order_bloc_suivant = $connect->query("update `" . $tblprefix . "blocs` set ordre_bloc = $ordre_bloc where id_bloc = $idbloc_suivant;");
 					}
 					locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre);
     		} else locationhref_admin("?inc=edit_tutorials");
@@ -1433,9 +1443,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** publier_bloc *************************
     case "publier_bloc" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-   			$select_user_idchap = mysql_query("select id_chapitre from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
-    		$id_chapitre = mysql_result($select_user_idchap,0,0);
-    		$publier_bloc = mysql_query("update `" . $tblprefix . "blocs` set publie_bloc = '1' where id_bloc = $id_bloc;");
+   			$select_user_idchap = $connect->query("select id_chapitre from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
+    		$id_chapitre = mysqli_result($select_user_idchap,0,0);
+    		$publier_bloc = $connect->query("update `" . $tblprefix . "blocs` set publie_bloc = '1' where id_bloc = $id_bloc;");
 				locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre);
     	} else locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -1443,9 +1453,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** depublier_bloc ***********************
     case "depublier_bloc" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_user_idchap = mysql_query("select id_chapitre from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
-    		$id_chapitre = mysql_result($select_user_idchap,0,0);
-    		$depublier_bloc = mysql_query("update `" . $tblprefix . "blocs` set publie_bloc = '0' where id_bloc = $id_bloc;");
+    		$select_user_idchap = $connect->query("select id_chapitre from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
+    		$id_chapitre = mysqli_result($select_user_idchap,0,0);
+    		$depublier_bloc = $connect->query("update `" . $tblprefix . "blocs` set publie_bloc = '0' where id_bloc = $id_bloc;");
 				locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre);
     	} else locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -1479,19 +1489,19 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
      					$variable_rep = "reponse".$reponse_correcte;
      					if (!empty($$variable_rep)){
      				
-     						$select_max_order = mysql_query("select max(ordre_qcm) from `" . $tblprefix . "qcm` where id_chapitre = $id_chap;");
- 								if (mysql_num_rows($select_max_order) == 1)
- 									$ordre_qcm = mysql_result($select_max_order,0) + 1;
+     						$select_max_order = $connect->query("select max(ordre_qcm) from `" . $tblprefix . "qcm` where id_chapitre = $id_chap;");
+ 								if (mysqli_num_rows($select_max_order) == 1)
+ 									$ordre_qcm = mysqli_result($select_max_order,0) + 1;
  								else $ordre_qcm = 1;
 
  								$insertqcm = "INSERT INTO `" . $tblprefix . "qcm` VALUES (NULL,$id_chap,'$text_question','$reponse1','$reponse2','$reponse3','$reponse4','$reponse5','$reponse6','$reponse_correcte',0,0,'1',$ordre_qcm);";
-	          		mysql_query($insertqcm,$connect);
+	          		$connect->query($insertqcm,$connect);
 
-								$select_tuto_id= mysql_query("select id_tutoriel from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
-								$id_tuto = mysql_result($select_tuto_id,0,0);
+								$select_tuto_id= $connect->query("select id_tutoriel from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
+								$id_tuto = mysqli_result($select_tuto_id,0,0);
 	          		$date_modification_tuto_chap = time();
-	          		$update_tuto_date_modification = mysql_query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto_chap where id_tutoriel = $id_tuto;");
-								$update_chap_date_modification = mysql_query("update `" . $tblprefix . "chapitres` set date_modification_chapitre = $date_modification_tuto_chap where id_chapitre = $id_chap;");
+	          		$update_tuto_date_modification = $connect->query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto_chap where id_tutoriel = $id_tuto;");
+								$update_chap_date_modification = $connect->query("update `" . $tblprefix . "chapitres` set date_modification_chapitre = $date_modification_tuto_chap where id_chapitre = $id_chap;");
 
 	          		$link = "?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chap."#qcm";
 	          		redirection(qcm_cree,$link,3,"tips",1);
@@ -1519,8 +1529,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** update_qcm **************************
     case "update_qcm" : {
 
-    		$select_qcm_complet = mysql_query("select * from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
-    		if (mysql_num_rows($select_qcm_complet) == 1) {
+    		$select_qcm_complet = $connect->query("select * from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
+    		if (mysqli_num_rows($select_qcm_complet) == 1) {
     			$qcm = mysql_fetch_row($select_qcm_complet);
     			
     			$id_chapitre = $qcm[1];
@@ -1564,13 +1574,13 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
      						if (!empty($$variable_rep)){
 
  									$update_qcm = "update `" . $tblprefix . "qcm` SET question_qcm = '$text_question', reponse1_qcm = '$reponse1', reponse2_qcm = '$reponse2', reponse3_qcm = '$reponse3', reponse4_qcm = '$reponse4', reponse5_qcm = '$reponse5', reponse6_qcm = '$reponse6', reponse_correcte = '$reponse_correcte' where id_qcm = $id_qcm;";
- 									mysql_query($update_qcm);
+ 									$connect->query($update_qcm);
  									
-									$select_tuto_id= mysql_query("select id_tutoriel from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chapitre;");
-									$id_tuto = mysql_result($select_tuto_id,0,0);
+									$select_tuto_id= $connect->query("select id_tutoriel from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chapitre;");
+									$id_tuto = mysqli_result($select_tuto_id,0,0);
 	          			$date_modification_tuto_chap = time();
-	          			$update_tuto_date_modification = mysql_query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto_chap where id_tutoriel = $id_tuto;");
-									$update_chap_date_modification = mysql_query("update `" . $tblprefix . "chapitres` set date_modification_chapitre = $date_modification_tuto_chap where id_chapitre = $id_chapitre;");
+	          			$update_tuto_date_modification = $connect->query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto_chap where id_tutoriel = $id_tuto;");
+									$update_chap_date_modification = $connect->query("update `" . $tblprefix . "chapitres` set date_modification_chapitre = $date_modification_tuto_chap where id_chapitre = $id_chapitre;");
 
  									redirection(qcm_modifie,"?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre."#qcm",3,"tips",1);
 
@@ -1599,9 +1609,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** delete_qcm **************************
     case "delete_qcm" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_user_idchap = mysql_query("select id_chapitre from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
-    		$id_chapitre = mysql_result($select_user_idchap,0,0);
-				$delete_qcm = mysql_query("delete from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
+    		$select_user_idchap = $connect->query("select id_chapitre from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
+    		$id_chapitre = mysqli_result($select_user_idchap,0,0);
+				$delete_qcm = $connect->query("delete from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
 				locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre."#qcm");
     	} else locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -1609,18 +1619,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** orderup_qcm *********************
     case "orderup_qcm" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_order_idchap = mysql_query("select id_chapitre, ordre_qcm from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
-				if (mysql_num_rows($select_order_idchap) == 1) {
-					$id_chapitre = mysql_result($select_order_idchap,0,0);
-					$ordre_qcm = mysql_result($select_order_idchap,0,1);
+    		$select_order_idchap = $connect->query("select id_chapitre, ordre_qcm from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
+				if (mysqli_num_rows($select_order_idchap) == 1) {
+					$id_chapitre = mysqli_result($select_order_idchap,0,0);
+					$ordre_qcm = mysqli_result($select_order_idchap,0,1);
 
-    			$qcm_precedent = mysql_query ("select id_qcm, ordre_qcm from `" . $tblprefix . "qcm` where ordre_qcm < $ordre_qcm and id_chapitre = $id_chapitre order by ordre_qcm desc;");
-					if (mysql_num_rows($qcm_precedent) > 0) {
-						$idqcm_precedent = mysql_result($qcm_precedent,0,0);
-						$ordreqcm_precedent = mysql_result($qcm_precedent,0,1);
+    			$qcm_precedent = $connect->query ("select id_qcm, ordre_qcm from `" . $tblprefix . "qcm` where ordre_qcm < $ordre_qcm and id_chapitre = $id_chapitre order by ordre_qcm desc;");
+					if (mysqli_num_rows($qcm_precedent) > 0) {
+						$idqcm_precedent = mysqli_result($qcm_precedent,0,0);
+						$ordreqcm_precedent = mysqli_result($qcm_precedent,0,1);
 							
-						$order_this_qcm = mysql_query("update `" . $tblprefix . "qcm` set ordre_qcm = $ordreqcm_precedent where id_qcm = $id_qcm;");
-						$order_qcm_precedent = mysql_query("update `" . $tblprefix . "qcm` set ordre_qcm = $ordre_qcm where id_qcm = $idqcm_precedent;");
+						$order_this_qcm = $connect->query("update `" . $tblprefix . "qcm` set ordre_qcm = $ordreqcm_precedent where id_qcm = $id_qcm;");
+						$order_qcm_precedent = $connect->query("update `" . $tblprefix . "qcm` set ordre_qcm = $ordre_qcm where id_qcm = $idqcm_precedent;");
 					}
     			locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre."#qcm");
     		} else locationhref_admin("?inc=edit_tutorials");
@@ -1630,18 +1640,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** orderdown_qcm *********************
     case "orderdown_qcm" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_order_idchap = mysql_query("select id_chapitre, ordre_qcm from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
-				if (mysql_num_rows($select_order_idchap) == 1) {
-					$id_chapitre = mysql_result($select_order_idchap,0,0);
-					$ordre_qcm = mysql_result($select_order_idchap,0,1);
+    		$select_order_idchap = $connect->query("select id_chapitre, ordre_qcm from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
+				if (mysqli_num_rows($select_order_idchap) == 1) {
+					$id_chapitre = mysqli_result($select_order_idchap,0,0);
+					$ordre_qcm = mysqli_result($select_order_idchap,0,1);
 
-    			$qcm_suivant = mysql_query ("select id_qcm, ordre_qcm from `" . $tblprefix . "qcm` where ordre_qcm > $ordre_qcm and id_chapitre = $id_chapitre order by ordre_qcm;");
-					if (mysql_num_rows($qcm_suivant) > 0) {
-						$idqcm_suivant = mysql_result($qcm_suivant,0,0);
-						$ordreqcm_suivant = mysql_result($qcm_suivant,0,1);
+    			$qcm_suivant = $connect->query ("select id_qcm, ordre_qcm from `" . $tblprefix . "qcm` where ordre_qcm > $ordre_qcm and id_chapitre = $id_chapitre order by ordre_qcm;");
+					if (mysqli_num_rows($qcm_suivant) > 0) {
+						$idqcm_suivant = mysqli_result($qcm_suivant,0,0);
+						$ordreqcm_suivant = mysqli_result($qcm_suivant,0,1);
 							
-						$order_this_qcm = mysql_query("update `" . $tblprefix . "qcm` set ordre_qcm = $ordreqcm_suivant where id_qcm = $id_qcm;");
-						$order_qcm_suivant = mysql_query("update `" . $tblprefix . "qcm` set ordre_qcm = $ordre_qcm where id_qcm = $idqcm_suivant;");
+						$order_this_qcm = $connect->query("update `" . $tblprefix . "qcm` set ordre_qcm = $ordreqcm_suivant where id_qcm = $id_qcm;");
+						$order_qcm_suivant = $connect->query("update `" . $tblprefix . "qcm` set ordre_qcm = $ordre_qcm where id_qcm = $idqcm_suivant;");
 					}
     			locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre."#qcm");
     		} else locationhref_admin("?inc=edit_tutorials");
@@ -1651,9 +1661,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** publier_qcm *************************
     case "publier_qcm" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_user_idchap = mysql_query("select id_chapitre from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
-    		$id_chapitre = mysql_result($select_user_idchap,0,0);
-    		$publier_qcm = mysql_query("update `" . $tblprefix . "qcm` set publie_qcm = '1' where id_qcm = $id_qcm;");
+    		$select_user_idchap = $connect->query("select id_chapitre from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
+    		$id_chapitre = mysqli_result($select_user_idchap,0,0);
+    		$publier_qcm = $connect->query("update `" . $tblprefix . "qcm` set publie_qcm = '1' where id_qcm = $id_qcm;");
 				locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre."#qcm");
     	} else locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -1661,9 +1671,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** depublier_qcm ***********************
     case "depublier_qcm" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_user_idchap = mysql_query("select id_chapitre from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
-    		$id_chapitre = mysql_result($select_user_idchap,0,0);
-    		$depublier_qcm = mysql_query("update `" . $tblprefix . "qcm` set publie_qcm = '0' where id_qcm = $id_qcm;");
+    		$select_user_idchap = $connect->query("select id_chapitre from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
+    		$id_chapitre = mysqli_result($select_user_idchap,0,0);
+    		$depublier_qcm = $connect->query("update `" . $tblprefix . "qcm` set publie_qcm = '0' where id_qcm = $id_qcm;");
 				locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre."#qcm");
     	} else locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -1713,18 +1723,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     						else $homework_acces = "*";
     					} else $homework_acces = "*";
 
-     					$select_max_order = mysql_query("select max(ordre_devoir) from `" . $tblprefix . "devoirs` where id_chapitre = $id_chap;");
- 							if (mysql_num_rows($select_max_order) == 1)
- 								$ordre_devoir = mysql_result($select_max_order,0) + 1;
+     					$select_max_order = $connect->query("select max(ordre_devoir) from `" . $tblprefix . "devoirs` where id_chapitre = $id_chap;");
+ 							if (mysqli_num_rows($select_max_order) == 1)
+ 								$ordre_devoir = mysqli_result($select_max_order,0) + 1;
  							else $ordre_devoir = 1;
 
- 							$insertdevoir = mysql_query("INSERT INTO `" . $tblprefix . "devoirs` VALUES (NULL,$id_chap,'$homework_acces','$titre_devoir','$contenu_devoir',$date_publication3,$date_expiration,'1',$ordre_devoir);");
+ 							$insertdevoir = $connect->query("INSERT INTO `" . $tblprefix . "devoirs` VALUES (NULL,$id_chap,'$homework_acces','$titre_devoir','$contenu_devoir',$date_publication3,$date_expiration,'1',$ordre_devoir);");
 
-							$select_tuto_id= mysql_query("select id_tutoriel from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
-							$id_tuto = mysql_result($select_tuto_id,0,0);
+							$select_tuto_id= $connect->query("select id_tutoriel from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
+							$id_tuto = mysqli_result($select_tuto_id,0,0);
 	          	$date_modification_tuto_chap = time();
-	         		$update_tuto_date_modification = mysql_query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto_chap where id_tutoriel = $id_tuto;");
-							$update_chap_date_modification = mysql_query("update `" . $tblprefix . "chapitres` set date_modification_chapitre = $date_modification_tuto_chap where id_chapitre = $id_chap;");
+	         		$update_tuto_date_modification = $connect->query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto_chap where id_tutoriel = $id_tuto;");
+							$update_chap_date_modification = $connect->query("update `" . $tblprefix . "chapitres` set date_modification_chapitre = $date_modification_tuto_chap where id_chapitre = $id_chap;");
 
 	         		$link = "?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chap."#devoir";
 	         		redirection(devoir_cree,$link,3,"tips",1);
@@ -1766,8 +1776,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					
 					echo "\n<br /><input name=\"acces_devoir\" type=\"radio\" value=\"classe\" onclick=\"disabled_select('classes',false)\" /><b>".acces_classes." :</b>";
 					
-					$select_classes = mysql_query("select * from `" . $tblprefix . "classes`;");
-					if (mysql_num_rows($select_classes) > 0){
+					$select_classes = $connect->query("select * from `" . $tblprefix . "classes`;");
+					if (mysqli_num_rows($select_classes) > 0){
 					 	echo "<table border=\"0\"><tr><td align=\"center\">";
 						echo "<select size=\"5\" name=\"classes[]\" id=\"classes\" multiple=\"multiple\">";
     				while($classe = mysql_fetch_row($select_classes)){
@@ -1789,8 +1799,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** update_devoir **************************
     case "update_devoir" : {
 
-    	$select_devoir_complet = mysql_query("select * from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
-    	if (mysql_num_rows($select_devoir_complet) == 1) {
+    	$select_devoir_complet = $connect->query("select * from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
+    	if (mysqli_num_rows($select_devoir_complet) == 1) {
     		$devoir = mysql_fetch_row($select_devoir_complet);
  				$id_chap = $devoir[1];
  				
@@ -1836,13 +1846,13 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     						else $homework_acces = "*";
     					} else $homework_acces = "*";
 
- 							$update_devoir = mysql_query("update `" . $tblprefix . "devoirs` SET acces_devoir = '$homework_acces', titre_devoir = '$titre_devoir', contenu_devoir = '$contenu_devoir', date_publie_devoir = $date_publication3, date_expire_devoir = $date_expiration where id_devoir = $id_devoir;");
+ 							$update_devoir = $connect->query("update `" . $tblprefix . "devoirs` SET acces_devoir = '$homework_acces', titre_devoir = '$titre_devoir', contenu_devoir = '$contenu_devoir', date_publie_devoir = $date_publication3, date_expire_devoir = $date_expiration where id_devoir = $id_devoir;");
 
-							$select_tuto_id= mysql_query("select id_tutoriel from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
-							$id_tuto = mysql_result($select_tuto_id,0,0);
+							$select_tuto_id= $connect->query("select id_tutoriel from `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap;");
+							$id_tuto = mysqli_result($select_tuto_id,0,0);
 	          	$date_modification_tuto_chap = time();
-	         		$update_tuto_date_modification = mysql_query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto_chap where id_tutoriel = $id_tuto;");
-							$update_chap_date_modification = mysql_query("update `" . $tblprefix . "chapitres` set date_modification_chapitre = $date_modification_tuto_chap where id_chapitre = $id_chap;");
+	         		$update_tuto_date_modification = $connect->query("update `" . $tblprefix . "tutoriels` set date_modification_tutoriel = $date_modification_tuto_chap where id_tutoriel = $id_tuto;");
+							$update_chap_date_modification = $connect->query("update `" . $tblprefix . "chapitres` set date_modification_chapitre = $date_modification_tuto_chap where id_chapitre = $id_chap;");
 
 	         		$link = "?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chap."#devoir";
 	         		redirection(devoir_modifie,$link,3,"tips",1);
@@ -1895,8 +1905,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					echo " /><b>".acces_classes." :</b>";
 					
 					$tab_acces_devoir = explode("-",$devoir[2]);
-					$select_classes = mysql_query("select * from `" . $tblprefix . "classes`;");
-					if (mysql_num_rows($select_classes) > 0){
+					$select_classes = $connect->query("select * from `" . $tblprefix . "classes`;");
+					if (mysqli_num_rows($select_classes) > 0){
 					 	echo "<table border=\"0\"><tr><td align=\"center\">";
 						echo "<select size=\"5\" name=\"classes[]\" id=\"classes\" multiple=\"multiple\">";
     				while($classe = mysql_fetch_row($select_classes)){
@@ -1924,24 +1934,24 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** delete_devoir **************************
     case "delete_devoir" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_user_idchap = mysql_query("select id_chapitre from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
-    		$id_chapitre = mysql_result($select_user_idchap,0,0);
-				$select_devoirs_rendus = mysql_query("select lien_file from `" . $tblprefix . "devoirs_rendus` where id_devoir = $id_devoir;");
-				if (mysql_num_rows($select_devoirs_rendus) > 0){
+    		$select_user_idchap = $connect->query("select id_chapitre from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
+    		$id_chapitre = mysqli_result($select_user_idchap,0,0);
+				$select_devoirs_rendus = $connect->query("select lien_file from `" . $tblprefix . "devoirs_rendus` where id_devoir = $id_devoir;");
+				if (mysqli_num_rows($select_devoirs_rendus) > 0){
     			while($lien_file = mysql_fetch_row($select_devoirs_rendus))
     				@unlink("../docs/".$lien_file[0]);
     		}
-    		$select_titre_devoir = mysql_query("select titre_devoir from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
-				if (mysql_num_rows($select_titre_devoir) == 1){
-					$titre_devoir = mysql_result($select_titre_devoir,0);
+    		$select_titre_devoir = $connect->query("select titre_devoir from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
+				if (mysqli_num_rows($select_titre_devoir) == 1){
+					$titre_devoir = mysqli_result($select_titre_devoir,0);
 					$lien_zip = $id_devoir."_".special_chars($titre_devoir).".zip";
 					@unlink("../docs/".$lien_zip);
 					$csv_notes_devoir_titre = $id_devoir."_".special_chars($titre_devoir)."_marks.csv";
 					@unlink("../docs/".$csv_notes_devoir_titre);
 				}
-				$delete_devoirs_rendus = mysql_query("delete from `" . $tblprefix . "devoirs_rendus` where id_devoir = $id_devoir;");
-				$delete_devoirs_notes = mysql_query("delete from `" . $tblprefix . "devoirs_notes` where id_devoir = $id_devoir;");
-				$delete_devoir = mysql_query("delete from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
+				$delete_devoirs_rendus = $connect->query("delete from `" . $tblprefix . "devoirs_rendus` where id_devoir = $id_devoir;");
+				$delete_devoirs_notes = $connect->query("delete from `" . $tblprefix . "devoirs_notes` where id_devoir = $id_devoir;");
+				$delete_devoir = $connect->query("delete from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
 				locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre."#devoir");
     	} else locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -1949,18 +1959,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** orderup_devoir *********************
     case "orderup_devoir" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-				$select_ordre_idchap = mysql_query("select id_chapitre, ordre_devoir from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
-				if (mysql_num_rows($select_ordre_idchap) == 1) {
-					$id_chapitre = mysql_result($select_ordre_idchap,0,0);
-					$ordre_devoir = mysql_result($select_ordre_idchap,0,1);
+				$select_ordre_idchap = $connect->query("select id_chapitre, ordre_devoir from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
+				if (mysqli_num_rows($select_ordre_idchap) == 1) {
+					$id_chapitre = mysqli_result($select_ordre_idchap,0,0);
+					$ordre_devoir = mysqli_result($select_ordre_idchap,0,1);
 
-    			$devoir_precedent = mysql_query ("select id_devoir, ordre_devoir from `" . $tblprefix . "devoirs` where ordre_devoir < $ordre_devoir and id_chapitre = $id_chapitre order by ordre_devoir desc;");
-					if (mysql_num_rows($devoir_precedent) > 0) {
-						$iddevoir_precedent = mysql_result($devoir_precedent,0,0);
-						$ordredevoir_precedent = mysql_result($devoir_precedent,0,1);
+    			$devoir_precedent = $connect->query ("select id_devoir, ordre_devoir from `" . $tblprefix . "devoirs` where ordre_devoir < $ordre_devoir and id_chapitre = $id_chapitre order by ordre_devoir desc;");
+					if (mysqli_num_rows($devoir_precedent) > 0) {
+						$iddevoir_precedent = mysqli_result($devoir_precedent,0,0);
+						$ordredevoir_precedent = mysqli_result($devoir_precedent,0,1);
 							
-						$order_this_devoir = mysql_query("update `" . $tblprefix . "devoirs` set ordre_devoir = $ordredevoir_precedent where id_devoir = $id_devoir;");
-						$order_devoir_precedent = mysql_query("update `" . $tblprefix . "devoirs` set ordre_devoir = $ordre_devoir where id_devoir = $iddevoir_precedent;");
+						$order_this_devoir = $connect->query("update `" . $tblprefix . "devoirs` set ordre_devoir = $ordredevoir_precedent where id_devoir = $id_devoir;");
+						$order_devoir_precedent = $connect->query("update `" . $tblprefix . "devoirs` set ordre_devoir = $ordre_devoir where id_devoir = $iddevoir_precedent;");
 					}
     			locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre."#devoir");
     		} else locationhref_admin("?inc=edit_tutorials");
@@ -1970,18 +1980,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** orderdown_devoir *********************
     case "orderdown_devoir" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-				$select_ordre_idchap = mysql_query("select id_chapitre, ordre_devoir from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
-				if (mysql_num_rows($select_ordre_idchap) == 1) {
-					$id_chapitre = mysql_result($select_ordre_idchap,0,0);
-					$ordre_devoir = mysql_result($select_ordre_idchap,0,1);
+				$select_ordre_idchap = $connect->query("select id_chapitre, ordre_devoir from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
+				if (mysqli_num_rows($select_ordre_idchap) == 1) {
+					$id_chapitre = mysqli_result($select_ordre_idchap,0,0);
+					$ordre_devoir = mysqli_result($select_ordre_idchap,0,1);
 
-    			$devoir_suivant = mysql_query ("select id_devoir, ordre_devoir from `" . $tblprefix . "devoirs` where ordre_devoir > $ordre_devoir and id_chapitre = $id_chapitre order by ordre_devoir;");
-					if (mysql_num_rows($devoir_suivant) > 0) {
-						$iddevoir_suivant = mysql_result($devoir_suivant,0,0);
-						$ordredevoir_suivant = mysql_result($devoir_suivant,0,1);
+    			$devoir_suivant = $connect->query ("select id_devoir, ordre_devoir from `" . $tblprefix . "devoirs` where ordre_devoir > $ordre_devoir and id_chapitre = $id_chapitre order by ordre_devoir;");
+					if (mysqli_num_rows($devoir_suivant) > 0) {
+						$iddevoir_suivant = mysqli_result($devoir_suivant,0,0);
+						$ordredevoir_suivant = mysqli_result($devoir_suivant,0,1);
 							
-						$order_this_devoir = mysql_query("update `" . $tblprefix . "devoirs` set ordre_devoir = $ordredevoir_suivant where id_devoir = $id_devoir;");
-						$order_devoir_suivant = mysql_query("update `" . $tblprefix . "devoirs` set ordre_devoir = $ordre_devoir where id_devoir = $iddevoir_suivant;");
+						$order_this_devoir = $connect->query("update `" . $tblprefix . "devoirs` set ordre_devoir = $ordredevoir_suivant where id_devoir = $id_devoir;");
+						$order_devoir_suivant = $connect->query("update `" . $tblprefix . "devoirs` set ordre_devoir = $ordre_devoir where id_devoir = $iddevoir_suivant;");
 					}
     			locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre."#devoir");
     		} else locationhref_admin("?inc=edit_tutorials");
@@ -1991,9 +2001,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** publier_devoir *************************
     case "publier_devoir" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_user_idchap = mysql_query("select id_chapitre from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
-    		$id_chapitre = mysql_result($select_user_idchap,0,0);
-    		$publier_devoir = mysql_query("update `" . $tblprefix . "devoirs` set publie_devoir = '1' where id_devoir = $id_devoir;");
+    		$select_user_idchap = $connect->query("select id_chapitre from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
+    		$id_chapitre = mysqli_result($select_user_idchap,0,0);
+    		$publier_devoir = $connect->query("update `" . $tblprefix . "devoirs` set publie_devoir = '1' where id_devoir = $id_devoir;");
 				locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre."#devoir");
     	} else locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -2001,9 +2011,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** depublier_devoir ***********************
     case "depublier_devoir" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_user_idchap = mysql_query("select id_chapitre from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
-    		$id_chapitre = mysql_result($select_user_idchap,0,0);
-    		$depublier_devoir = mysql_query("update `" . $tblprefix . "devoirs` set publie_devoir = '0' where id_devoir = $id_devoir;");
+    		$select_user_idchap = $connect->query("select id_chapitre from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
+    		$id_chapitre = mysqli_result($select_user_idchap,0,0);
+    		$depublier_devoir = $connect->query("update `" . $tblprefix . "devoirs` set publie_devoir = '0' where id_devoir = $id_devoir;");
 				locationhref_admin("?inc=edit_tutorials&do=open_chapitre&id_chap=".$id_chapitre."#devoir");
     	} else locationhref_admin("?inc=edit_tutorials");
     } break;
@@ -2015,13 +2025,13 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				$id_devoir_rendu = intval($_GET['id_devoir_rendu']);
 			else $id_devoir_rendu = 0;
 
-			$select_devoir_rendu = mysql_query("select id_devoir,lien_file from `" . $tblprefix . "devoirs_rendus` where id_devoir_rendu  = $id_devoir_rendu;");
-			if (mysql_num_rows($select_devoir_rendu) == 1){
+			$select_devoir_rendu = $connect->query("select id_devoir,lien_file from `" . $tblprefix . "devoirs_rendus` where id_devoir_rendu  = $id_devoir_rendu;");
+			if (mysqli_num_rows($select_devoir_rendu) == 1){
 				
-				$id_devoir = html_ent(mysql_result($select_devoir_rendu,0,0));
-		  	$lien_fichier = html_ent(mysql_result($select_devoir_rendu,0,1));
+				$id_devoir = html_ent(mysqli_result($select_devoir_rendu,0,0));
+		  	$lien_fichier = html_ent(mysqli_result($select_devoir_rendu,0,1));
 
-		  	$delete_file = mysql_query("delete from `" . $tblprefix . "devoirs_rendus` where id_devoir_rendu = $id_devoir_rendu;");
+		  	$delete_file = $connect->query("delete from `" . $tblprefix . "devoirs_rendus` where id_devoir_rendu = $id_devoir_rendu;");
 		  	@unlink("../docs/".$lien_fichier);
     		locationhref_admin("?inc=edit_tutorials&do=open_devoir&id_devoir=".$id_devoir);
     	} else locationhref_admin("?inc=edit_tutorials");
@@ -2031,21 +2041,21 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** open_devoir **************************
     case "open_devoir" : {
     	if (!empty($_POST['send'])){
-    		$select_apps = mysql_query("select id_apprenant from `" . $tblprefix . "apprenants`;");
-    		if (mysql_num_rows($select_apps) > 0){
+    		$select_apps = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants`;");
+    		if (mysqli_num_rows($select_apps) > 0){
     			while($app_note = mysql_fetch_row($select_apps)){
     				$id_app = $app_note[0];
     				$var_app_note = "note_".$id_app;
 						if (isset($_POST[$var_app_note]) && !empty($_POST[$var_app_note])){
 							$note_this_app = floatval($_POST[$var_app_note]);
 							if ($note_this_app > 20 || $note_this_app < 0) $note_this_app = 0;
-   						$select_this_note_devoir = mysql_query("select id_devoir_note from `" . $tblprefix . "devoirs_notes` where id_devoir = $id_devoir and id_apprenant = $id_app;");
-      				if (mysql_num_rows($select_this_note_devoir) == 1){
-   							$id_devoir_note = mysql_result($select_this_note_devoir,0);
-   							$update_note = mysql_query("update `" . $tblprefix . "devoirs_notes` set note_devoir = $note_this_app where id_devoir_note = $id_devoir_note;");
+   						$select_this_note_devoir = $connect->query("select id_devoir_note from `" . $tblprefix . "devoirs_notes` where id_devoir = $id_devoir and id_apprenant = $id_app;");
+      				if (mysqli_num_rows($select_this_note_devoir) == 1){
+   							$id_devoir_note = mysqli_result($select_this_note_devoir,0);
+   							$update_note = $connect->query("update `" . $tblprefix . "devoirs_notes` set note_devoir = $note_this_app where id_devoir_note = $id_devoir_note;");
    						}
    						else {
-   							$insert_note = mysql_query("INSERT INTO `" . $tblprefix . "devoirs_notes` VALUES (NULL,$id_devoir,$id_app,$note_this_app);");
+   							$insert_note = $connect->query("INSERT INTO `" . $tblprefix . "devoirs_notes` VALUES (NULL,$id_devoir,$id_app,$note_this_app);");
    						}
 						}
     			}
@@ -2053,8 +2063,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     		}
     	}
     	else {
-    	$select_devoir = mysql_query("select * from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
-    	if (mysql_num_rows($select_devoir) == 1){
+    	$select_devoir = $connect->query("select * from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
+    	if (mysqli_num_rows($select_devoir) == 1){
     		if($devoir = mysql_fetch_row($select_devoir)){
     			goback_lien("?inc=edit_tutorials&do=open_chapitre&id_chap=".$devoir[1]);
 					$titre_devoir = html_ent($devoir[3]);
@@ -2080,8 +2090,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						$tab_acces_devoir = explode("-",trim($devoir[2],"-"));
 						if (!empty($tab_acces_devoir[0])){
 							$chaine_acces_devoir = implode(",",$tab_acces_devoir);
-							$select_classes = mysql_query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_devoir.");");
-							if (mysql_num_rows($select_classes) > 0){
+							$select_classes = $connect->query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_devoir.");");
+							if (mysqli_num_rows($select_classes) > 0){
     						while($classe = mysql_fetch_row($select_classes))
     							$acces_devoir .= "<u>".$classe[1]."</u>, ";
     					}
@@ -2113,8 +2123,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						$csv_notes_devoir1 = mb_convert_encoding($csv_notes_devoir1, 'ISO-8859-1', 'UTF-8');
 						fwrite($csv_notes_devoir_file,$csv_notes_devoir1."\r\n");
 
-						$select_devoir_rendu = mysql_query("select identifiant_apprenant,lien_file,date_file, `" . $tblprefix . "devoirs_rendus`.id_apprenant, id_devoir_rendu from `" . $tblprefix . "devoirs_rendus`,`" . $tblprefix . "apprenants` where `" . $tblprefix . "devoirs_rendus`.id_apprenant = `" . $tblprefix . "apprenants`.id_apprenant and id_devoir = $id_devoir;");
-    				if (mysql_num_rows($select_devoir_rendu) > 0){
+						$select_devoir_rendu = $connect->query("select identifiant_apprenant,lien_file,date_file, `" . $tblprefix . "devoirs_rendus`.id_apprenant, id_devoir_rendu from `" . $tblprefix . "devoirs_rendus`,`" . $tblprefix . "apprenants` where `" . $tblprefix . "devoirs_rendus`.id_apprenant = `" . $tblprefix . "apprenants`.id_apprenant and id_devoir = $id_devoir;");
+    				if (mysqli_num_rows($select_devoir_rendu) > 0){
 							echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 							echo "\n<td class=\"affichage_table\"><b>".identifiant."</b></td>";
 							echo "\n<td class=\"affichage_table\"><b>".devoir."</b></td>";
@@ -2129,9 +2139,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
    							$date_file = set_date($dateformat,$devoir_rendu[2]);
    							$id_app = $devoir_rendu[3];
    							
-   								$select_note_devoir = mysql_query("select note_devoir from `" . $tblprefix . "devoirs_notes` where id_devoir = $id_devoir and id_apprenant = $id_app;");
-    	  					if (mysql_num_rows($select_note_devoir) == 1)
-    								$note_devoir = mysql_result($select_note_devoir,0);
+   								$select_note_devoir = $connect->query("select note_devoir from `" . $tblprefix . "devoirs_notes` where id_devoir = $id_devoir and id_apprenant = $id_app;");
+    	  					if (mysqli_num_rows($select_note_devoir) == 1)
+    								$note_devoir = mysqli_result($select_note_devoir,0);
     							else $note_devoir = "00.00";
 
     							$csv_notes_devoir2  = "\"".$identifiant_apprenant."\";\"".$note_devoir."\";";
@@ -2172,11 +2182,11 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
    					} else echo aucun;
    					if (count($apps_rendus) > 0){
     						$chaine_apps_req = implode(",", $apps_rendus);
-    						$select_apps_non_rendu = mysql_query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants` where active_apprenant = '1' and id_apprenant NOT IN (".$chaine_apps_req.");");
-    				} else $select_apps_non_rendu = mysql_query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants` where active_apprenant = '1';");
+    						$select_apps_non_rendu = $connect->query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants` where active_apprenant = '1' and id_apprenant NOT IN (".$chaine_apps_req.");");
+    				} else $select_apps_non_rendu = $connect->query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants` where active_apprenant = '1';");
     						
     						echo "<li><u><b>".learners_not_uploaded_homework." : </b></u></li><br />";
-    						if (mysql_num_rows($select_apps_non_rendu) > 0){
+    						if (mysqli_num_rows($select_apps_non_rendu) > 0){
 									echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 									echo "\n<td class=\"affichage_table\"><b>".identifiant."</b></td>";
 									echo "\n<td class=\"affichage_table\"><b>".mark."</b></td>";
@@ -2185,9 +2195,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     								$id_app = $apps_non_rendu[0];
     								$identifiant_apprenant = html_ent($apps_non_rendu[1]);
    								
-   									$select_note_devoir = mysql_query("select note_devoir from `" . $tblprefix . "devoirs_notes` where id_devoir = $id_devoir and id_apprenant = $id_app;");
-    	  						if (mysql_num_rows($select_note_devoir) == 1)
-    									$note_devoir = mysql_result($select_note_devoir,0);
+   									$select_note_devoir = $connect->query("select note_devoir from `" . $tblprefix . "devoirs_notes` where id_devoir = $id_devoir and id_apprenant = $id_app;");
+    	  						if (mysqli_num_rows($select_note_devoir) == 1)
+    									$note_devoir = mysqli_result($select_note_devoir,0);
     								else $note_devoir = "00.00";
 
     								$csv_notes_devoir2  = "\"".$identifiant_apprenant."\";\"".$note_devoir."\";";
@@ -2218,9 +2228,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     			 	echo "<form method=\"POST\" action=\"\">";
 						foreach ($tab_acces_devoir as $classe_devoir){
 							
-    					$select_classe = mysql_query("select classe from `" . $tblprefix . "classes` where id_classe = $classe_devoir;");
-    	  			if (mysql_num_rows($select_classe) == 1)
-    						$classe_apprenant = html_ent(mysql_result($select_classe,0));
+    					$select_classe = $connect->query("select classe from `" . $tblprefix . "classes` where id_classe = $classe_devoir;");
+    	  			if (mysqli_num_rows($select_classe) == 1)
+    						$classe_apprenant = html_ent(mysqli_result($select_classe,0));
     					else $classe_apprenant = "";
 							$apps_rendus = array();
 							
@@ -2233,8 +2243,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							$csv_notes_devoir1 = mb_convert_encoding($csv_notes_devoir1, 'ISO-8859-1', 'UTF-8');
 							fwrite($csv_notes_devoir_file,$csv_notes_devoir1."\r\n");
 						
-							$select_devoir_rendu = mysql_query("select identifiant_apprenant,lien_file,date_file, `" . $tblprefix . "devoirs_rendus`.id_apprenant from `" . $tblprefix . "devoirs_rendus`,`" . $tblprefix . "apprenants` where `" . $tblprefix . "devoirs_rendus`.id_apprenant = `" . $tblprefix . "apprenants`.id_apprenant and `" . $tblprefix . "apprenants`.id_classe = ".$classe_devoir." and id_devoir = $id_devoir;");
-    					if (mysql_num_rows($select_devoir_rendu) > 0){
+							$select_devoir_rendu = $connect->query("select identifiant_apprenant,lien_file,date_file, `" . $tblprefix . "devoirs_rendus`.id_apprenant from `" . $tblprefix . "devoirs_rendus`,`" . $tblprefix . "apprenants` where `" . $tblprefix . "devoirs_rendus`.id_apprenant = `" . $tblprefix . "apprenants`.id_apprenant and `" . $tblprefix . "apprenants`.id_classe = ".$classe_devoir." and id_devoir = $id_devoir;");
+    					if (mysqli_num_rows($select_devoir_rendu) > 0){
 								echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 								echo "\n<td class=\"affichage_table\"><b>".identifiant."</b></td>";
 								echo "\n<td class=\"affichage_table\"><b>".devoir."</b></td>";
@@ -2249,9 +2259,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     							$date_file = set_date($dateformat,$devoir_rendu[2]);
     							$id_app = $devoir_rendu[3];
     							if (file_exists("../docs/".$lien_file)){
-   									$select_note_devoir = mysql_query("select note_devoir from `" . $tblprefix . "devoirs_notes` where id_devoir = $id_devoir and id_apprenant = $id_app;");
-    	  						if (mysql_num_rows($select_note_devoir) == 1)
-    									$note_devoir = mysql_result($select_note_devoir,0);
+   									$select_note_devoir = $connect->query("select note_devoir from `" . $tblprefix . "devoirs_notes` where id_devoir = $id_devoir and id_apprenant = $id_app;");
+    	  						if (mysqli_num_rows($select_note_devoir) == 1)
+    									$note_devoir = mysqli_result($select_note_devoir,0);
     								else $note_devoir = "00.00";
 
     								$csv_notes_devoir2  = "\"".$identifiant_apprenant."\";\"".$note_devoir."\";";
@@ -2289,11 +2299,11 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     					} else echo aucun;
     					if (count($apps_rendus) > 0){
     						$chaine_apps_req = implode(",", $apps_rendus);
-    						$select_apps_non_rendu = mysql_query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants` where id_classe = $classe_devoir and active_apprenant = '1' and id_apprenant NOT IN (".$chaine_apps_req.");");
-    					} else $select_apps_non_rendu = mysql_query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants` where id_classe = $classe_devoir and active_apprenant = '1';");
+    						$select_apps_non_rendu = $connect->query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants` where id_classe = $classe_devoir and active_apprenant = '1' and id_apprenant NOT IN (".$chaine_apps_req.");");
+    					} else $select_apps_non_rendu = $connect->query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants` where id_classe = $classe_devoir and active_apprenant = '1';");
     						
     						echo "<li><u><b>".learners_not_uploaded_homework." : </b></u></li><br />";
-    						if (mysql_num_rows($select_apps_non_rendu) > 0){
+    						if (mysqli_num_rows($select_apps_non_rendu) > 0){
 									echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 									echo "\n<td class=\"affichage_table\"><b>".identifiant."</b></td>";
 									echo "\n<td class=\"affichage_table\"><b>".mark."</b></td>";
@@ -2302,9 +2312,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     								$id_app = $apps_non_rendu[0];
     								$identifiant_apprenant = html_ent($apps_non_rendu[1]);
 
-   									$select_note_devoir = mysql_query("select note_devoir from `" . $tblprefix . "devoirs_notes` where id_devoir = $id_devoir and id_apprenant = $id_app;");
-    	  						if (mysql_num_rows($select_note_devoir) == 1)
-    									$note_devoir = mysql_result($select_note_devoir,0);
+   									$select_note_devoir = $connect->query("select note_devoir from `" . $tblprefix . "devoirs_notes` where id_devoir = $id_devoir and id_apprenant = $id_app;");
+    	  						if (mysqli_num_rows($select_note_devoir) == 1)
+    									$note_devoir = mysqli_result($select_note_devoir,0);
     								else $note_devoir = "00.00";
 
     								$csv_notes_devoir2  = "\"".$identifiant_apprenant."\";\"".$note_devoir."\";";
@@ -2344,8 +2354,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // En attente de validation
     	echo "<hr /><a name=\"en_attente\"><b><u>- ".tutoriels_attente_validation." : </u></b></a><br /><br />";
 
-  $select_tutos1 = mysql_query("select * from `" . $tblprefix . "tutoriels` where publie_tutoriel = '1' order by ordre_tutoriel;");
-	$nbr_trouve = mysql_num_rows($select_tutos1);
+  $select_tutos1 = $connect->query("select * from `" . $tblprefix . "tutoriels` where publie_tutoriel = '1' order by ordre_tutoriel;");
+	$nbr_trouve = mysqli_num_rows($select_tutos1);
   if ($nbr_trouve > 0){
 		$page_max = ceil($nbr_trouve / $nbr_resultats);
 		if ($page <= $page_max && $page > 1 && $page_max > 1)
@@ -2354,7 +2364,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			$limit = 0;
 			$page = 1;
 		}
-    	$select_tutos1_limit = mysql_query("select * from `" . $tblprefix . "tutoriels` where publie_tutoriel = '1' order by ordre_tutoriel limit $limit, $nbr_resultats;");
+    	$select_tutos1_limit = $connect->query("select * from `" . $tblprefix . "tutoriels` where publie_tutoriel = '1' order by ordre_tutoriel limit $limit, $nbr_resultats;");
     		echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".tutoriel."</b></td>";
 				echo "\n<td class=\"affichage_table\"><b>".acces_cours."</b></td>";
@@ -2379,8 +2389,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						$tab_acces_tuto = explode("-",trim($tutoriel[13],"-"));
 						if (!empty($tab_acces_tuto[0])){
 							$chaine_acces_tuto = implode(",",$tab_acces_tuto);
-							$select_classes = mysql_query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_tuto.");");
-							if (mysql_num_rows($select_classes) > 0){
+							$select_classes = $connect->query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_tuto.");");
+							if (mysqli_num_rows($select_classes) > 0){
     						while($classe = mysql_fetch_row($select_classes))
     							$acces_tuto .= "<u>".$classe[1]."</u>, ";
     					}
@@ -2395,9 +2405,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 
 					echo "\n<td class=\"affichage_table\"><b>".$acces_tuto."</b></td>";
 
-    			$select_auteur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $tutoriel[1];");
-    			if (mysql_num_rows($select_auteur) == 1)
-    				$auteur = html_ent(mysql_result($select_auteur,0));
+    			$select_auteur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $tutoriel[1];");
+    			if (mysqli_num_rows($select_auteur) == 1)
+    				$auteur = html_ent(mysqli_result($select_auteur,0));
     			else $auteur = inconnu;
     			$auteur = wordwrap($auteur,15,"<br />",true);
 					echo "\n<td class=\"affichage_table\"><a href=\"../?profiles=".$tutoriel[1]."\" title=\"".user_profile."\"><b>".$auteur."</b></a></td>";
@@ -2433,11 +2443,11 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 		}
     	} else echo aucun_tutoriel_non_valide."<br />";
 
-    // validés
+    // validï¿½s
     	echo "<br /><hr /><a name=\"valides\"><b><u>- ".tutoriels_valides." : </u></b></a><br /><br />";
 
-    	$select_tutos2 = mysql_query("select * from `" . $tblprefix . "tutoriels` where publie_tutoriel = '2' order by ordre_tutoriel;");
-			 $nbr_trouve = mysql_num_rows($select_tutos2);
+    	$select_tutos2 = $connect->query("select * from `" . $tblprefix . "tutoriels` where publie_tutoriel = '2' order by ordre_tutoriel;");
+			 $nbr_trouve = mysqli_num_rows($select_tutos2);
   		 if ($nbr_trouve > 0){
 				$page_max = ceil($nbr_trouve / $nbr_resultats);
 				if ($page2 <= $page_max && $page2 > 1 && $page_max > 1)
@@ -2447,7 +2457,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					$page2 = 1;
 				}
 
-    	$select_tutos2_limit = mysql_query("select * from `" . $tblprefix . "tutoriels` where publie_tutoriel = '2' order by ordre_tutoriel limit $limit, $nbr_resultats;");
+    	$select_tutos2_limit = $connect->query("select * from `" . $tblprefix . "tutoriels` where publie_tutoriel = '2' order by ordre_tutoriel limit $limit, $nbr_resultats;");
 
     		echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".tutoriel."</b></td>";
@@ -2476,8 +2486,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						$tab_acces_tuto = explode("-",trim($tutoriel[13],"-"));
 						if (!empty($tab_acces_tuto[0])){
 							$chaine_acces_tuto = implode(",",$tab_acces_tuto);
-							$select_classes = mysql_query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_tuto.");");
-							if (mysql_num_rows($select_classes) > 0){
+							$select_classes = $connect->query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_tuto.");");
+							if (mysqli_num_rows($select_classes) > 0){
     						while($classe = mysql_fetch_row($select_classes))
     							$acces_tuto .= "<u>".$classe[1]."</u>, ";
     					}
@@ -2492,16 +2502,16 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					
 					echo "\n<td class=\"affichage_table\"><b>".$acces_tuto."</b></td>";
 					
-    			$select_auteur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $tutoriel[1];");
-    			if (mysql_num_rows($select_auteur) == 1)
-    				$auteur = html_ent(mysql_result($select_auteur,0));
+    			$select_auteur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $tutoriel[1];");
+    			if (mysqli_num_rows($select_auteur) == 1)
+    				$auteur = html_ent(mysqli_result($select_auteur,0));
     			else $auteur = inconnu;
     			$auteur = wordwrap($auteur,15,"<br />",true);
 					echo "\n<td class=\"affichage_table\"><a href=\"../?profiles=".$tutoriel[1]."\" title=\"".user_profile."\"><b>".$auteur."</b></a></td>";
 
-    			$select_validateur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $tutoriel[12];");
-    			if (mysql_num_rows($select_validateur) == 1)
-    				$validateur = html_ent(mysql_result($select_validateur,0));
+    			$select_validateur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $tutoriel[12];");
+    			if (mysqli_num_rows($select_validateur) == 1)
+    				$validateur = html_ent(mysqli_result($select_validateur,0));
     			else $validateur = inconnu;
     			$validateur = wordwrap($validateur,15,"<br />",true);
 					echo "\n<td class=\"affichage_table\"><a href=\"../?profiles=".$tutoriel[12]."\" title=\"".user_profile."\"><b>".$validateur."</b></a></td>";
@@ -2512,15 +2522,15 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					echo "\n<td class=\"affichage_table\"><a target=\"_blank\" href=\"../?tutorial=".$tutoriel[0]."\" title=\"".previsualiser."\"><img border=\"0\" src=\"../images/others/view.png\" width=\"32\" height=\"32\" /></a></td>";
 
 					echo "\n<td class=\"affichage_table\" nowrap=\"nowrap\">";
-					$tuto_precedent = mysql_query ("select id_tutoriel from `" . $tblprefix . "tutoriels` where ordre_tutoriel < $tutoriel[9] and publie_tutoriel = '2' order by ordre_tutoriel desc;");
-					if (mysql_num_rows($tuto_precedent) > 0)
+					$tuto_precedent = $connect->query ("select id_tutoriel from `" . $tblprefix . "tutoriels` where ordre_tutoriel < $tutoriel[9] and publie_tutoriel = '2' order by ordre_tutoriel desc;");
+					if (mysqli_num_rows($tuto_precedent) > 0)
 						echo "<a href=\"?inc=edit_tutorials&do=orderup_tuto&id_tuto=".$tutoriel[0]."&key=".$key."\" title=\"".deplacer_haut."\"><img border=\"0\" src=\"../images/others/up.png\" width=\"15\" height=\"15\" /></a>";
 					else
 						echo "<img border=\"0\" src=\"../images/others/up2.png\" width=\"15\" height=\"15\" />";
 					echo "<b> ".$i_ordre." </b>";
 					$i_ordre++;
-					$tuto_suivant = mysql_query ("select id_tutoriel from `" . $tblprefix . "tutoriels` where ordre_tutoriel > $tutoriel[9] and publie_tutoriel = '2' order by ordre_tutoriel;");
-					if (mysql_num_rows($tuto_suivant) > 0)
+					$tuto_suivant = $connect->query ("select id_tutoriel from `" . $tblprefix . "tutoriels` where ordre_tutoriel > $tutoriel[9] and publie_tutoriel = '2' order by ordre_tutoriel;");
+					if (mysqli_num_rows($tuto_suivant) > 0)
 						echo "<a href=\"?inc=edit_tutorials&do=orderdown_tuto&id_tuto=".$tutoriel[0]."&key=".$key."\" title=\"".deplacer_bas."\"><img border=\"0\" src=\"../images/others/down.png\" width=\"15\" height=\"15\" /></a>";
 					else echo "<img border=\"0\" src=\"../images/others/down2.png\" width=\"15\" height=\"15\" />";
 					echo "</td>";
