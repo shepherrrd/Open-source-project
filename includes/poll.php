@@ -27,8 +27,8 @@ defined("access_const") or die( 'Restricted access' );
 
 $select_statut_poll = $connect->query("select titre_composant, active_composant from `" . $tblprefix . "composants` where nom_composant = 'poll';");
 if (mysqli_num_rows($select_statut_poll) == 1) {
-	$titre_poll = mysql_result($select_statut_poll,0,0);
-	$statut_poll = mysql_result($select_statut_poll,0,1);
+	$titre_poll = $select_statut_poll->fetch_row()[0];
+	$statut_poll = $select_statut_poll->fetch_row()[1];
 	if ($statut_poll == 1) {
 		
 	 $select_questions = $connect->query("select * from `" . $tblprefix . "sondage_questions` where active_question = '1';");
@@ -38,7 +38,7 @@ if (mysqli_num_rows($select_statut_poll) == 1) {
 
 		$select_identification = $connect->query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'identification';");
 		if (mysqli_num_rows($select_identification) == 1)
-			$identification = mysql_result($select_identification,0);
+			$identification = $select_identification->fetch_row();
 		else $identification = 0;
 
 		if (!empty($_SESSION['log']) && !empty($_SESSION['id']) && $identification == 1){
@@ -55,8 +55,8 @@ if (mysqli_num_rows($select_statut_poll) == 1) {
 		//*********** One question *******************
 		
 		if (mysqli_num_rows($select_questions) == 1){
-			$id_question1 = mysql_result($select_questions,0,0);
-			$question1 = html_ent(mysql_result($select_questions,0,2));
+			$id_question1 = $select_questions->fetch_row()[0];
+			$question1 = html_ent($select_questions->fetch_row()[2]);
 			$question1 = bbcode_br($question1);
 			$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question1;");
 			if (mysqli_num_rows($select_reponses1) > 0){
@@ -85,7 +85,7 @@ if (mysqli_num_rows($select_statut_poll) == 1) {
 				else{
 					
 					if (!empty($_POST['send']))
-						echo "<font color=\"red\"><b>".answer_1question."</b></font><br />";
+						echo "<font color=\"red\"><b>"."answer_1question"."</b></font><br />";
 
 					echo "\n<table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" align=\"center\" width=\"100%\">\n";
 					echo "\n<tr><td align=\"left\" width=\"100%\"><b>".$question1."</b></td></tr>";
@@ -107,14 +107,14 @@ if (mysqli_num_rows($select_statut_poll) == 1) {
 		else if (mysqli_num_rows($select_questions) > 1){
 			$select_question1 = $connect->query("select * from `" . $tblprefix . "sondage_questions` where active_question = '1' and id_conjoint != 0;");
 			
-			$id_question1 = mysql_result($select_question1,0,0);
-			$id_conjoint1 = mysql_result($select_question1,0,1);
-			$question1 = html_ent(mysql_result($select_question1,0,2));
+			$id_question1 = $select_question1->fetch_row()[0];
+			$id_conjoint1 = $select_question1->fetch_row()[3];
+			$question1 = html_ent($select_question1->fetch_row()[2]);
 			$question1 = bbcode_br($question1);
 			
 			$select_question2 = $connect->query("select * from `" . $tblprefix . "sondage_questions` where id_question = $id_conjoint1;");
-			$id_question2 = mysql_result($select_question2,0,0);
-			$question2 = html_ent(mysql_result($select_question2,0,2));
+			$id_question2 = $select_question2->fetch_row()[0];
+			$question2 = html_ent($select_question2->fetch_row()[2]);
 			$question2 = bbcode_br($question2);
 		
 			$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question1;");
@@ -160,7 +160,7 @@ if (mysqli_num_rows($select_statut_poll) == 1) {
 				else{
 					
 					if (!empty($_POST['send']))
-						echo "<font color=\"red\"><b>".answer_2question."</b></font><br />";
+						echo "<font color=\"red\"><b>"."answer_2question"."</b></font><br />";
 
 					echo "\n<table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" align=\"center\" width=\"100%\">\n";
 					
@@ -191,8 +191,8 @@ if (mysqli_num_rows($select_statut_poll) == 1) {
 				}
 			}
 		}
-		echo "\n<br /><input type=\"hidden\" name=\"send\" value=\"ok\"><input type=\"submit\" class=\"searchbtn\" value=\"" .btnvote. "\">";
-		echo "&nbsp;&nbsp;<input type=\"button\" class=\"searchbtn\" value=\"".resultats."\" onclick=\"window.location.href='?poll'\" /></form>";
+		echo "\n<br /><input type=\"hidden\" name=\"send\" value=\"ok\"><input type=\"submit\" class=\"searchbtn\" value=\"" ."btnvote". "\">";
+		echo "&nbsp;&nbsp;<input type=\"button\" class=\"searchbtn\" value=\""."resultats"."\" onclick=\"window.location.href='?poll'\" /></form>";
 	 }
 	}
 }

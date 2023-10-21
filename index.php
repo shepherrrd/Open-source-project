@@ -200,7 +200,7 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 					<td height="40" width="100%" align="center">
 						<?php
 							echo $footer_site;
-							@mysql_close($connect);
+							$connect->close();
 						?>
 					</td>
 				</tr>

@@ -58,9 +58,9 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 
 <?php
 
-$select_statut_identification = mysql_query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'identification';");
-if (mysql_num_rows($select_statut_identification) == 1) {
- $statut_identification = mysql_result($select_statut_identification,0);
+$select_statut_identification = $connect->query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'identification';");
+if (mysqli_num_rows($select_statut_identification) == 1) {
+ $statut_identification = $select_statut_identification->fetch_row();
  if ($statut_identification == 1) {
 	if (isset($_POST['login']) && !empty($_POST['login']) && isset($_POST['password']) && !empty($_POST['password'])) {
 
@@ -68,14 +68,14 @@ if (mysql_num_rows($select_statut_identification) == 1) {
 		$password = escape_string($_POST['password']);
 
 		$seluser = "SELECT * from `" . $tblprefix . "users` WHERE identifiant_user = '" . $login . "';";
-		$resultat = mysql_query($seluser,$connect);
+		$resultat = $connect->query($seluser,$connect);
 
-		if ($resultat && mysql_num_rows($resultat) == 1) {
+		if ($resultat && mysqli_num_rows($resultat) == 1) {
 			
-			$id = mysql_result($resultat, 0, "id_user");
-			$pass = mysql_result($resultat, 0, "mdp_user");
-			$statut = mysql_result($resultat, 0, "active_user");
-			$grade = mysql_result($resultat, 0, "grade_user");
+			$id = $resultat->fetch_assoc()["id_user"];
+			$pass = $resultat->fetch_assoc()["mdp_user"];
+			$statut = $resultat->fetch_assoc()["active_user"];
+			$grade = $resultat->fetch_assoc()["grade_user"];
 
 			if ($statut == 1) {
 						$passpart1 = substr($pass,0,32);
@@ -88,30 +88,30 @@ if (mysql_num_rows($select_statut_identification) == 1) {
 								$_SESSION['grade'] = $grade;
 								$_SESSION['key'] = fonc_rand(16);
 								
-								$update_conn = mysql_query("update `" . $tblprefix . "users` set last_connect = ".time().", connected_now = '1', last_duration = 0, nbr_connexion = nbr_connexion + 1 where id_user = $id;");
+								$update_conn = $connect->query("update `" . $tblprefix . "users` set last_connect = ".time().", connected_now = '1', last_duration = 0, nbr_connexion = nbr_connexion + 1 where id_user = $id;");
 								
 								$ip_user = escape_string($_SERVER['REMOTE_ADDR']);
-								$select_acces = mysql_query("select id_acces from `" . $tblprefix . "infos_acces` where type_user = 'u' and id_user = $id and ip_user = '$ip_user';");
-								if (mysql_num_rows($select_acces) > 0){
-									$id_this_acces = mysql_result($select_acces,0);
-									$update_acces = mysql_query("update `" . $tblprefix . "infos_acces` set date_acces = ".time()." where id_acces = $id_this_acces;");
+								$select_acces = $connect->query("select id_acces from `" . $tblprefix . "infos_acces` where type_user = 'u' and id_user = $id and ip_user = '$ip_user';");
+								if (mysqli_num_rows($select_acces) > 0){
+									$id_this_acces = $select_acces->fetch_row();
+									$update_acces = $connect->query("update `" . $tblprefix . "infos_acces` set date_acces = ".time()." where id_acces = $id_this_acces;");
 								}
 								else {
-									$insert_acces = mysql_query("INSERT INTO `" . $tblprefix . "infos_acces` VALUES (NULL,'u',$id,'$ip_user',".time().");");
+									$insert_acces = $connect->query("INSERT INTO `" . $tblprefix . "infos_acces` VALUES (NULL,'u',$id,'$ip_user',".time().");");
 								}
 								
 								if(stristr($_SERVER['HTTP_REFERER'],$_SERVER['SERVER_NAME']))
 									$redir_link = $_SERVER['HTTP_REFERER'];
 								else $redir_link = "index.php";
-								redirection(merci_connexion,$redir_link,3,"tips",0);
-						} else goback(mdp_invalide,2,"error",0);
-			} else goback(compte_desac,2,"error",0);
+								redirection("merci_connexion",$redir_link,3,"tips",0);
+						} else goback("mdp_invalide",2,"error",0);
+			} else goback("compte_desac",2,"error",0);
 		}
 		else {
 			$selapp = "SELECT * from `" . $tblprefix . "apprenants` WHERE identifiant_apprenant = '" . $login . "';";
-			$resultat2 = mysql_query($selapp,$connect);
+			$resultat2 = $connect->query($selapp,$connect);
 
-			if ($resultat2 && mysql_num_rows($resultat2) == 1) {
+			if ($resultat2 && mysqli_num_rows($resultat2) == 1) {
 				$id = mysql_result($resultat2, 0, "id_apprenant");
 				$pass = mysql_result($resultat2, 0, "mdp_apprenant");
 				$statut = mysql_result($resultat2, 0, "active_apprenant");
@@ -127,24 +127,24 @@ if (mysql_num_rows($select_statut_identification) == 1) {
 							$_SESSION['id'] = $id;
 							$_SESSION['key'] = fonc_rand(16);
 
-							$update_conn = mysql_query("update `" . $tblprefix . "apprenants` set last_connect_apprenant = ".time().", connected_now_apprenant = '1', last_duration = 0, nbr_connexion = nbr_connexion + 1 where id_apprenant = $id;");
+							$update_conn = $connect->query("update `" . $tblprefix . "apprenants` set last_connect_apprenant = ".time().", connected_now_apprenant = '1', last_duration = 0, nbr_connexion = nbr_connexion + 1 where id_apprenant = $id;");
 							
 							$machine_app = escape_string($_SERVER['HTTP_USER_AGENT']);
 							if (!empty($machine_app))
-								$update_machine = mysql_query("update `" . $tblprefix . "apprenants` set machine_apprenant = '$machine_app' where id_apprenant = $id;");
+								$update_machine = $connect->query("update `" . $tblprefix . "apprenants` set machine_apprenant = '$machine_app' where id_apprenant = $id;");
 							
 							$ip_app = escape_string($_SERVER['REMOTE_ADDR']);
-							$select_acces = mysql_query("select id_acces from `" . $tblprefix . "infos_acces` where type_user = 'l' and id_user = $id and ip_user = '$ip_app';");
-							if (mysql_num_rows($select_acces) > 0){
+							$select_acces = $connect->query("select id_acces from `" . $tblprefix . "infos_acces` where type_user = 'l' and id_user = $id and ip_user = '$ip_app';");
+							if (mysqli_num_rows($select_acces) > 0){
 								$id_this_acces = mysql_result($select_acces,0);
-								$update_acces = mysql_query("update `" . $tblprefix . "infos_acces` set date_acces = ".time()." where id_acces = $id_this_acces;");
+								$update_acces = $connect->query("update `" . $tblprefix . "infos_acces` set date_acces = ".time()." where id_acces = $id_this_acces;");
 							}
 							else {
-								$insert_acces = mysql_query("INSERT INTO `" . $tblprefix . "infos_acces` VALUES (NULL,'l',$id,'$ip_app',".time().");");
+								$insert_acces = $connect->query("INSERT INTO `" . $tblprefix . "infos_acces` VALUES (NULL,'l',$id,'$ip_app',".time().");");
 							}
  							
- 							$select_grade_app = mysql_query("select grade_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id;");
-							if (mysql_num_rows($select_grade_app) == 1)
+ 							$select_grade_app = $connect->query("select grade_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id;");
+							if (mysqli_num_rows($select_grade_app) == 1)
 								$grade_app_session = mysql_result($select_grade_app,0);
 							else $grade_app_session = "None";
 
@@ -155,9 +155,9 @@ if (mysql_num_rows($select_statut_identification) == 1) {
 				// *********** rappel devoirs ***************
 						$nbr_devoirs = 0;
 						$chaine_devoir = "";
-						$select_devoir_app = mysql_query("select * from `" . $tblprefix . "devoirs` where publie_devoir = '1' and date_publie_devoir < ".time()." and date_expire_devoir > ".time()." order by date_expire_devoir;");
-						if (mysql_num_rows($select_devoir_app)> 0) {
-							while($devoir = mysql_fetch_row($select_devoir_app)) {
+						$select_devoir_app = $connect->query("select * from `" . $tblprefix . "devoirs` where publie_devoir = '1' and date_publie_devoir < ".time()." and date_expire_devoir > ".time()." order by date_expire_devoir;");
+						if (mysqli_num_rows($select_devoir_app)> 0) {
+							while($devoir = mysqli_fetch_row($select_devoir_app)) {
 								$id_this_devoir = $devoir[0];
 								$id_chap_devoir = $devoir[1];
 								$acces_devoir = $devoir[2];
@@ -165,26 +165,26 @@ if (mysql_num_rows($select_statut_identification) == 1) {
 								$expiration_devoir = round(($devoir[6] - time()) / 60 / 60 / 24);
 								$expiration_chaine = $expiration_devoir." ".jours;
 
-								$select_grade_chap = mysql_query("select grade_chapitre from `" . $tblprefix . "chapitres` where id_chapitre = $id_chap_devoir;");
-								if (mysql_num_rows($select_grade_chap) == 1) {
+								$select_grade_chap = $connect->query("select grade_chapitre from `" . $tblprefix . "chapitres` where id_chapitre = $id_chap_devoir;");
+								if (mysqli_num_rows($select_grade_chap) == 1) {
 									$grade_chap = mysql_result($select_grade_chap,0);
 									$tab_acces_chap = explode("-",trim($grade_chap,"-"));
 									if ($grade_chap == "*" || $grade_chap == "0" || in_array($grade_app_session,$tab_acces_chap)){
 									
-     							 $select_access_tuto = mysql_query("select acces_tutoriel from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap_devoir;");
-									 if (mysql_num_rows($select_access_tuto) == 1) {
+     							 $select_access_tuto = $connect->query("select acces_tutoriel from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap_devoir;");
+									 if (mysqli_num_rows($select_access_tuto) == 1) {
 										$access_tuto = mysql_result($select_access_tuto,0);
 										$tab_acces_tuto = explode("-",trim($access_tuto,"-"));
 										if ($access_tuto == "*" || $access_tuto == "0" || in_array($id_classe_access,$tab_acces_tuto)){
 										
-											$select_devoir_rendu = mysql_query("select * from `" . $tblprefix . "devoirs_rendus` where id_devoir = $id_this_devoir and id_apprenant = $id;");
-											if (mysql_num_rows($select_devoir_rendu) == 0){
+											$select_devoir_rendu = $connect->query("select * from `" . $tblprefix . "devoirs_rendus` where id_devoir = $id_this_devoir and id_apprenant = $id;");
+											if (mysqli_num_rows($select_devoir_rendu) == 0){
 												$acces_devoir_valide = 0;
 												if ($acces_devoir == "*")
 													$acces_devoir_valide = 1;
 												else {
-													$select_classe = mysql_query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id;");
-													if (mysql_num_rows($select_classe) == 1){
+													$select_classe = $connect->query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id;");
+													if (mysqli_num_rows($select_classe) == 1){
 														$id_classe = mysql_result($select_classe,0);
 														$tab_classes = explode("-",$acces_devoir);
 														if (in_array($id_classe,$tab_classes))
@@ -218,7 +218,7 @@ if (mysql_num_rows($select_statut_identification) == 1) {
 	} else goback(champ_manq,2,"error",0);
  }
 }
-@mysql_close($connect);
+$connect->close();
 ?>
 
 </body>
