@@ -30,10 +30,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 
  echo "<div id=\"titre\">".configuration_generale."</div><br />";
 	
- $select_site_infos = mysql_query("select * from `" . $tblprefix . "site_infos`;");
+ $select_site_infos = $connect->query("select * from `" . $tblprefix . "site_infos`;");
 
- if (mysql_num_rows($select_site_infos) == 1) {
-	$site_infos = mysql_fetch_row($select_site_infos);
+ if (mysqli_num_rows($select_site_infos) == 1) {
+	$site_infos = mysqli_fetch_row($select_site_infos);
 
 	$id_site = $site_infos[0];
 	$nom_site = html_ent($site_infos[1]);
@@ -83,7 +83,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			if (substr($url,0,7) != "http://" && substr($url,0,8) != "https://")
 				$url = "http://".$url;
 
-				$update_site = mysql_query("update `" . $tblprefix . "site_infos` SET nom_site = '$nom', titre_site = '$titre', url_site = '$url', description_site = '$description', keywords_site = '$keywords', footer_site = '$footer' where id_site = $id_site;");
+				$update_site = $connect->query("update `" . $tblprefix . "site_infos` SET nom_site = '$nom', titre_site = '$titre', url_site = '$url', description_site = '$description', keywords_site = '$keywords', footer_site = '$footer' where id_site = $id_site;");
  				redirection(infossite_modifie,"?inc=site_config&do=website",3,"tips",1);
 		}
 		else {
@@ -118,19 +118,19 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			if (!empty($_POST['send'])){
 				if (isset($_POST['autoriser']) && ($_POST['autoriser'] == 1 || $_POST['autoriser'] == 0) && $_POST['autoriser'] != $insc){
 					$post_insc = $_POST['autoriser'];
-					mysql_query ("update `" . $tblprefix . "site_infos` SET inscription = '$post_insc' where id_site = $id_site;");
+					$connect->query ("update `" . $tblprefix . "site_infos` SET inscription = '$post_insc' where id_site = $id_site;");
 				}
 				if (isset($_POST['activer']) && ($_POST['activer'] == 1 || $_POST['activer'] == 0) && $_POST['activer'] != $activ){
 					$post_activ = $_POST['activer'];
-					mysql_query ("update `" . $tblprefix . "site_infos` SET activation_apprenants = '$post_activ' where id_site = $id_site;");
+					$connect->query ("update `" . $tblprefix . "site_infos` SET activation_apprenants = '$post_activ' where id_site = $id_site;");
 				}
 				if (isset($_POST['demander']) && ($_POST['demander'] == 1 || $_POST['demander'] == 0) && $_POST['demander'] != $clas){
 					$post_clas = $_POST['demander'];
-					mysql_query ("update `" . $tblprefix . "site_infos` SET demander_classe = '$post_clas' where id_site = $id_site;");
+					$connect->query ("update `" . $tblprefix . "site_infos` SET demander_classe = '$post_clas' where id_site = $id_site;");
 				}
 				if (isset($_POST['modifier']) && ($_POST['modifier'] == 1 || $_POST['modifier'] == 0) && $_POST['modifier'] != $edit_clas){
 					$post_edit_clas = $_POST['modifier'];
-					mysql_query ("update `" . $tblprefix . "site_infos` SET autoriser_modification_classe = '$post_edit_clas' where id_site = $id_site;");
+					$connect->query ("update `" . $tblprefix . "site_infos` SET autoriser_modification_classe = '$post_edit_clas' where id_site = $id_site;");
 				}
 				redirection(infos_modifies,"?inc=site_config&do=registration",3,"tips",1);
 			}
@@ -156,17 +156,17 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				if (isset($_GET['cat']) && $_GET['cat'] == "edit_classe"){
 					if (isset($_GET['id_classe']) && ctype_digit($_GET['id_classe'])){
 						$id_classe = $_GET['id_classe'];
-						$select_classe_all = mysql_query("select * from `" . $tblprefix . "classes` where id_classe = $id_classe;");
-    				if (mysql_num_rows($select_classe_all) == 1) {
-    					$la_classe = mysql_result($select_classe_all,0,1);
+						$select_classe_all = $connect->query("select * from `" . $tblprefix . "classes` where id_classe = $id_classe;");
+    				if (mysqli_num_rows($select_classe_all) == 1) {
+    					$la_classe = mysqli_result($select_classe_all,0,1);
     					
 							if (isset($_POST['nom_classe'])){
 								$nom_classe = trim($_POST['nom_classe']);
 								if (!empty($nom_classe)){
 									$nom_classe = escape_string($nom_classe);
-									$select_classe = mysql_query("select id_classe from `" . $tblprefix . "classes` where classe = '$nom_classe';");
- 									if ((mysql_num_rows($select_classe) == 0) || (mysql_num_rows($select_classe) == 1 && mysql_result($select_classe,0) == $id_classe)) {
- 										mysql_query ("update `" . $tblprefix . "classes` SET classe = '$nom_classe' where id_classe = $id_classe;");
+									$select_classe = $connect->query("select id_classe from `" . $tblprefix . "classes` where classe = '$nom_classe';");
+ 									if ((mysqli_num_rows($select_classe) == 0) || (mysqli_num_rows($select_classe) == 1 && mysqli_result($select_classe,0) == $id_classe)) {
+ 										$connect->query ("update `" . $tblprefix . "classes` SET classe = '$nom_classe' where id_classe = $id_classe;");
 	          				redirection(classe_modifiee,"?inc=site_config&do=registration#classe",1,"tips",1);
  									} else goback(classe_existe,2,"error",1);
  								} else goback(remplir_champ,2,"error",1);
@@ -184,7 +184,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				else if (isset($_GET['cat']) && $_GET['cat'] == "delete_classe"){
 					if (isset($_GET['key']) && $_GET['key'] == $key && isset($_GET['id_classe']) && ctype_digit($_GET['id_classe'])){
 						$id_classe = $_GET['id_classe'];
-						$delete_classe = mysql_query("delete from `" . $tblprefix . "classes` where id_classe = $id_classe;");
+						$delete_classe = $connect->query("delete from `" . $tblprefix . "classes` where id_classe = $id_classe;");
 					}
 					locationhref_admin("?inc=site_config&do=registration#classe");
 				}
@@ -195,9 +195,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						$nom_classe = trim($_POST['nom_classe']);
 						if (!empty($nom_classe)){
 							$nom_classe = escape_string($nom_classe);
-							$select_classe = mysql_query("select id_classe from `" . $tblprefix . "classes` where classe = '$nom_classe';");
- 							if (mysql_num_rows($select_classe) == 0){
- 								mysql_query ("INSERT INTO `" . $tblprefix . "classes` VALUES (NULL,'$nom_classe');");
+							$select_classe = $connect->query("select id_classe from `" . $tblprefix . "classes` where classe = '$nom_classe';");
+ 							if (mysqli_num_rows($select_classe) == 0){
+ 								$connect->query ("INSERT INTO `" . $tblprefix . "classes` VALUES (NULL,'$nom_classe');");
 	          		redirection(classe_ajoutee,"?inc=site_config&do=registration",1,"tips",1);
  							} else goback(classe_existe,2,"error",1);
  						} else goback(remplir_champ,2,"error",1);
@@ -210,15 +210,15 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				}
 				
 				// ************** liste classes *****************
-				$select_classes = mysql_query("select * from `" . $tblprefix . "classes`;");
+				$select_classes = $connect->query("select * from `" . $tblprefix . "classes`;");
 				confirmer();
-				if (mysql_num_rows($select_classes) > 0){
+				if (mysqli_num_rows($select_classes) > 0){
 					echo "<br /><table width=\"50%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 					echo "\n<td class=\"affichage_table\" width=\"60%\"><b>".classe."</b></td>";
 					echo "\n<td class=\"affichage_table\" width=\"20%\"><b>".editer."</b></td>";
 					echo "\n<td class=\"affichage_table\" width=\"20%\"><b>".supprimer."</b></td>";
 					echo "</tr>";
-					while($classe = mysql_fetch_row($select_classes)){
+					while($classe = mysqli_fetch_row($select_classes)){
 						$id_classe = $classe[0];
 						$nom_classe = html_ent($classe[1]);
 						echo "<tr>\n";
@@ -256,20 +256,20 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 		if (!empty($_POST['send'])){
     	$langue_home = escape_string($_POST['langue_home']);
 			if (file_exists("../language/".$langue_home."/home.ini"))
-				$update_langue = mysql_query("update `" . $tblprefix . "site_infos` SET langue_site = '$langue_home' where id_site = $id_site;");
+				$update_langue = $connect->query("update `" . $tblprefix . "site_infos` SET langue_site = '$langue_home' where id_site = $id_site;");
 			else goback(langue_introuvable,2,"error",1);
 			
 			if (isset($_POST['afficher_le_profil']) && ($_POST['afficher_le_profil'] == 1 || $_POST['afficher_le_profil'] == 0) && $_POST['afficher_le_profil'] != $affich_profil){
 				$post_affich_profil = $_POST['afficher_le_profil'];
-				mysql_query ("update `" . $tblprefix . "site_infos` SET afficher_profil_aux_visiteurs = '$post_affich_profil' where id_site = $id_site;");
+				$connect->query ("update `" . $tblprefix . "site_infos` SET afficher_profil_aux_visiteurs = '$post_affich_profil' where id_site = $id_site;");
 			}
 			if (isset($_POST['nb_d_elements_page']) && ctype_digit($_POST['nb_d_elements_page']) && $_POST['nb_d_elements_page'] > 0 && $_POST['nb_d_elements_page'] != $nb_elements_page){
 				$nb_d_elements_page = escape_string($_POST['nb_d_elements_page']);
-				mysql_query ("update `" . $tblprefix . "site_infos` SET nombre_elements_page = '$nb_d_elements_page' where id_site = $id_site;");
+				$connect->query ("update `" . $tblprefix . "site_infos` SET nombre_elements_page = '$nb_d_elements_page' where id_site = $id_site;");
 			}
 			if (isset($_POST['nb_de_caracteres']) && ctype_digit($_POST['nb_de_caracteres']) && $_POST['nb_de_caracteres'] > 0 && $_POST['nb_de_caracteres'] != $nb_caracteres){
 				$nb_de_caracteres = escape_string($_POST['nb_de_caracteres']);
-				mysql_query ("update `" . $tblprefix . "site_infos` SET nombre_caracteres = '$nb_de_caracteres' where id_site = $id_site;");
+				$connect->query ("update `" . $tblprefix . "site_infos` SET nombre_caracteres = '$nb_de_caracteres' where id_site = $id_site;");
 			}
 			redirection(infos_modifies,"?inc=site_config",3,"tips",1);
 		}

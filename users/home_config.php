@@ -42,17 +42,17 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** orderup_article **************************
 		case "orderup_article" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$cet_article = mysql_query ("select ordre_accueil from `" . $tblprefix . "articles` where id_article = $id_article;");
-				if (mysql_num_rows($cet_article) == 1) {
-					$ordre_accueil = mysql_result($cet_article,0);
+    		$cet_article = $connect->query ("select ordre_accueil from `" . $tblprefix . "articles` where id_article = $id_article;");
+				if (mysqli_num_rows($cet_article) == 1) {
+					$ordre_accueil = mysqli_result($cet_article,0);
 
-    			$article_precedent = mysql_query ("select id_article, ordre_accueil from `" . $tblprefix . "articles` where accueil_article = '1' and ordre_accueil < $ordre_accueil order by ordre_accueil desc;");
-					if (mysql_num_rows($article_precedent) > 0) {
-						$idarticle_precedent = mysql_result($article_precedent,0,0);
-						$ordrearticle_precedent = mysql_result($article_precedent,0,1);
+    			$article_precedent = $connect->query ("select id_article, ordre_accueil from `" . $tblprefix . "articles` where accueil_article = '1' and ordre_accueil < $ordre_accueil order by ordre_accueil desc;");
+					if (mysqli_num_rows($article_precedent) > 0) {
+						$idarticle_precedent = mysqli_result($article_precedent,0,0);
+						$ordrearticle_precedent = mysqli_result($article_precedent,0,1);
 
-						$order_this_article = mysql_query("update `" . $tblprefix . "articles` set ordre_accueil = $ordrearticle_precedent where id_article = $id_article;");
-						$order_article_precedent = mysql_query("update `" . $tblprefix . "articles` set ordre_accueil = $ordre_accueil where id_article = $idarticle_precedent;");
+						$order_this_article = $connect->query("update `" . $tblprefix . "articles` set ordre_accueil = $ordrearticle_precedent where id_article = $id_article;");
+						$order_article_precedent = $connect->query("update `" . $tblprefix . "articles` set ordre_accueil = $ordre_accueil where id_article = $idarticle_precedent;");
 					}
     		}
 			}
@@ -62,17 +62,17 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** orderdown_article **************************
 		case "orderdown_article" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$cet_article = mysql_query ("select ordre_accueil from `" . $tblprefix . "articles` where id_article = $id_article;");
-				if (mysql_num_rows($cet_article) == 1) {
-					$ordre_accueil = mysql_result($cet_article,0);
+    		$cet_article = $connect->query ("select ordre_accueil from `" . $tblprefix . "articles` where id_article = $id_article;");
+				if (mysqli_num_rows($cet_article) == 1) {
+					$ordre_accueil = mysqli_result($cet_article,0);
 
-    			$article_suivant = mysql_query ("select id_article, ordre_accueil from `" . $tblprefix . "articles` where accueil_article = '1' and ordre_accueil > $ordre_accueil order by ordre_accueil;");
-					if (mysql_num_rows($article_suivant) > 0) {
-						$idarticle_suivant = mysql_result($article_suivant,0,0);
-						$ordrearticle_suivant = mysql_result($article_suivant,0,1);
+    			$article_suivant = $connect->query ("select id_article, ordre_accueil from `" . $tblprefix . "articles` where accueil_article = '1' and ordre_accueil > $ordre_accueil order by ordre_accueil;");
+					if (mysqli_num_rows($article_suivant) > 0) {
+						$idarticle_suivant = mysqli_result($article_suivant,0,0);
+						$ordrearticle_suivant = mysqli_result($article_suivant,0,1);
 
-						$order_this_article = mysql_query("update `" . $tblprefix . "articles` set ordre_accueil = $ordrearticle_suivant where id_article = $id_article;");
-						$order_article_suivant = mysql_query("update `" . $tblprefix . "articles` set ordre_accueil = $ordre_accueil where id_article = $idarticle_suivant;");
+						$order_this_article = $connect->query("update `" . $tblprefix . "articles` set ordre_accueil = $ordrearticle_suivant where id_article = $id_article;");
+						$order_article_suivant = $connect->query("update `" . $tblprefix . "articles` set ordre_accueil = $ordre_accueil where id_article = $idarticle_suivant;");
 					}
     		}
 			}
@@ -83,14 +83,14 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 		case "multi_colonnes" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
 				
-				$select_colonnes = mysql_query("select accueil_multicolonnes from `" . $tblprefix . "site_infos`;");
-				if (mysql_num_rows($select_colonnes) > 0) {
+				$select_colonnes = $connect->query("select accueil_multicolonnes from `" . $tblprefix . "site_infos`;");
+				if (mysqli_num_rows($select_colonnes) > 0) {
 					
-					$multicolonnes = mysql_result($select_colonnes,0);
+					$multicolonnes = mysqli_result($select_colonnes,0);
 					if ($multicolonnes == 0) $edit_colonnes = 1;
 					else $edit_colonnes = 0;
 
-    			$update_multicolonnes = mysql_query("update `" . $tblprefix . "site_infos` set accueil_multicolonnes = '$edit_colonnes';");
+    			$update_multicolonnes = $connect->query("update `" . $tblprefix . "site_infos` set accueil_multicolonnes = '$edit_colonnes';");
 				}
 			}
 			locationhref_admin("?inc=home_config");
@@ -99,12 +99,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** open_menu **************************
 		default : {
 
-			$select_colonnes = mysql_query("select accueil_multicolonnes from `" . $tblprefix . "site_infos`;");
+			$select_colonnes = $connect->query("select accueil_multicolonnes from `" . $tblprefix . "site_infos`;");
 			
-			if (mysql_num_rows($select_colonnes) > 0) {
+			if (mysqli_num_rows($select_colonnes) > 0) {
 					echo "<h4><u>- ".afficher_multicolonnes." :</u>&nbsp;&nbsp;&nbsp;<font size=\"4\">";
 					
-					$multicolonnes = mysql_result($select_colonnes,0);
+					$multicolonnes = mysqli_result($select_colonnes,0);
 					if ($multicolonnes == 1) echo oui;
 					else echo non;
 					
@@ -115,9 +115,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			echo "<h4><u>- ".ordonner_articles_accueil." : </u></h4>";
 			
 			$max_len = 100;
-		 	$select_articles = mysql_query("select id_article, titre_article, contenu_article, ordre_accueil from `" . $tblprefix . "articles` where accueil_article = '1' order by ordre_accueil;");
+		 	$select_articles = $connect->query("select id_article, titre_article, contenu_article, ordre_accueil from `" . $tblprefix . "articles` where accueil_article = '1' order by ordre_accueil;");
 		 	
-		 	if (mysql_num_rows($select_articles) > 0){
+		 	if (mysqli_num_rows($select_articles) > 0){
 		 		
 		 		echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td style=\"border: 1px solid #000000;\" align=\"center\" width=\"75%\"><b>".articles."</b></td>";
@@ -140,14 +140,14 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							echo "\n<td class=\"affichage_table\"><b>".$titre_article."</b></td>";
 							
 							echo "\n<td class=\"affichage_table\" nowrap=\"nowrap\">";
-							$article_precedent = mysql_query ("select id_article from `" . $tblprefix . "articles` where ordre_accueil < $ordre_accueil and accueil_article = '1' order by ordre_accueil desc;");
-							if (mysql_num_rows($article_precedent) > 0)
+							$article_precedent = $connect->query ("select id_article from `" . $tblprefix . "articles` where ordre_accueil < $ordre_accueil and accueil_article = '1' order by ordre_accueil desc;");
+							if (mysqli_num_rows($article_precedent) > 0)
 								echo "<a href=\"?inc=home_config&do=orderup_article&id_article=".$id_article."&key=".$key."\" title=\"".deplacer_haut."\"><img border=\"0\" src=\"../images/others/up.png\" width=\"15\" height=\"15\" /></a>";
 							else echo "<img border=\"0\" src=\"../images/others/up2.png\" width=\"15\" height=\"15\" />";
 							echo "<b> ".$i_ordre." </b>";
 							$i_ordre++;
-							$article_suivant = mysql_query ("select id_article from `" . $tblprefix . "articles` where ordre_accueil > $ordre_accueil and accueil_article = '1' order by ordre_accueil;");
-							if (mysql_num_rows($article_suivant) > 0)
+							$article_suivant = $connect->query ("select id_article from `" . $tblprefix . "articles` where ordre_accueil > $ordre_accueil and accueil_article = '1' order by ordre_accueil;");
+							if (mysqli_num_rows($article_suivant) > 0)
 								echo "<a href=\"?inc=home_config&do=orderdown_article&id_article=".$id_article."&key=".$key."\" title=\"".deplacer_bas."\"><img border=\"0\" src=\"../images/others/down.png\" width=\"15\" height=\"15\" /></a>";
 							else echo "<img border=\"0\" src=\"../images/others/down2.png\" width=\"15\" height=\"15\" />";
 							echo "</td>";

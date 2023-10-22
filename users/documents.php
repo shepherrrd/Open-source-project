@@ -30,9 +30,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 
 	echo "<div id=\"titre\">".gestion_electronique_documents."</div>";
 
-	$select_statut_comp = mysql_query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'documents';");
-	if (mysql_num_rows($select_statut_comp) == 1) {
- 		$statut_comp = mysql_result($select_statut_comp,0);
+	$select_statut_comp = $connect->query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'documents';");
+	if (mysqli_num_rows($select_statut_comp) == 1) {
+ 		$statut_comp = mysqli_result($select_statut_comp,0);
 		if ($statut_comp == 0)
 		 echo "<h3><img src=\"../images/icones/warning.png\" /><font color=\"red\">".component_disabled." ".enable_it_now." : </font><a href=\"?inc=components\"\">".gestion_composants."</a></h3>";
 	}
@@ -80,12 +80,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
     			if (isset($_POST['apps_upload']) && ($_POST['apps_upload'] == 1 || $_POST['apps_upload'] == 0))
     				$apps_upload = $_POST['apps_upload'];
     			
-    			$select_folder_name = mysql_query("select id_folder from `" . $tblprefix . "folders` where nom_folder = '$folder_name';");
- 					if (mysql_num_rows($select_folder_name) == 0) {
+    			$select_folder_name = $connect->query("select id_folder from `" . $tblprefix . "folders` where nom_folder = '$folder_name';");
+ 					if (mysqli_num_rows($select_folder_name) == 0) {
 						
 						$time_insert_folder = time();
  						$insertfolder = "INSERT INTO `" . $tblprefix . "folders` VALUES (NULL,$id_user_session,'$folder_name','$folder_acces',$time_insert_folder,'1','$apps_upload');";
-	          mysql_query($insertfolder,$connect);
+	          $connect->query($insertfolder);
 
 	          redirection(folder_cree,"?inc=documents",3,"tips",1);
  					} else goback(nom_dossier_existe,2,"error",1);
@@ -102,12 +102,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					echo "\n<input name=\"acces\" type=\"radio\" value=\"all\" onclick=\"disabled_select('classes',true)\" checked=\"checked\" /><b>".acces_ouvert."</b><br />";
 					echo "\n<input name=\"acces\" type=\"radio\" value=\"learner\" onclick=\"disabled_select('classes',true)\" /><b>".acces_apprenants."</b><br />";
 					echo "\n<input name=\"acces\" type=\"radio\" value=\"classe\" onclick=\"disabled_select('classes',false)\" /><b>".acces_classes." :</b>";
-    			$select_classes = mysql_query("select * from `" . $tblprefix . "classes`;");
-			 		if (mysql_num_rows($select_classes) > 0){
+    			$select_classes = $connect->query("select * from `" . $tblprefix . "classes`;");
+			 		if (mysqli_num_rows($select_classes) > 0){
 					 	echo "<table border=\"0\"><tr><td align=\"center\">";
 						echo "<table border=\"0\"><tr><td><a href=\"?inc=site_config&do=registration#classe\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=site_config&do=registration#classe\"><b>".ajouter_classe."</b></a></td></tr></table>";
 						echo "<select size=\"5\" name=\"classes[]\" id=\"classes\" multiple=\"multiple\">";
- 						while($classe = mysql_fetch_row($select_classes)){
+ 						while($classe = mysqli_fetch_row($select_classes)){
     					$id_classe = $classe[0];
     					$nom_classe = html_ent($classe[1]);
     					echo "\n<option value=\"".$id_classe."\">".$nom_classe."</option>";
@@ -129,9 +129,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
     // ****************** edit_folder **************************
     case "edit_folder" : {
 
-    		$select_folder_complet = mysql_query("select * from `" . $tblprefix . "folders` where id_folder = $id_folder;");
-    		if (mysql_num_rows($select_folder_complet) == 1) {
-    			$folder = mysql_fetch_row($select_folder_complet);
+    		$select_folder_complet = $connect->query("select * from `" . $tblprefix . "folders` where id_folder = $id_folder;");
+    		if (mysqli_num_rows($select_folder_complet) == 1) {
+    			$folder = mysqli_fetch_row($select_folder_complet);
     			if (isset($grade_user_session) && ($grade_user_session == "3" || $grade_user_session == "2" || $folder[1] == $id_user_session)){
     			$nom_folder_bd = html_ent($folder[2]);
 					$acces_folder_bd = $folder[3];
@@ -155,10 +155,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
     						if (isset($_POST['apps_upload']) && ($_POST['apps_upload'] == 1 || $_POST['apps_upload'] == 0))
     							$apps_upload = $_POST['apps_upload'];
 
-    						$select_folder_name = mysql_query("select id_folder from `" . $tblprefix . "folders` where nom_folder = '$folder_name';");
- 								if ((mysql_num_rows($select_folder_name) == 0) || (mysql_num_rows($select_folder_name) == 1 && mysql_result($select_folder_name,0) == $folder[0])) {
+    						$select_folder_name = $connect->query("select id_folder from `" . $tblprefix . "folders` where nom_folder = '$folder_name';");
+ 								if ((mysqli_num_rows($select_folder_name) == 0) || (mysqli_num_rows($select_folder_name) == 1 && mysqli_result($select_folder_name,0) == $folder[0])) {
  									$update_folder = "update `" . $tblprefix . "folders` SET nom_folder = '$folder_name', acces_folder = '$folder_acces', apps_upload = '$apps_upload' where id_folder = $id_folder;";
- 									mysql_query($update_folder);
+ 									$connect->query($update_folder);
  									redirection(folder_modifie,"?inc=documents",3,"tips",1);
  								} else goback(nom_dossier_existe,2,"error",1);
     					} else goback(remplir_champs_obligatoires,2,"error",1);
@@ -190,12 +190,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 							 echo " checked=\"checked\"";
 							echo " /><b>".acces_classes." :</b>";
 							$tab_classes = explode("-",$acces_folder_bd);
-    					$select_classes = mysql_query("select * from `" . $tblprefix . "classes`;");
-					 		if (mysql_num_rows($select_classes) > 0){
+    					$select_classes = $connect->query("select * from `" . $tblprefix . "classes`;");
+					 		if (mysqli_num_rows($select_classes) > 0){
 					 			echo "<table border=\"0\"><tr><td align=\"center\">";
 					 			echo "<table border=\"0\"><tr><td><a href=\"?inc=site_config&do=registration#classe\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=site_config&do=registration#classe\"><b>".ajouter_classe."</b></a></td></tr></table>";
 								echo "<select size=\"5\" name=\"classes[]\" id=\"classes\" multiple=\"multiple\">";
-    						while($classe = mysql_fetch_row($select_classes)){
+    						while($classe = mysqli_fetch_row($select_classes)){
     							$id_classe = $classe[0];
     							$nom_classe = html_ent($classe[1]);
     							echo "\n<option value=\"".$id_classe."\"";
@@ -225,13 +225,13 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 		// ****************** delete_folder **************************
 		case "delete_folder" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-				$select_owner = mysql_query("select id_user from `" . $tblprefix . "folders` where id_folder = $id_folder;");
-    		if (mysql_num_rows($select_owner) == 1) {
-    			$owner_folder = mysql_result($select_owner,0);
+				$select_owner = $connect->query("select id_user from `" . $tblprefix . "folders` where id_folder = $id_folder;");
+    		if (mysqli_num_rows($select_owner) == 1) {
+    			$owner_folder = mysqli_result($select_owner,0);
     			if (isset($grade_user_session) && ($grade_user_session == "3" || $grade_user_session == "2" || $owner_folder == $id_user_session)){
-    				$select_count_files = mysql_query("select count(id_file) from `" . $tblprefix . "files` where id_folder = $id_folder;");
-    				if (mysql_num_rows($select_count_files) == 1 && mysql_result($select_count_files,0) == 0)
-							$delete_folder = mysql_query("delete from `" . $tblprefix . "folders` where id_folder = $id_folder;");
+    				$select_count_files = $connect->query("select count(id_file) from `" . $tblprefix . "files` where id_folder = $id_folder;");
+    				if (mysqli_num_rows($select_count_files) == 1 && mysqli_result($select_count_files,0) == 0)
+							$delete_folder = $connect->query("delete from `" . $tblprefix . "folders` where id_folder = $id_folder;");
 					}
 				}
 			}
@@ -241,11 +241,11 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
     // ****************** publier_folder *************************
     case "publier_folder" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-				$select_owner = mysql_query("select id_user from `" . $tblprefix . "folders` where id_folder = $id_folder;");
-    		if (mysql_num_rows($select_owner) == 1) {
-    			$owner_folder = mysql_result($select_owner,0);
+				$select_owner = $connect->query("select id_user from `" . $tblprefix . "folders` where id_folder = $id_folder;");
+    		if (mysqli_num_rows($select_owner) == 1) {
+    			$owner_folder = mysqli_result($select_owner,0);
     			if (isset($grade_user_session) && ($grade_user_session == "3" || $grade_user_session == "2" || $owner_folder == $id_user_session)){
-    				$publier_folder = mysql_query("update `" . $tblprefix . "folders` set publie_folder = '1' where id_folder = $id_folder;");
+    				$publier_folder = $connect->query("update `" . $tblprefix . "folders` set publie_folder = '1' where id_folder = $id_folder;");
     			}
     		}
     	}
@@ -255,11 +255,11 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
     // ****************** depublier_folder ***********************
     case "depublier_folder" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-				$select_owner = mysql_query("select id_user from `" . $tblprefix . "folders` where id_folder = $id_folder;");
-    		if (mysql_num_rows($select_owner) == 1) {
-    			$owner_folder = mysql_result($select_owner,0);
+				$select_owner = $connect->query("select id_user from `" . $tblprefix . "folders` where id_folder = $id_folder;");
+    		if (mysqli_num_rows($select_owner) == 1) {
+    			$owner_folder = mysqli_result($select_owner,0);
     			if (isset($grade_user_session) && ($grade_user_session == "3" || $grade_user_session == "2" || $owner_folder == $id_user_session)){
-    				$depublier_folder = mysql_query("update `" . $tblprefix . "folders` set publie_folder = '0' where id_folder = $id_folder;");
+    				$depublier_folder = $connect->query("update `" . $tblprefix . "folders` set publie_folder = '0' where id_folder = $id_folder;");
     			}
     		}
     	}
@@ -284,8 +284,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
   				$ext = substr($filename, strrpos($filename, '.') + 1);
   				$ext = strtolower($ext);
   				if (in_array($ext, $extensions) && $_FILES['uploaded_file']['type'] != "application/octet-stream"){
-  					$select_this_file = mysql_query("select id_file from `" . $tblprefix . "files` where nom_file = '$filename' and taille_file = $file_size and id_user = $id_user_session;");
-						if (mysql_num_rows($select_this_file) == 0) {
+  					$select_this_file = $connect->query("select id_file from `" . $tblprefix . "files` where nom_file = '$filename' and taille_file = $file_size and id_user = $id_user_session;");
+						if (mysqli_num_rows($select_this_file) == 0) {
   						$new_file = fonc_rand(24).".".$ext;
   						while (file_exists("../docs/".$new_file))
   							$new_file = fonc_rand(24).".".$ext;
@@ -298,7 +298,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 
 								$time_upload = time();
  								$insertfile = "INSERT INTO `" . $tblprefix . "files` VALUES (NULL,$id_user_session,'$filename',$file_size,'$new_file',$time_upload,'$is_image','u',$id_folder);";
-	        			mysql_query($insertfile,$connect);
+	        			$connect->query($insertfile,$connect);
 	        			redirection(fichier_uploade,"?inc=documents&do=open_folder&id_folder=".$id_folder,3,"tips",1);
         			} else echo "<font color=\"red\"><b>".erreur_upload."</b></font><br />";
 						} else echo "<font color=\"red\"><b>".erreur_upload_key."</b></font><br />";
@@ -351,15 +351,15 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				$id_file = intval($_GET['id_file']);
 			else $id_file = 0;
 
-			$select_file = mysql_query("select id_user,lien_file,type_user from `" . $tblprefix . "files` where id_file = $id_file;");
-			if (mysql_num_rows($select_file) == 1){
+			$select_file = $connect->query("select id_user,lien_file,type_user from `" . $tblprefix . "files` where id_file = $id_file;");
+			if (mysqli_num_rows($select_file) == 1){
 				
-				$user_file = html_ent(mysql_result($select_file,0,0));
-		  	$lien_fichier = html_ent(mysql_result($select_file,0,1));
-		  	$type_usr_file = html_ent(mysql_result($select_file,0,2));
+				$user_file = html_ent(mysqli_result($select_file,0,0));
+		  	$lien_fichier = html_ent(mysqli_result($select_file,0,1));
+		  	$type_usr_file = html_ent(mysqli_result($select_file,0,2));
 		  	
 		  	if (isset($grade_user_session) && ($grade_user_session == "3" || $grade_user_session == "2" || ($type_usr_file == 'u' && $user_file == $id_user_session) || $type_usr_file == 'l')){
-		  		$delete_file = mysql_query("delete from `" . $tblprefix . "files` where id_file = $id_file;");
+		  		$delete_file = $connect->query("delete from `" . $tblprefix . "files` where id_file = $id_file;");
 		  		@unlink("../docs/".$lien_fichier);
 		  	}
     	}
@@ -373,18 +373,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				$id_file_edit = escape_string($_POST['id_file_edit']);
 				$name_file_edit = escape_string($_POST['name_file_edit']);
 				
-				$select_file_edit = mysql_query("select id_user,nom_file,type_user from `" . $tblprefix . "files` where id_file = $id_file_edit;");
-				if (mysql_num_rows($select_file_edit) > 0) {
-					$user_file = html_ent(mysql_result($select_file_edit,0,0));
-		  		$file_edit = html_ent(mysql_result($select_file_edit,0,1));
-		  		$type_usr_file = html_ent(mysql_result($select_file_edit,0,2));
+				$select_file_edit = $connect->query("select id_user,nom_file,type_user from `" . $tblprefix . "files` where id_file = $id_file_edit;");
+				if (mysqli_num_rows($select_file_edit) > 0) {
+					$user_file = html_ent(mysqli_result($select_file_edit,0,0));
+		  		$file_edit = html_ent(mysqli_result($select_file_edit,0,1));
+		  		$type_usr_file = html_ent(mysqli_result($select_file_edit,0,2));
 		  		
 		  		if (isset($grade_user_session) && ($grade_user_session == "3" || $grade_user_session == "2" || ($type_usr_file == 'u' && $user_file == $id_user_session) || $type_usr_file == 'l')){
 						$ext_file_edit = substr($file_edit, strrpos($file_edit, '.') + 1);
 						$file_edit2 = substr($file_edit, 0, strrpos($file_edit, '.'));
 						if ($file_edit2 != $name_file_edit){
 							$name_file_edit = $name_file_edit.".".$ext_file_edit;
-							$update_component = mysql_query("update `" . $tblprefix . "files` set nom_file = '$name_file_edit' where id_file = $id_file_edit;");
+							$update_component = $connect->query("update `" . $tblprefix . "files` set nom_file = '$name_file_edit' where id_file = $id_file_edit;");
 						}
 					}
 				}
@@ -396,9 +396,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
   case "open_folder" : {
    	goback_lien("?inc=documents");
   	
-  	$select_folder_name = mysql_query("select nom_folder from `" . $tblprefix . "folders` where id_folder = $id_folder;");
-    if (mysql_num_rows($select_folder_name) == 1){
-    	$nom_dossier = html_ent(mysql_result($select_folder_name,0));
+  	$select_folder_name = $connect->query("select nom_folder from `" . $tblprefix . "folders` where id_folder = $id_folder;");
+    if (mysqli_num_rows($select_folder_name) == 1){
+    	$nom_dossier = html_ent(mysqli_result($select_folder_name,0));
     	echo "<center><h3>".$nom_dossier."</h3></center>";
 		}
 
@@ -420,9 +420,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 		echo "<script type=\"text/javascript\">function DisplayHideDiv(id_div){var lay=document.getElementById(id_div);if(lay.style.display=='none'){lay.style.display='block';}else{lay.style.display='none';}}</script>";
 
 			
-    $select_files = mysql_query("select * from `" . $tblprefix . "files` where id_folder = $id_folder order by date_file desc;");
+    $select_files = $connect->query("select * from `" . $tblprefix . "files` where id_folder = $id_folder order by date_file desc;");
     
-    $nbr_trouve = mysql_num_rows($select_files);
+    $nbr_trouve = mysqli_num_rows($select_files);
     if ($nbr_trouve > 0){
 			$page_max = ceil($nbr_trouve / $nbr_resultats);
 			if ($page <= $page_max && $page > 1 && $page_max > 1)
@@ -431,7 +431,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				$limit = 0;
 				$page = 1;
 			}
-    	$select_files_limit = mysql_query("select * from `" . $tblprefix . "files` where id_folder = $id_folder order by date_file desc limit $limit, $nbr_resultats;");
+    	$select_files_limit = $connect->query("select * from `" . $tblprefix . "files` where id_folder = $id_folder order by date_file desc limit $limit, $nbr_resultats;");
 
     	echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 			echo "\n<td class=\"affichage_table\"><b>".fichier."</b></td>";
@@ -444,7 +444,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 			echo "\n<td class=\"affichage_table\"><b>".supprimer."</b></td>";
 			echo "</tr>";
 
-			while($fichier = mysql_fetch_row($select_files_limit)){
+			while($fichier = mysqli_fetch_row($select_files_limit)){
 					
 				$nom_fichier = html_ent($fichier[2]);
 				$nom_fichier = substr($nom_fichier, 0, strrpos($nom_fichier, '.'));
@@ -463,17 +463,17 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				echo "\n<td class=\"affichage_table\"><b><a href=\"../includes/download.php?f=".$lien_fichier."\" title=\"".download."\">".$nom_fichier."</a></b></td>";
 				
 				if ($type_usr_file == 'l') {
-					$select_user = mysql_query("select identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $fichier[1];");
+					$select_user = $connect->query("select identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $fichier[1];");
 					$lien_profile = "s_profiles";
 					$is_learner = " (".learner.")";
 				}
 				else {
-    			$select_user = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $fichier[1];");
+    			$select_user = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $fichier[1];");
     			$lien_profile = "profiles";
     			$is_learner = "";
     		}
-    		if (mysql_num_rows($select_user) == 1)
-    			$user = html_ent(mysql_result($select_user,0));
+    		if (mysqli_num_rows($select_user) == 1)
+    			$user = html_ent(mysqli_result($select_user,0));
     		else $user = inconnu;
     		$user = wordwrap($user,15,"<br />",true);
 				echo "\n<td class=\"affichage_table\"><a href=\"../?".$lien_profile."=".$fichier[1]."\" title=\"".user_profile."\"><b>".$user."</b></a>".$is_learner."</td>";
@@ -543,11 +543,11 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 	
     	echo "<table border=\"0\"><tr><td><a href=\"?inc=documents&do=create_folder\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=documents&do=create_folder\"><b>".create_folder."</b></a></td></tr></table>";
 
-    // publiés
+    // publiï¿½s
     	echo "<hr /><a name=\"published\"><b><u>- ".published_folders." : </u></b></a><br /><br />";
 
-  $select_published_folders = mysql_query("select * from `" . $tblprefix . "folders` where publie_folder = '1' order by nom_folder ;");
-	$nbr_trouve = mysql_num_rows($select_published_folders);
+  $select_published_folders = $connect->query("select * from `" . $tblprefix . "folders` where publie_folder = '1' order by nom_folder ;");
+	$nbr_trouve = mysqli_num_rows($select_published_folders);
   if ($nbr_trouve > 0){
 		$page_max = ceil($nbr_trouve / $nbr_resultats);
 		if ($page <= $page_max && $page > 1 && $page_max > 1)
@@ -557,7 +557,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 			$page = 1;
 		}
 
-    	$select_published_folders_limit = mysql_query("select * from `" . $tblprefix . "folders` where publie_folder = '1' order by nom_folder limit $limit, $nbr_resultats;");
+    	$select_published_folders_limit = $connect->query("select * from `" . $tblprefix . "folders` where publie_folder = '1' order by nom_folder limit $limit, $nbr_resultats;");
 
     		echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".folder_name."</b></td>";
@@ -571,13 +571,13 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 
-				while($folder = mysql_fetch_row($select_published_folders_limit)){
+				while($folder = mysqli_fetch_row($select_published_folders_limit)){
 					
 					$id_folder = $folder[0];
 
-    			$select_auteur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $folder[1];");
-    			if (mysql_num_rows($select_auteur) == 1)
-    				$auteur = html_ent(mysql_result($select_auteur,0));
+    			$select_auteur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $folder[1];");
+    			if (mysqli_num_rows($select_auteur) == 1)
+    				$auteur = html_ent(mysqli_result($select_auteur,0));
     			else $auteur = inconnu;
     			$auteur = wordwrap($auteur,15,"<br />",true);
 
@@ -593,9 +593,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 						$tab_acces_folder = explode("-",trim($folder[3],"-"));
 						if (!empty($tab_acces_folder[0])){
 							$chaine_acces_folder = implode(",",$tab_acces_folder);
-							$select_classes = mysql_query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_folder.");");
-							if (mysql_num_rows($select_classes) > 0){
-    						while($classe = mysql_fetch_row($select_classes))
+							$select_classes = $connect->query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_folder.");");
+							if (mysqli_num_rows($select_classes) > 0){
+    						while($classe = mysqli_fetch_row($select_classes))
     							$acces_folder .= "<u>".$classe[1]."</u>, ";
     						$acces_folder = substr($acces_folder,0,-2);
     					}
@@ -604,9 +604,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					
 					$date_creation = set_date($dateformat,$folder[4]);
 
-    			$select_count_files = mysql_query("select count(id_file) from `" . $tblprefix . "files` where id_folder = $id_folder;");
-    			if (mysql_num_rows($select_count_files) == 1)
-    				$count_files = mysql_result($select_count_files,0);
+    			$select_count_files = $connect->query("select count(id_file) from `" . $tblprefix . "files` where id_folder = $id_folder;");
+    			if (mysqli_num_rows($select_count_files) == 1)
+    				$count_files = mysqli_result($select_count_files,0);
     			else $count_files = "---";
     			
 					if ($folder[6] == "1")
@@ -659,11 +659,11 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 		}
     	} else echo no_published_folder."<br />";
 
-    // non publiés
+    // non publiï¿½s
     	echo "<br /><hr /><a name=\"unpublished\"><b><u>- ".unpublished_folders." : </u></b></a><br /><br />";
 
-    	$select_unpublished_folders = mysql_query("select * from `" . $tblprefix . "folders` where publie_folder = '0' order by nom_folder ;");
-			 $nbr_trouve = mysql_num_rows($select_unpublished_folders);
+    	$select_unpublished_folders = $connect->query("select * from `" . $tblprefix . "folders` where publie_folder = '0' order by nom_folder ;");
+			 $nbr_trouve = mysqli_num_rows($select_unpublished_folders);
   		 if ($nbr_trouve > 0){
 				$page_max = ceil($nbr_trouve / $nbr_resultats);
 				if ($page2 <= $page_max && $page2 > 1 && $page_max > 1)
@@ -673,7 +673,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					$page2 = 1;
 				}
 
-    	$select_unpublished_folders_limit = mysql_query("select * from `" . $tblprefix . "folders` where publie_folder = '0' order by nom_folder limit $limit, $nbr_resultats;");
+    	$select_unpublished_folders_limit = $connect->query("select * from `" . $tblprefix . "folders` where publie_folder = '0' order by nom_folder limit $limit, $nbr_resultats;");
 
     		echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".folder_name."</b></td>";
@@ -687,13 +687,13 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 
-				while($folder = mysql_fetch_row($select_unpublished_folders_limit)){
+				while($folder = mysqli_fetch_row($select_unpublished_folders_limit)){
 					
 					$id_folder = $folder[0];
 
-    			$select_auteur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $folder[1];");
-    			if (mysql_num_rows($select_auteur) == 1)
-    				$auteur = html_ent(mysql_result($select_auteur,0));
+    			$select_auteur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $folder[1];");
+    			if (mysqli_num_rows($select_auteur) == 1)
+    				$auteur = html_ent(mysqli_result($select_auteur,0));
     			else $auteur = inconnu;
     			$auteur = wordwrap($auteur,15,"<br />",true);
 
@@ -709,9 +709,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 						$tab_acces_folder = explode("-",trim($folder[3],"-"));
 						if (!empty($tab_acces_folder[0])){
 							$chaine_acces_folder = implode(",",$tab_acces_folder);
-							$select_classes = mysql_query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_folder.");");
-							if (mysql_num_rows($select_classes) > 0){
-    						while($classe = mysql_fetch_row($select_classes))
+							$select_classes = $connect->query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_folder.");");
+							if (mysqli_num_rows($select_classes) > 0){
+    						while($classe = mysqli_fetch_row($select_classes))
     							$acces_folder .= "<u>".$classe[1]."</u>, ";
     						$acces_folder = substr($acces_folder,0,-2);
     					}
@@ -720,9 +720,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					
 					$date_creation = set_date($dateformat,$folder[4]);
 
-    			$select_count_files = mysql_query("select count(id_file) from `" . $tblprefix . "files` where id_folder = $id_folder;");
-    			if (mysql_num_rows($select_count_files) == 1)
-    				$count_files = mysql_result($select_count_files,0);
+    			$select_count_files = $connect->query("select count(id_file) from `" . $tblprefix . "files` where id_folder = $id_folder;");
+    			if (mysqli_num_rows($select_count_files) == 1)
+    				$count_files = mysqli_result($select_count_files,0);
     			else $count_files = "---";
     			
 					if ($folder[6] == "1")

@@ -62,15 +62,15 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
 				
 				$select_pseudo_apprenant = $connect->query("select id_classe, identifiant_apprenant, photo_apprenant, last_connect_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
     		if (mysqli_num_rows($select_pseudo_apprenant) == 1){
-    			$classe = $select_pseudo_apprenant->fetch_row()[0];
-    			$pseudo = html_ent($select_pseudo_apprenant->fetch_row()[1]);
+    			$classe = $select_pseudo_apprenant->fetch_row()[0] ?? null;
+    			$pseudo = html_ent($select_pseudo_apprenant->fetch_row()[1] ?? null);
     			$pseudo = wordwrap($pseudo,20,"<br />",true);
-    			$photo = $select_pseudo_apprenant->fetch_row()[2];
-    			$last_connect = $select_pseudo_apprenant->fetch_row()[3];
+    			$photo = $select_pseudo_apprenant->fetch_row()[2] ?? null;
+    			$last_connect = $select_pseudo_apprenant->fetch_row()[3] ?? null;
     			
     			$select_classe = $connect->query("select classe from `" . $tblprefix . "classes` where id_classe = $classe;");
     	  	if (mysqli_num_rows($select_classe) == 1){
-    				$classe_apprenant = html_ent($select_classes->fetch_row());
+    				$classe_apprenant = html_ent($select_classe->fetch_row()[0] ?? null);
     				$classe_apprenant = wordwrap($classe_apprenant,20,"<br />",true);
     			} else $classe_apprenant = "";
     		}

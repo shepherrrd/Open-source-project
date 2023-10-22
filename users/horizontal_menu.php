@@ -31,9 +31,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	echo "<div id=\"titre\">".gestion_horizontal_menu."</div>";
 	echo "<script language=\"javascript\" type=\"text/javascript\" src=\"../styles/radio_div.js\"></script>";
 
-	$select_statut_comp = mysql_query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'horizontal_menu';");
-	if (mysql_num_rows($select_statut_comp) == 1) {
- 		$statut_comp = mysql_result($select_statut_comp,0);
+	$select_statut_comp = $connect->query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'horizontal_menu';");
+	if (mysqli_num_rows($select_statut_comp) == 1) {
+ 		$statut_comp = mysqli_result($select_statut_comp,0);
 		if ($statut_comp == 0)
 		 echo "<h3><img src=\"../images/icones/warning.png\" /><font color=\"red\">".component_disabled." ".enable_it_now." : </font><a href=\"?inc=components\"\">".gestion_composants."</a></h3>";
 	}
@@ -58,31 +58,31 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     	 if (!empty($menu_titre) && !empty($_POST['menu_contenu'])){
     		$menu_titre = escape_string($menu_titre);
     		
-    		$select_menu_titre = mysql_query("select id_hormenu from `" . $tblprefix . "hormenu` where titre_hormenu = '$menu_titre';");
-    		if (mysql_num_rows($select_menu_titre) == 0){
+    		$select_menu_titre = $connect->query("select id_hormenu from `" . $tblprefix . "hormenu` where titre_hormenu = '$menu_titre';");
+    		if (mysqli_num_rows($select_menu_titre) == 0){
     		
-    			$select_max_order = mysql_query("select max(ordre_hormenu) from `" . $tblprefix . "hormenu`;");
- 					if (mysql_num_rows($select_max_order) == 1)
- 						$ordre_menu = mysql_result($select_max_order,0) + 1;
+    			$select_max_order = $connect->query("select max(ordre_hormenu) from `" . $tblprefix . "hormenu`;");
+ 					if (mysqli_num_rows($select_max_order) == 1)
+ 						$ordre_menu = mysqli_result($select_max_order,0) + 1;
  					else $ordre_menu = 1;
     		
     			if ($_POST['menu_contenu'] == "article"){
 
     				$insert_menu = "INSERT INTO `" . $tblprefix . "hormenu` VALUES (NULL,'$menu_titre','article','','1',$ordre_menu);";
-						mysql_query($insert_menu,$connect);
+						$connect->query($insert_menu,$connect);
     				$this_menu_insert = mysql_insert_id();
     				
     				if (isset($_POST['articles']) && !empty($_POST['articles']))
 				  	$array_art = $_POST['articles'];
 				  	else $array_art = array();
 				  
-    				$select_article = mysql_query("select id_article from `" . $tblprefix . "articles`;");
-    				if (mysql_num_rows($select_article) > 0){
+    				$select_article = $connect->query("select id_article from `" . $tblprefix . "articles`;");
+    				if (mysqli_num_rows($select_article) > 0){
     					$order_i = 1;
-    					while($article = mysql_fetch_row($select_article)){
+    					while($article = mysqli_fetch_row($select_article)){
     						$id_article = $article[0];
     						if (in_array($id_article,$array_art)){
-									$update_article = mysql_query("update `" . $tblprefix . "articles` set id_menu = $this_menu_insert, ordre_article = $order_i where id_article = $id_article;");
+									$update_article = $connect->query("update `" . $tblprefix . "articles` set id_menu = $this_menu_insert, ordre_article = $order_i where id_article = $id_article;");
     							$order_i++;
     						}
     					}
@@ -94,7 +94,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     				if (!empty($lien)) {
     					$lien = escape_string($lien);
     					$insert_menu = "INSERT INTO `" . $tblprefix . "hormenu` VALUES (NULL,'$menu_titre','url','$lien','1',$ordre_menu);";
-							mysql_query($insert_menu,$connect);
+							$connect->query($insert_menu);
 							redirection(element_ajoute,"?inc=horizontal_menu",3,"tips",1);
     				} else goback(remplir_lien,2,"error",1);
     			}
@@ -103,7 +103,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     					$modules = escape_string($_POST['modules']);
     					if ($modules != "." && $modules != ".." && substr($modules,-4,1) != "." && substr($modules,-5,1) != ".") {
     						$insert_menu = "INSERT INTO `" . $tblprefix . "hormenu` VALUES (NULL,'$menu_titre','module','$modules','1',$ordre_menu);";
-								mysql_query($insert_menu,$connect);
+								$connect->query($insert_menu,$connect);
 								redirection(element_ajoute,"?inc=horizontal_menu",3,"tips",1);
 							} else goback(contenu_menu_invalide,2,"error",1);
     				} else goback(remplir_module,2,"error",1);
@@ -117,12 +117,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     		echo "\n<p><b><font color=\"red\">*</font> <u>" .titre_element_menu. " :</u> </b><br /><br /><input name=\"menu_titre\" type=\"text\" maxlength=\"100\" size=\"50\" value=\"\"></p>";
 				echo "\n<p><b><font color=\"red\">*</font> <u>".contenu_element_menu." :</u> </b></p>";
 
-    		$select_article = mysql_query("select id_article, titre_article, publie_article from `" . $tblprefix . "articles`;");
-    		if (mysql_num_rows($select_article) > 0){
+    		$select_article = $connect->query("select id_article, titre_article, publie_article from `" . $tblprefix . "articles`;");
+    		if (mysqli_num_rows($select_article) > 0){
     			echo "\n<b><input name=\"menu_contenu\" type=\"radio\" value=\"article\" checked=\"checked\" onclick=\"DisplayHide('contenu_menu', 'contenu1')\"> " .article. " : </b>";
     			echo "<div style=\"display: block; margin-left: 20px;\" class=\"contenu_menu\" id=\"contenu1\">";
     			echo "<select size=\"10\" name=\"articles[]\" multiple=\"multiple\">";
-    			while($article = mysql_fetch_row($select_article)){
+    			while($article = mysqli_fetch_row($select_article)){
     				$id_article = $article[0];
     				$titre_article = html_ent($article[1]);
     				if ($article[2] == 1)
@@ -167,9 +167,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** edit_menu **************************
 		case "edit_menu" : {
 			
-		 $select_menu = mysql_query("select * from `" . $tblprefix . "hormenu` where id_hormenu = $id_menu;");
-		 if (mysql_num_rows($select_menu) == 1) {
-		 	$menu = mysql_fetch_row($select_menu);
+		 $select_menu = $connect->query("select * from `" . $tblprefix . "hormenu` where id_hormenu = $id_menu;");
+		 if (mysqli_num_rows($select_menu) == 1) {
+		 	$menu = mysqli_fetch_row($select_menu);
 		 	$titre_hormenu = html_ent($menu[1]);
 		 	$lien_hormenu = html_ent($menu[3]);
 		 	$type_hormenu = $menu[2];
@@ -194,23 +194,23 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     			if ($_POST['menu_contenu'] == "article"){
 
     				$update_menu = "update `" . $tblprefix . "hormenu` set titre_hormenu = '$menu_titre', type_hormenu = 'article' where id_hormenu = $id_menu;";
-						mysql_query($update_menu,$connect);
+						$connect->query($update_menu,$connect);
     				
    				  if (isset($_POST['articles']) && !empty($_POST['articles']))
 					  	$array_art = $_POST['articles'];
 				  	else $array_art = array();
 
 						$tab_order = array();
-						$select_order_tab = mysql_query("select ordre_article from `" . $tblprefix . "articles` where id_menu = $id_menu;");
- 						if (mysql_num_rows($select_order_tab) > 0){
- 							while ($re_tab_order = mysql_fetch_row($select_order_tab))
+						$select_order_tab = $connect->query("select ordre_article from `" . $tblprefix . "articles` where id_menu = $id_menu;");
+ 						if (mysqli_num_rows($select_order_tab) > 0){
+ 							while ($re_tab_order = mysqli_fetch_row($select_order_tab))
  								$tab_order[] = $re_tab_order[0];
  						}
  						$order_new_article = 1;
  						
-    				$select_article = mysql_query("select id_article, id_menu, ordre_article from `" . $tblprefix . "articles`;");
-    				if (mysql_num_rows($select_article) > 0){
-    					while($article = mysql_fetch_row($select_article)){
+    				$select_article = $connect->query("select id_article, id_menu, ordre_article from `" . $tblprefix . "articles`;");
+    				if (mysqli_num_rows($select_article) > 0){
+    					while($article = mysqli_fetch_row($select_article)){
     						$id_article = $article[0];
     						$idmenu = $article[1];
     						$ordre_article = $article[2];
@@ -218,12 +218,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     							if ($idmenu != $id_menu){
     								while (in_array($order_new_article,$tab_order))
     									$order_new_article++;
-    								$update_article = mysql_query("update `" . $tblprefix . "articles` set id_menu = $id_menu, ordre_article = $order_new_article where id_article = $id_article;");
+    								$update_article = $connect->query("update `" . $tblprefix . "articles` set id_menu = $id_menu, ordre_article = $order_new_article where id_article = $id_article;");
     								$order_new_article++;
     							}
     						} else {
     							if ($idmenu == $id_menu)
-    								$update_article = mysql_query("update `" . $tblprefix . "articles` set id_menu = 0, ordre_article = 1 where id_article = $id_article;");
+    								$update_article = $connect->query("update `" . $tblprefix . "articles` set id_menu = 0, ordre_article = 1 where id_article = $id_article;");
     						}
     					}
     				}
@@ -234,7 +234,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     				if (!empty($lien)) {
     					$lien = escape_string($lien);
 							$update_menu = "update `" . $tblprefix . "hormenu` set titre_hormenu = '$menu_titre', type_hormenu = 'url', lien_hormenu = '$lien' where id_hormenu = $id_menu;";
-							mysql_query($update_menu,$connect);
+							$connect->query($update_menu,$connect);
 							redirection(element_modifie,"?inc=horizontal_menu",3,"tips",1);
     				} else goback(remplir_lien,2,"error",1);
     			}
@@ -243,7 +243,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     					$modules = escape_string($_POST['modules']);
     					if ($modules != "." && $modules != ".." && substr($modules,-4,1) != "." && substr($modules,-5,1) != ".") {
 								$update_menu = "update `" . $tblprefix . "hormenu` set titre_hormenu = '$menu_titre', type_hormenu = 'module', lien_hormenu = '$modules' where id_hormenu = $id_menu;";
-								mysql_query($update_menu,$connect);
+								$connect->query($update_menu,$connect);
 								redirection(element_modifie,"?inc=horizontal_menu",3,"tips",1);
 							} else goback(contenu_menu_invalide,2,"error",1);
     				} else goback(remplir_module,2,"error",1);
@@ -256,12 +256,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     		echo "\n<p><b><font color=\"red\">*</font> <u>" .titre_element_menu. " :</u> </b><br /><br /><input name=\"menu_titre\" type=\"text\" maxlength=\"100\" size=\"50\" value=\"".$titre_hormenu."\"></p>";
 				echo "\n<p><b><font color=\"red\">*</font> <u>".contenu_element_menu." :</u> </b></p>";
 
-    		$select_article = mysql_query("select id_article, id_menu, titre_article, publie_article from `" . $tblprefix . "articles`;");
-    		if (mysql_num_rows($select_article) > 0){
+    		$select_article = $connect->query("select id_article, id_menu, titre_article, publie_article from `" . $tblprefix . "articles`;");
+    		if (mysqli_num_rows($select_article) > 0){
     			echo "\n<b><input name=\"menu_contenu\" type=\"radio\" value=\"article\"".check_menu('article',$type_hormenu,1)." onclick=\"DisplayHide('contenu_menu', 'contenu1')\"> " .article. " : </b>";
     			echo "\n<div style=\"display: ".check_menu('article',$type_hormenu,0)."; margin-left: 20px;\" class=\"contenu_menu\" id=\"contenu1\">";
     			echo "<select size=\"10\" name=\"articles[]\" multiple=\"multiple\">";
-    			while($article = mysql_fetch_row($select_article)){
+    			while($article = mysqli_fetch_row($select_article)){
     				$id_article = $article[0];
     				$id_menu_article = $article[1];
     				$titre_article = html_ent($article[2]);
@@ -317,7 +317,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** delete_menu **************************
 		case "delete_menu" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-				$delete_menu = mysql_query("delete from `" . $tblprefix . "hormenu` where id_hormenu = $id_menu;");
+				$delete_menu = $connect->query("delete from `" . $tblprefix . "hormenu` where id_hormenu = $id_menu;");
 			}
 			locationhref_admin("?inc=horizontal_menu");
 		} break;
@@ -325,17 +325,17 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** orderup_menu **************************
 		case "orderup_menu" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$ce_menu = mysql_query ("select ordre_hormenu from `" . $tblprefix . "hormenu` where id_hormenu = $id_menu;");
-				if (mysql_num_rows($ce_menu) == 1) {
-					$ordre_menu = mysql_result($ce_menu,0,0);
+    		$ce_menu = $connect->query ("select ordre_hormenu from `" . $tblprefix . "hormenu` where id_hormenu = $id_menu;");
+				if (mysqli_num_rows($ce_menu) == 1) {
+					$ordre_menu = mysqli_result($ce_menu,0,0);
 
-    			$menu_precedent = mysql_query ("select id_hormenu, ordre_hormenu from `" . $tblprefix . "hormenu` where ordre_hormenu < $ordre_menu order by ordre_hormenu desc;");
-					if (mysql_num_rows($menu_precedent) > 0) {
-						$idmenu_precedent = mysql_result($menu_precedent,0,0);
-						$ordremenu_precedent = mysql_result($menu_precedent,0,1);
+    			$menu_precedent = $connect->query ("select id_hormenu, ordre_hormenu from `" . $tblprefix . "hormenu` where ordre_hormenu < $ordre_menu order by ordre_hormenu desc;");
+					if (mysqli_num_rows($menu_precedent) > 0) {
+						$idmenu_precedent = mysqli_result($menu_precedent,0,0);
+						$ordremenu_precedent = mysqli_result($menu_precedent,0,1);
 
-						$order_this_menu = mysql_query("update `" . $tblprefix . "hormenu` set ordre_hormenu = $ordremenu_precedent where id_hormenu = $id_menu;");
-						$order_menu_precedent = mysql_query("update `" . $tblprefix . "hormenu` set ordre_hormenu = $ordre_menu where id_hormenu = $idmenu_precedent;");
+						$order_this_menu = $connect->query("update `" . $tblprefix . "hormenu` set ordre_hormenu = $ordremenu_precedent where id_hormenu = $id_menu;");
+						$order_menu_precedent = $connect->query("update `" . $tblprefix . "hormenu` set ordre_hormenu = $ordre_menu where id_hormenu = $idmenu_precedent;");
 					}
     		}
 			}
@@ -345,17 +345,17 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** orderdown_menu **************************
 		case "orderdown_menu" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$ce_menu = mysql_query ("select ordre_hormenu from `" . $tblprefix . "hormenu` where id_hormenu = $id_menu;");
-				if (mysql_num_rows($ce_menu) == 1) {
-					$ordre_menu = mysql_result($ce_menu,0,0);
+    		$ce_menu = $connect->query ("select ordre_hormenu from `" . $tblprefix . "hormenu` where id_hormenu = $id_menu;");
+				if (mysqli_num_rows($ce_menu) == 1) {
+					$ordre_menu = mysqli_result($ce_menu,0,0);
 
-    			$menu_suivant = mysql_query ("select id_hormenu, ordre_hormenu from `" . $tblprefix . "hormenu` where ordre_hormenu > $ordre_menu order by ordre_hormenu;");
-					if (mysql_num_rows($menu_suivant) > 0) {
-						$idmenu_suivant = mysql_result($menu_suivant,0,0);
-						$ordremenu_suivant = mysql_result($menu_suivant,0,1);
+    			$menu_suivant = $connect->query ("select id_hormenu, ordre_hormenu from `" . $tblprefix . "hormenu` where ordre_hormenu > $ordre_menu order by ordre_hormenu;");
+					if (mysqli_num_rows($menu_suivant) > 0) {
+						$idmenu_suivant = mysqli_result($menu_suivant,0,0);
+						$ordremenu_suivant = mysqli_result($menu_suivant,0,1);
 
-						$order_this_menu = mysql_query("update `" . $tblprefix . "hormenu` set ordre_hormenu = $ordremenu_suivant where id_hormenu = $id_menu;");
-						$order_menu_suivant = mysql_query("update `" . $tblprefix . "hormenu` set ordre_hormenu = $ordre_menu where id_hormenu = $idmenu_suivant;");
+						$order_this_menu = $connect->query("update `" . $tblprefix . "hormenu` set ordre_hormenu = $ordremenu_suivant where id_hormenu = $id_menu;");
+						$order_menu_suivant = $connect->query("update `" . $tblprefix . "hormenu` set ordre_hormenu = $ordre_menu where id_hormenu = $idmenu_suivant;");
 					}
     		}
 			}
@@ -365,18 +365,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** orderup_article **************************
 		case "orderup_article" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$cet_article = mysql_query ("select id_menu, ordre_article from `" . $tblprefix . "articles` where id_article = $id_article;");
-				if (mysql_num_rows($cet_article) == 1) {
-					$id_menu = mysql_result($cet_article,0,0);
-					$ordre_article = mysql_result($cet_article,0,1);
+    		$cet_article = $connect->query ("select id_menu, ordre_article from `" . $tblprefix . "articles` where id_article = $id_article;");
+				if (mysqli_num_rows($cet_article) == 1) {
+					$id_menu = mysqli_result($cet_article,0,0);
+					$ordre_article = mysqli_result($cet_article,0,1);
 
-    			$article_precedent = mysql_query ("select id_article, ordre_article from `" . $tblprefix . "articles` where id_menu = $id_menu and ordre_article < $ordre_article order by ordre_article desc;");
-					if (mysql_num_rows($article_precedent) > 0) {
-						$idarticle_precedent = mysql_result($article_precedent,0,0);
-						$ordrearticle_precedent = mysql_result($article_precedent,0,1);
+    			$article_precedent = $connect->query ("select id_article, ordre_article from `" . $tblprefix . "articles` where id_menu = $id_menu and ordre_article < $ordre_article order by ordre_article desc;");
+					if (mysqli_num_rows($article_precedent) > 0) {
+						$idarticle_precedent = mysqli_result($article_precedent,0,0);
+						$ordrearticle_precedent = mysqli_result($article_precedent,0,1);
 
-						$order_this_article = mysql_query("update `" . $tblprefix . "articles` set ordre_article = $ordrearticle_precedent where id_article = $id_article;");
-						$order_article_precedent = mysql_query("update `" . $tblprefix . "articles` set ordre_article = $ordre_article where id_article = $idarticle_precedent;");
+						$order_this_article = $connect->query("update `" . $tblprefix . "articles` set ordre_article = $ordrearticle_precedent where id_article = $id_article;");
+						$order_article_precedent = $connect->query("update `" . $tblprefix . "articles` set ordre_article = $ordre_article where id_article = $idarticle_precedent;");
 					}
 					locationhref_admin("?inc=horizontal_menu");
     		} else locationhref_admin("?inc=horizontal_menu");
@@ -386,18 +386,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** orderdown_article **************************
 		case "orderdown_article" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$cet_article = mysql_query ("select id_menu, ordre_article from `" . $tblprefix . "articles` where id_article = $id_article;");
-				if (mysql_num_rows($cet_article) == 1) {
-					$id_menu = mysql_result($cet_article,0,0);
-					$ordre_article = mysql_result($cet_article,0,1);
+    		$cet_article = $connect->query ("select id_menu, ordre_article from `" . $tblprefix . "articles` where id_article = $id_article;");
+				if (mysqli_num_rows($cet_article) == 1) {
+					$id_menu = mysqli_result($cet_article,0,0);
+					$ordre_article = mysqli_result($cet_article,0,1);
 
-    			$article_suivant = mysql_query ("select id_article, ordre_article from `" . $tblprefix . "articles` where id_menu = $id_menu and ordre_article > $ordre_article order by ordre_article;");
-					if (mysql_num_rows($article_suivant) > 0) {
-						$idarticle_suivant = mysql_result($article_suivant,0,0);
-						$ordrearticle_suivant = mysql_result($article_suivant,0,1);
+    			$article_suivant = $connect->query ("select id_article, ordre_article from `" . $tblprefix . "articles` where id_menu = $id_menu and ordre_article > $ordre_article order by ordre_article;");
+					if (mysqli_num_rows($article_suivant) > 0) {
+						$idarticle_suivant = mysqli_result($article_suivant,0,0);
+						$ordrearticle_suivant = mysqli_result($article_suivant,0,1);
 
-						$order_this_article = mysql_query("update `" . $tblprefix . "articles` set ordre_article = $ordrearticle_suivant where id_article = $id_article;");
-						$order_article_suivant = mysql_query("update `" . $tblprefix . "articles` set ordre_article = $ordre_article where id_article = $idarticle_suivant;");
+						$order_this_article = $connect->query("update `" . $tblprefix . "articles` set ordre_article = $ordrearticle_suivant where id_article = $id_article;");
+						$order_article_suivant = $connect->query("update `" . $tblprefix . "articles` set ordre_article = $ordre_article where id_article = $idarticle_suivant;");
 					}
 					locationhref_admin("?inc=horizontal_menu");
     		} else locationhref_admin("?inc=horizontal_menu");
@@ -407,7 +407,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** activer_menu **************************
 		case "activer_menu" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$activer_menu = mysql_query("update `" . $tblprefix . "hormenu` set active_hormenu = '1' where id_hormenu = $id_menu;");
+    		$activer_menu = $connect->query("update `" . $tblprefix . "hormenu` set active_hormenu = '1' where id_hormenu = $id_menu;");
 			}
 			locationhref_admin("?inc=horizontal_menu");
 		} break;
@@ -415,7 +415,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** desactiver_menu **************************
 		case "desactiver_menu" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$desactiver_menu = mysql_query("update `" . $tblprefix . "hormenu` set active_hormenu = '0' where id_hormenu = $id_menu;");
+    		$desactiver_menu = $connect->query("update `" . $tblprefix . "hormenu` set active_hormenu = '0' where id_hormenu = $id_menu;");
 			}
 			locationhref_admin("?inc=horizontal_menu");
 		} break;
@@ -433,8 +433,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				$page = intval($_GET['l']);
 			else $page = 1;
 
-			$select_menu = mysql_query("select * from `" . $tblprefix . "hormenu` order by ordre_hormenu;");
-			$nbr_trouve = mysql_num_rows($select_menu);
+			$select_menu = $connect->query("select * from `" . $tblprefix . "hormenu` order by ordre_hormenu;");
+			$nbr_trouve = mysqli_num_rows($select_menu);
   		if ($nbr_trouve > 0){
 				$page_max = ceil($nbr_trouve / $nbr_resultats);
 				if ($page <= $page_max && $page > 1 && $page_max > 1)
@@ -444,7 +444,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					$page = 1;
 				}
 	
-				$select_menu_limit = mysql_query("select * from `" . $tblprefix . "hormenu` order by ordre_hormenu limit $limit, $nbr_resultats;");
+				$select_menu_limit = $connect->query("select * from `" . $tblprefix . "hormenu` order by ordre_hormenu limit $limit, $nbr_resultats;");
 
 				echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".elements_menu."</b></td>";
@@ -456,7 +456,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				echo "</tr>\n";
 				
 				$i_ordre = ($page - 1) * $nbr_resultats + 1;
-				while($menu = mysql_fetch_row($select_menu_limit)){
+				while($menu = mysqli_fetch_row($select_menu_limit)){
 					
 					$id_menu = $menu[0];
 					$titre_menu = html_ent($menu[1]);
@@ -477,11 +477,11 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					echo "\n<td class=\"affichage_table\">";
 				
 				if ($type_menu == "article"){
-		 			$select_articles = mysql_query("select id_article, titre_article, contenu_article, ordre_article from `" . $tblprefix . "articles` where id_menu = $id_menu order by ordre_article;");
-		 			if (mysql_num_rows($select_articles) > 0){
+		 			$select_articles = $connect->query("select id_article, titre_article, contenu_article, ordre_article from `" . $tblprefix . "articles` where id_menu = $id_menu order by ordre_article;");
+		 			if (mysqli_num_rows($select_articles) > 0){
 		 				echo "<table width=\"100%\" align=\"center\" border=\"1\">";
 						$j_ordre = 1;
-						while($article = mysql_fetch_row($select_articles)){
+						while($article = mysqli_fetch_row($select_articles)){
 							$id_article = $article[0];
 							$titre_article = html_ent(trim($article[1]));
 							$contenu_article = html_ent($article[2]);
@@ -492,14 +492,14 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							echo "<tr>\n";
 							echo "\n<td><b>".$titre_article."</b></td>";
 							echo "\n<td nowrap=\"nowrap\">";
-							$article_precedent = mysql_query ("select id_article from `" . $tblprefix . "articles` where ordre_article < $ordre_article and id_menu = $id_menu order by ordre_article desc;");
-							if (mysql_num_rows($article_precedent) > 0)
+							$article_precedent = $connect->query ("select id_article from `" . $tblprefix . "articles` where ordre_article < $ordre_article and id_menu = $id_menu order by ordre_article desc;");
+							if (mysqli_num_rows($article_precedent) > 0)
 								echo "<a href=\"?inc=horizontal_menu&do=orderup_article&id_article=".$id_article."&key=".$key."\" title=\"".deplacer_haut."\"><img border=\"0\" src=\"../images/others/up.png\" width=\"15\" height=\"15\" /></a>";
 							else echo "<img border=\"0\" src=\"../images/others/up2.png\" width=\"15\" height=\"15\" />";
 							echo "<b> ".$j_ordre." </b>";
 							$j_ordre++;
-							$article_suivant = mysql_query ("select id_article from `" . $tblprefix . "articles` where ordre_article > $ordre_article and id_menu = $id_menu order by ordre_article;");
-							if (mysql_num_rows($article_suivant) > 0)
+							$article_suivant = $connect->query ("select id_article from `" . $tblprefix . "articles` where ordre_article > $ordre_article and id_menu = $id_menu order by ordre_article;");
+							if (mysqli_num_rows($article_suivant) > 0)
 								echo "<a href=\"?inc=horizontal_menu&do=orderdown_article&id_article=".$id_article."&key=".$key."\" title=\"".deplacer_bas."\"><img border=\"0\" src=\"../images/others/down.png\" width=\"15\" height=\"15\" /></a>";
 							else echo "<img border=\"0\" src=\"../images/others/down2.png\" width=\"15\" height=\"15\" />";
 							echo "</td>";
@@ -522,15 +522,15 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					echo "\n<td class=\"affichage_table\"><a href=\"#\" onClick=\"confirmer('?inc=horizontal_menu&do=delete_menu&id_menu=".$id_menu."&key=".$key."','".confirm_supprimer_menu."')\" title=\"".supprimer."\"><img border=\"0\" src=\"../images/others/delete.png\" width=\"32\" height=\"32\" /></a></td>";
 
 					echo "\n<td class=\"affichage_table\" nowrap=\"nowrap\">";
-					$menu_precedent = mysql_query ("select id_hormenu from `" . $tblprefix . "hormenu` where ordre_hormenu < $ordre_menu order by ordre_hormenu desc;");
-					if (mysql_num_rows($menu_precedent) > 0)
+					$menu_precedent = $connect->query ("select id_hormenu from `" . $tblprefix . "hormenu` where ordre_hormenu < $ordre_menu order by ordre_hormenu desc;");
+					if (mysqli_num_rows($menu_precedent) > 0)
 						echo "<a href=\"?inc=horizontal_menu&do=orderup_menu&id_menu=".$id_menu."&key=".$key."\" title=\"".deplacer_haut."\"><img border=\"0\" src=\"../images/others/up.png\" width=\"15\" height=\"15\" /></a>";
 					else
 						echo "<img border=\"0\" src=\"../images/others/up2.png\" width=\"15\" height=\"15\" />";
 					echo "<b> ".$i_ordre." </b>";
 					$i_ordre++;
-					$menu_suivant = mysql_query ("select id_hormenu from `" . $tblprefix . "hormenu` where ordre_hormenu > $ordre_menu order by ordre_hormenu;");
-					if (mysql_num_rows($menu_suivant) > 0)
+					$menu_suivant = $connect->query ("select id_hormenu from `" . $tblprefix . "hormenu` where ordre_hormenu > $ordre_menu order by ordre_hormenu;");
+					if (mysqli_num_rows($menu_suivant) > 0)
 						echo "<a href=\"?inc=horizontal_menu&do=orderdown_menu&id_menu=".$id_menu."&key=".$key."\" title=\"".deplacer_bas."\"><img border=\"0\" src=\"../images/others/down.png\" width=\"15\" height=\"15\" /></a>";
 					else echo "<img border=\"0\" src=\"../images/others/down2.png\" width=\"15\" height=\"15\" />";
 					echo "</td>";

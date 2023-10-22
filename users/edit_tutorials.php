@@ -100,8 +100,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
  						else $ordre_tuto = 1;
  						$time_insert_tuto = time();
  						$inserttuto = "INSERT INTO `" . $tblprefix . "tutoriels` VALUES (NULL,$id_user_session,'$tuto_titre','','','','by','','1',$ordre_tuto,$time_insert_tuto,$time_insert_tuto,0,'*',0,0);";
-	          $connect->query($inserttuto,$connect);
-	          if ($this_tuto_insert = mysql_insert_id())
+	          $connect->query($inserttuto);
+	          if ($this_tuto_insert = mysqli_insert_id())
 	          	$link = "?inc=edit_tutorials&do=update_tuto&id_tuto=".$this_tuto_insert;
 	          else $link = "?inc=edit_tutorials";
 	          redirection(tutoriel_cree,$link,3,"tips",1);
@@ -120,7 +120,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     case "update_tuto" : {
     		$select_tuto_complet = $connect->query("select * from `" . $tblprefix . "tutoriels` where id_tutoriel = $id_tuto;");
     		if (mysqli_num_rows($select_tuto_complet) == 1) {
-    			$tutoriel = mysql_fetch_row($select_tuto_complet);
+    			$tutoriel = mysqli_fetch_row($select_tuto_complet);
     			
     			$titre_tuto = html_ent($tutoriel[2]);
     			$objectifs_tuto = html_ent($tutoriel[3]);
@@ -182,7 +182,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					 			echo "<table border=\"0\"><tr><td align=\"center\">";
 					 			echo "<table border=\"0\"><tr><td><a href=\"?inc=site_config&do=registration#classe\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=site_config&do=registration#classe\"><b>".ajouter_classe."</b></a></td></tr></table>";
 								echo "<select size=\"5\" name=\"classes[]\" id=\"classes\" multiple=\"multiple\">";
-    						while($classe = mysql_fetch_row($select_classes)){
+    						while($classe = mysqli_fetch_row($select_classes)){
     							$id_classe = $classe[0];
     							$nom_classe = html_ent($classe[1]);
     							echo "\n<option value=\"".$id_classe."\"";
@@ -226,15 +226,15 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     	if (isset($_GET['key']) && $_GET['key'] == $key){
     			$select_parties = $connect->query("select id_partie from `" . $tblprefix . "parties` where id_tutoriel = $id_tuto;");
     			if (mysqli_num_rows($select_parties) > 0){
-    				while($partie = mysql_fetch_row($select_parties)){
+    				while($partie = mysqli_fetch_row($select_parties)){
     					$select_chapitres = $connect->query("select id_chapitre from `" . $tblprefix . "chapitres` where id_partie = $partie[0];");
     					if (mysqli_num_rows($select_chapitres) > 0){
-    						while($chapitre = mysql_fetch_row($select_chapitres)){
+    						while($chapitre = mysqli_fetch_row($select_chapitres)){
     							$delete_bloc = $connect->query("delete from `" . $tblprefix . "blocs` where id_chapitre = $chapitre[0];");
 									$delete_qcm = $connect->query("delete from `" . $tblprefix . "qcm` where id_chapitre = $chapitre[0];");
     							$select_devoirs_rendus = $connect->query("select id_devoir from `" . $tblprefix . "devoirs` where id_chapitre = $chapitre[0];");
     							if (mysqli_num_rows($select_devoirs_rendus) > 0){
-    								while($devoir = mysql_fetch_row($select_devoirs_rendus)){
+    								while($devoir = mysqli_fetch_row($select_devoirs_rendus)){
     									$delete_devoirs_rendus = $connect->query("delete from `" . $tblprefix . "devoirs_rendus` where id_devoir = $devoir[0];");
     									$delete_devoirs_notes = $connect->query("delete from `" . $tblprefix . "devoirs_notes` where id_devoir = $devoir[0];");
     								}
@@ -346,7 +346,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 				$i_ordre = ($page - 1) * $nbr_resultats + 1;
-				while($partie = mysql_fetch_row($select_my_parties_limit)){
+				while($partie = mysqli_fetch_row($select_my_parties_limit)){
 					
 					$titre_partie = html_ent($partie[1]);
 					$titre_partie = readmore($titre_partie,$max_len2);
@@ -455,7 +455,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
      	
     		$select_partie_complet = $connect->query("select * from `" . $tblprefix . "parties` where id_partie = $id_part;");
     		if (mysqli_num_rows($select_partie_complet) == 1) {
-    			$partie = mysql_fetch_row($select_partie_complet);
+    			$partie = mysqli_fetch_row($select_partie_complet);
     			
     			$titre_partie = html_ent($partie[2]);
     			$objectifs_partie = html_ent($partie[3]);
@@ -507,12 +507,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     		$id_tutoriel = mysqli_result($select_user_idtuto,0,0);
     		$select_chapitres = $connect->query("select id_chapitre from `" . $tblprefix . "chapitres` where id_partie = $id_part;");
     		if (mysqli_num_rows($select_chapitres) > 0){
-    			while($chapitre = mysql_fetch_row($select_chapitres)){
+    			while($chapitre = mysqli_fetch_row($select_chapitres)){
     				$delete_bloc = $connect->query("delete from `" . $tblprefix . "blocs` where id_chapitre = $chapitre[0];");
 						$delete_qcm = $connect->query("delete from `" . $tblprefix . "qcm` where id_chapitre = $chapitre[0];");
     				$select_devoirs_rendus = $connect->query("select id_devoir from `" . $tblprefix . "devoirs` where id_chapitre = $chapitre[0];");
     				if (mysqli_num_rows($select_devoirs_rendus) > 0){
-    					while($devoir = mysql_fetch_row($select_devoirs_rendus)){
+    					while($devoir = mysqli_fetch_row($select_devoirs_rendus)){
     						$delete_devoirs_rendus = $connect->query("delete from `" . $tblprefix . "devoirs_rendus` where id_devoir = $devoir[0];");
     						$delete_devoirs_notes = $connect->query("delete from `" . $tblprefix . "devoirs_notes` where id_devoir = $devoir[0];");
     					}
@@ -594,7 +594,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
      if (!empty($_POST['send'])){
     		$select_chapitre_ordre = $connect->query("select id_chapitre from `" . $tblprefix . "chapitres` where id_partie = $id_part;");
     		if (mysqli_num_rows($select_chapitre_ordre) > 0){
-    			while($thechap = mysql_fetch_row($select_chapitre_ordre)){
+    			while($thechap = mysqli_fetch_row($select_chapitre_ordre)){
     				$id_chap_order = $thechap[0];
     				$var_input_order = "order_".$id_chap_order;
 						if (isset($_POST[$var_input_order]) && !empty($_POST[$var_input_order])){
@@ -643,7 +643,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 
-				while($chapitre = mysql_fetch_row($select_my_chapitres_limit)){
+				while($chapitre = mysqli_fetch_row($select_my_chapitres_limit)){
 					
 					$titre_chapitre = html_ent($chapitre[1]);
 					$titre_chapitre = readmore($titre_chapitre,$max_len2);
@@ -780,7 +780,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
      	
     		$select_chapitre_complet = $connect->query("select * from `" . $tblprefix . "chapitres` where id_chapitre = $id_chap;");
     		if (mysqli_num_rows($select_chapitre_complet) == 1) {
-    			$chapitre = mysql_fetch_row($select_chapitre_complet);
+    			$chapitre = mysqli_fetch_row($select_chapitre_complet);
     			
     			$titre_chapitre = html_ent($chapitre[2]);
     			$objectifs_chapitre = html_ent($chapitre[3]);
@@ -873,7 +873,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 
     		$select_devoirs_rendus = $connect->query("select id_devoir from `" . $tblprefix . "devoirs` where id_chapitre = $id_chap;");
     		if (mysqli_num_rows($select_devoirs_rendus) > 0){
-    			while($devoir = mysql_fetch_row($select_devoirs_rendus)){
+    			while($devoir = mysqli_fetch_row($select_devoirs_rendus)){
     				$delete_devoirs_rendus = $connect->query("delete from `" . $tblprefix . "devoirs_rendus` where id_devoir = $devoir[0];");
     				$delete_devoirs_notes = $connect->query("delete from `" . $tblprefix . "devoirs_notes` where id_devoir = $devoir[0];");
     			}
@@ -1003,7 +1003,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 				$j_ordre = ($page - 1) * $nbr_resultats + 1;
-				while($bloc = mysql_fetch_row($select_my_blocs_limit)){
+				while($bloc = mysqli_fetch_row($select_my_blocs_limit)){
 					
 					$titre_bloc = html_ent($bloc[1]);
 					$titre_bloc = readmore($titre_bloc,$max_len2);
@@ -1093,7 +1093,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 				$i_ordre = ($page2 - 1) * $nbr_resultats + 1;
-				while($qcm = mysql_fetch_row($select_my_qcm_limit)){
+				while($qcm = mysqli_fetch_row($select_my_qcm_limit)){
 
 					$titre_qcm = strip_tags($qcm[2]);
 					$titre_qcm = readmore($titre_qcm,$max_len);
@@ -1192,7 +1192,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 				$d_ordre = ($page3 - 1) * $nbr_resultats + 1;
-				while($devoir = mysql_fetch_row($select_my_devoir_limit)){
+				while($devoir = mysqli_fetch_row($select_my_devoir_limit)){
 
 					$titre_devoir = html_ent($devoir[3]);
 					$titre_devoir = readmore($titre_devoir,$max_len);
@@ -1216,7 +1216,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							$chaine_acces_devoir = implode(",",$tab_acces_devoir);
 							$select_classes = $connect->query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_devoir.");");
 							if (mysqli_num_rows($select_classes) > 0){
-    						while($classe = mysql_fetch_row($select_classes))
+    						while($classe = mysqli_fetch_row($select_classes))
     							$acces_devoir .= "<u>".$classe[1]."</u>, ";
     					}
     				}
@@ -1341,7 +1341,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
      	
     		$select_bloc_complet = $connect->query("select * from `" . $tblprefix . "blocs` where id_bloc = $id_bloc;");
     		if (mysqli_num_rows($select_bloc_complet) == 1) {
-    			$bloc = mysql_fetch_row($select_bloc_complet);
+    			$bloc = mysqli_fetch_row($select_bloc_complet);
     			
     			$titre_bloc = html_ent($bloc[2]);
 					$contenu_bloc = html_ent($bloc[3]);
@@ -1531,7 +1531,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 
     		$select_qcm_complet = $connect->query("select * from `" . $tblprefix . "qcm` where id_qcm = $id_qcm;");
     		if (mysqli_num_rows($select_qcm_complet) == 1) {
-    			$qcm = mysql_fetch_row($select_qcm_complet);
+    			$qcm = mysqli_fetch_row($select_qcm_complet);
     			
     			$id_chapitre = $qcm[1];
     			$question_qcm = html_ent($qcm[2]);
@@ -1780,7 +1780,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					if (mysqli_num_rows($select_classes) > 0){
 					 	echo "<table border=\"0\"><tr><td align=\"center\">";
 						echo "<select size=\"5\" name=\"classes[]\" id=\"classes\" multiple=\"multiple\">";
-    				while($classe = mysql_fetch_row($select_classes)){
+    				while($classe = mysqli_fetch_row($select_classes)){
     					$id_classe = $classe[0];
     					$nom_classe = html_ent($classe[1]);
     					echo "\n<option value=\"".$id_classe."\">".$nom_classe."</option>";
@@ -1801,7 +1801,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 
     	$select_devoir_complet = $connect->query("select * from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
     	if (mysqli_num_rows($select_devoir_complet) == 1) {
-    		$devoir = mysql_fetch_row($select_devoir_complet);
+    		$devoir = mysqli_fetch_row($select_devoir_complet);
  				$id_chap = $devoir[1];
  				
      		if (!empty($_POST['send'])) {
@@ -1909,7 +1909,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					if (mysqli_num_rows($select_classes) > 0){
 					 	echo "<table border=\"0\"><tr><td align=\"center\">";
 						echo "<select size=\"5\" name=\"classes[]\" id=\"classes\" multiple=\"multiple\">";
-    				while($classe = mysql_fetch_row($select_classes)){
+    				while($classe = mysqli_fetch_row($select_classes)){
     					$id_classe = $classe[0];
     					$nom_classe = html_ent($classe[1]);
     					echo "\n<option value=\"".$id_classe."\"";
@@ -1938,7 +1938,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     		$id_chapitre = mysqli_result($select_user_idchap,0,0);
 				$select_devoirs_rendus = $connect->query("select lien_file from `" . $tblprefix . "devoirs_rendus` where id_devoir = $id_devoir;");
 				if (mysqli_num_rows($select_devoirs_rendus) > 0){
-    			while($lien_file = mysql_fetch_row($select_devoirs_rendus))
+    			while($lien_file = mysqli_fetch_row($select_devoirs_rendus))
     				@unlink("../docs/".$lien_file[0]);
     		}
     		$select_titre_devoir = $connect->query("select titre_devoir from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
@@ -2043,7 +2043,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     	if (!empty($_POST['send'])){
     		$select_apps = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants`;");
     		if (mysqli_num_rows($select_apps) > 0){
-    			while($app_note = mysql_fetch_row($select_apps)){
+    			while($app_note = mysqli_fetch_row($select_apps)){
     				$id_app = $app_note[0];
     				$var_app_note = "note_".$id_app;
 						if (isset($_POST[$var_app_note]) && !empty($_POST[$var_app_note])){
@@ -2065,7 +2065,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     	else {
     	$select_devoir = $connect->query("select * from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir;");
     	if (mysqli_num_rows($select_devoir) == 1){
-    		if($devoir = mysql_fetch_row($select_devoir)){
+    		if($devoir = mysqli_fetch_row($select_devoir)){
     			goback_lien("?inc=edit_tutorials&do=open_chapitre&id_chap=".$devoir[1]);
 					$titre_devoir = html_ent($devoir[3]);
 					$date_publication_devoir = set_date($dateformat,$devoir[5]);
@@ -2092,7 +2092,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							$chaine_acces_devoir = implode(",",$tab_acces_devoir);
 							$select_classes = $connect->query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_devoir.");");
 							if (mysqli_num_rows($select_classes) > 0){
-    						while($classe = mysql_fetch_row($select_classes))
+    						while($classe = mysqli_fetch_row($select_classes))
     							$acces_devoir .= "<u>".$classe[1]."</u>, ";
     					}
     				}
@@ -2133,7 +2133,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							echo "\n<td class=\"affichage_table\"><b>".supprimer."</b></td>";
 							echo "</tr>";
 							$files_zip = array();
-    					while($devoir_rendu = mysql_fetch_row($select_devoir_rendu)){
+    					while($devoir_rendu = mysqli_fetch_row($select_devoir_rendu)){
     						$identifiant_apprenant = html_ent($devoir_rendu[0]);
     						$lien_file = html_ent($devoir_rendu[1]);
    							$date_file = set_date($dateformat,$devoir_rendu[2]);
@@ -2191,7 +2191,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 									echo "\n<td class=\"affichage_table\"><b>".identifiant."</b></td>";
 									echo "\n<td class=\"affichage_table\"><b>".mark."</b></td>";
 									echo "</tr>";
-    							while($apps_non_rendu = mysql_fetch_row($select_apps_non_rendu)){
+    							while($apps_non_rendu = mysqli_fetch_row($select_apps_non_rendu)){
     								$id_app = $apps_non_rendu[0];
     								$identifiant_apprenant = html_ent($apps_non_rendu[1]);
    								
@@ -2253,7 +2253,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 								echo "</tr>";
     						$files_zip = array();
     						
-    						while($devoir_rendu = mysql_fetch_row($select_devoir_rendu)){
+    						while($devoir_rendu = mysqli_fetch_row($select_devoir_rendu)){
     							$identifiant_apprenant = html_ent($devoir_rendu[0]);
     							$lien_file = html_ent($devoir_rendu[1]);
     							$date_file = set_date($dateformat,$devoir_rendu[2]);
@@ -2308,7 +2308,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 									echo "\n<td class=\"affichage_table\"><b>".identifiant."</b></td>";
 									echo "\n<td class=\"affichage_table\"><b>".mark."</b></td>";
 									echo "</tr>";
-    							while($apps_non_rendu = mysql_fetch_row($select_apps_non_rendu)){
+    							while($apps_non_rendu = mysqli_fetch_row($select_apps_non_rendu)){
     								$id_app = $apps_non_rendu[0];
     								$identifiant_apprenant = html_ent($apps_non_rendu[1]);
 
@@ -2375,7 +2375,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 
-				while($tutoriel = mysql_fetch_row($select_tutos1_limit)){
+				while($tutoriel = mysqli_fetch_row($select_tutos1_limit)){
 					
 					$titre_tutoriel = html_ent($tutoriel[2]);
 					$titre_tutoriel = readmore($titre_tutoriel,$max_len);
@@ -2391,7 +2391,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							$chaine_acces_tuto = implode(",",$tab_acces_tuto);
 							$select_classes = $connect->query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_tuto.");");
 							if (mysqli_num_rows($select_classes) > 0){
-    						while($classe = mysql_fetch_row($select_classes))
+    						while($classe = mysqli_fetch_row($select_classes))
     							$acces_tuto .= "<u>".$classe[1]."</u>, ";
     					}
     				}
@@ -2472,7 +2472,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				echo "</tr>";
 				
 				$i_ordre = ($page - 1) * $nbr_resultats + 1;
-				while($tutoriel = mysql_fetch_row($select_tutos2_limit)){
+				while($tutoriel = mysqli_fetch_row($select_tutos2_limit)){
 					
 					$titre_tutoriel = html_ent($tutoriel[2]);
 					$titre_tutoriel = readmore($titre_tutoriel,$max_len);
@@ -2488,7 +2488,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							$chaine_acces_tuto = implode(",",$tab_acces_tuto);
 							$select_classes = $connect->query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_tuto.");");
 							if (mysqli_num_rows($select_classes) > 0){
-    						while($classe = mysql_fetch_row($select_classes))
+    						while($classe = mysqli_fetch_row($select_classes))
     							$acces_tuto .= "<u>".$classe[1]."</u>, ";
     					}
     				}

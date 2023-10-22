@@ -61,7 +61,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 		if (isset($_GET['key']) && $_GET['key'] == $key){
 			if (isset($_GET['id_acc']) && ctype_digit($_GET['id_acc'])){
 				$id_acc = intval($_GET['id_acc']);
-				$delete_access = mysql_query("delete from `" . $tblprefix . "infos_acces` where id_acces = $id_acc;");
+				$delete_access = $connect->query("delete from `" . $tblprefix . "infos_acces` where id_acces = $id_acc;");
 			}
 		}
 		locationhref_admin("?inc=access_infos");
@@ -70,7 +70,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** access_50_delete **************************
 	case "access_50_delete" : {
 		if (isset($_GET['key']) && $_GET['key'] == $key){
-			$delete_access_50 = mysql_query("delete from `" . $tblprefix . "infos_acces` order by date_acces asc limit 50;");
+			$delete_access_50 = $connect->query("delete from `" . $tblprefix . "infos_acces` order by date_acces asc limit 50;");
 		}
 		locationhref_admin("?inc=access_infos");
 	} break;
@@ -122,7 +122,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	echo "<center><a href=\"#\" onClick=\"confirmer('?inc=access_infos&do=access_50_delete&key=".$key."','".confirm_supprimer_50_access."')\" title=\"".supprimer."\"><b>".supprimer_50_access."</b></a></center><hr />";
 
 // default request
-$select_access = mysql_query("select * from `" . $tblprefix . "infos_acces` order by date_acces desc limit 0,20;");
+$select_access = $connect->query("select * from `" . $tblprefix . "infos_acces` order by date_acces desc limit 0,20;");
 
 // affichage
 if (!empty($_POST['choix_access'])){
@@ -130,7 +130,7 @@ if (!empty($_POST['choix_access'])){
 	if ($choix_access == "ip"){
 		if (!empty($_POST['ip_access'])){
 			$ip_access = escape_string($_POST['ip_access']);
-			$select_access = mysql_query("select * from `" . $tblprefix . "infos_acces` where ip_user like '%$ip_access%' order by date_acces desc;");
+			$select_access = $connect->query("select * from `" . $tblprefix . "infos_acces` where ip_user like '%$ip_access%' order by date_acces desc;");
 		}
 	}
 	else if ($choix_access == "date"){
@@ -170,7 +170,7 @@ if (!empty($_POST['choix_access'])){
 					$date_1_final = mktime(0, 0, 0, $mm, $jj, $yyyy);
 					if (ctype_digit($jj2) && $jj2 >= 1 && $jj2 <= 31 && ctype_digit($mm2) && $mm2 >= 1 && $mm2 <= 12 && $yyyy2 >= (date("Y",time()) - 10) && $yyyy2 <= (date("Y",time()) + 10)){
 						$date_2_final = mktime(0, 0, 0, $mm2, $jj2, $yyyy2) + 24*3600;
-						$select_access = mysql_query("select * from `" . $tblprefix . "infos_acces` where date_acces >= $date_1_final and date_acces <= $date_2_final order by date_acces desc;");
+						$select_access = $connect->query("select * from `" . $tblprefix . "infos_acces` where date_acces >= $date_1_final and date_acces <= $date_2_final order by date_acces desc;");
 					}
 				}
 			}
@@ -179,23 +179,23 @@ if (!empty($_POST['choix_access'])){
 	else {
 	 if (!empty($_POST['id_access'])){
 		$id_access = escape_string($_POST['id_access']);
-		$select_user = mysql_query("select id_user from `" . $tblprefix . "users` where identifiant_user = '$id_access';");
-		if (mysql_num_rows($select_user) > 0){
-			$id_user = mysql_result($select_user,0);
-			$select_access = mysql_query("select * from `" . $tblprefix . "infos_acces` where type_user = 'u' and id_user = $id_user order by date_acces desc;");
+		$select_user = $connect->query("select id_user from `" . $tblprefix . "users` where identifiant_user = '$id_access';");
+		if (mysqli_num_rows($select_user) > 0){
+			$id_user = mysqli_result($select_user,0);
+			$select_access = $connect->query("select * from `" . $tblprefix . "infos_acces` where type_user = 'u' and id_user = $id_user order by date_acces desc;");
 		}
 		else {
-			$select_app = mysql_query("select id_apprenant from `" . $tblprefix . "apprenants` where identifiant_apprenant = '$id_access';");
-			if (mysql_num_rows($select_app) > 0){
-				$id_app = mysql_result($select_app,0);
-				$select_access = mysql_query("select * from `" . $tblprefix . "infos_acces` where type_user = 'l' and id_user = $id_app order by date_acces desc;");
+			$select_app = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants` where identifiant_apprenant = '$id_access';");
+			if (mysqli_num_rows($select_app) > 0){
+				$id_app = mysqli_result($select_app,0);
+				$select_access = $connect->query("select * from `" . $tblprefix . "infos_acces` where type_user = 'l' and id_user = $id_app order by date_acces desc;");
 			}
 		}
 	 }
 	}
 } else echo "<h3><u>".last_20_access." :</u></h3>";
 
-if (mysql_num_rows($select_access) > 0){
+if (mysqli_num_rows($select_access) > 0){
 	echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 	echo "\n<td class=\"affichage_table\"><b>".identifiant."</b></td>";
 	echo "\n<td class=\"affichage_table\"><b>".photo_profil."</b></td>";
@@ -204,7 +204,7 @@ if (mysql_num_rows($select_access) > 0){
 	echo "\n<td class=\"affichage_table\"><b>".date_access."</b></td>";
 	echo "\n<td class=\"affichage_table\"><b>".supprimer."</b></td>";
 	echo "</tr>";
-	while($access = mysql_fetch_row($select_access)){
+	while($access = mysqli_fetch_row($select_access)){
 		
 		$the_id = $access[0];
 		$type_user = $access[1];
@@ -213,15 +213,15 @@ if (mysql_num_rows($select_access) > 0){
 		$date_access = set_date($dateformat,$access[4]);
 		
 		if ($type_user == "l"){
-			$select_app = mysql_query("select id_classe, identifiant_apprenant, photo_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id_user;");
-			if (mysql_num_rows($select_app) > 0){
-				$id_classe = html_ent(mysql_result($select_app,0,0));
-				$identifiant = html_ent(mysql_result($select_app,0,1));
-				$photo_profil = html_ent(mysql_result($select_app,0,2));
+			$select_app = $connect->query("select id_classe, identifiant_apprenant, photo_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id_user;");
+			if (mysqli_num_rows($select_app) > 0){
+				$id_classe = html_ent(mysqli_result($select_app,0,0));
+				$identifiant = html_ent(mysqli_result($select_app,0,1));
+				$photo_profil = html_ent(mysqli_result($select_app,0,2));
 				
-				$select_classe = mysql_query("select classe from `" . $tblprefix . "classes` where id_classe = $id_classe;");
-    	  if (mysql_num_rows($select_classe) == 1)
-    			$classe_apprenant = " (".html_ent(mysql_result($select_classe,0)).")";
+				$select_classe = $connect->query("select classe from `" . $tblprefix . "classes` where id_classe = $id_classe;");
+    	  if (mysqli_num_rows($select_classe) == 1)
+    			$classe_apprenant = " (".html_ent(mysqli_result($select_classe,0)).")";
     		else $classe_apprenant = "";
 			}
 			else {
@@ -233,11 +233,11 @@ if (mysql_num_rows($select_access) > 0){
 			$type_user = learner.$classe_apprenant;
 		}
 		else {
-			$select_user = mysql_query("select identifiant_user, grade_user, photo_profil from `" . $tblprefix . "users` where id_user = $id_user;");
-			if (mysql_num_rows($select_user) > 0){
-				$identifiant = html_ent(mysql_result($select_user,0,0));
-				$grade_user = html_ent(mysql_result($select_user,0,1));
-				$photo_profil = html_ent(mysql_result($select_user,0,2));
+			$select_user = $connect->query("select identifiant_user, grade_user, photo_profil from `" . $tblprefix . "users` where id_user = $id_user;");
+			if (mysqli_num_rows($select_user) > 0){
+				$identifiant = html_ent(mysqli_result($select_user,0,0));
+				$grade_user = html_ent(mysqli_result($select_user,0,1));
+				$photo_profil = html_ent(mysqli_result($select_user,0,2));
 				$type_user = $grade_tab[$grade_user];
 			}
 			else {
