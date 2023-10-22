@@ -42,7 +42,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
    	// ****************** activer_component **************************
 		case "activer_component" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$activer_component = mysql_query("update `" . $tblprefix . "composants` set active_composant = '1' where id_composant = $id_com;");
+    		$activer_component = $connect->query("update `" . $tblprefix . "composants` set active_composant = '1' where id_composant = $id_com;");
 			}
 			locationhref_admin("?inc=components");
 		} break;
@@ -50,7 +50,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
    	// ****************** desactiver_component **************************
 		case "desactiver_component" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$desactiver_component = mysql_query("update `" . $tblprefix . "composants` set active_composant = '0' where id_composant = $id_com;");
+    		$desactiver_component = $connect->query("update `" . $tblprefix . "composants` set active_composant = '0' where id_composant = $id_com;");
 			}
 			locationhref_admin("?inc=components");
 		} break;
@@ -58,17 +58,17 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** orderup_component **************************
 		case "orderup_component" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$ce_composant = mysql_query ("select ordre_composant from `" . $tblprefix . "composants` where id_composant = $id_com;");
-				if (mysql_num_rows($ce_composant) == 1) {
+    		$ce_composant = $connect->query ("select ordre_composant from `" . $tblprefix . "composants` where id_composant = $id_com;");
+				if (mysqli_num_rows($ce_composant) == 1) {
 					$ordre_composant = mysql_result($ce_composant,0);
 
-    			$composant_precedent = mysql_query ("select id_composant, ordre_composant from `" . $tblprefix . "composants` where ordre_composant != 0 and ordre_composant < $ordre_composant order by ordre_composant desc;");
-					if (mysql_num_rows($composant_precedent) > 0) {
+    			$composant_precedent = $connect->query ("select id_composant, ordre_composant from `" . $tblprefix . "composants` where ordre_composant != 0 and ordre_composant < $ordre_composant order by ordre_composant desc;");
+					if (mysqli_num_rows($composant_precedent) > 0) {
 						$idcomposant_precedent = mysql_result($composant_precedent,0,0);
 						$ordrecomposant_precedent = mysql_result($composant_precedent,0,1);
 
-						$order_this_composant = mysql_query("update `" . $tblprefix . "composants` set ordre_composant = $ordrecomposant_precedent where id_composant = $id_com;");
-						$order_composant_precedent = mysql_query("update `" . $tblprefix . "composants` set ordre_composant = $ordre_composant where id_composant = $idcomposant_precedent;");
+						$order_this_composant = $connect->query("update `" . $tblprefix . "composants` set ordre_composant = $ordrecomposant_precedent where id_composant = $id_com;");
+						$order_composant_precedent = $connect->query("update `" . $tblprefix . "composants` set ordre_composant = $ordre_composant where id_composant = $idcomposant_precedent;");
 					}
     		}
 			}
@@ -78,17 +78,17 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	// ****************** orderdown_component **************************
 		case "orderdown_component" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$ce_composant = mysql_query ("select ordre_composant from `" . $tblprefix . "composants` where id_composant = $id_com;");
-				if (mysql_num_rows($ce_composant) == 1) {
+    		$ce_composant = $connect->query ("select ordre_composant from `" . $tblprefix . "composants` where id_composant = $id_com;");
+				if (mysqli_num_rows($ce_composant) == 1) {
 					$ordre_composant = mysql_result($ce_composant,0);
 
-    			$composant_suivant = mysql_query ("select id_composant, ordre_composant from `" . $tblprefix . "composants` where ordre_composant != 0 and ordre_composant > $ordre_composant order by ordre_composant;");
-					if (mysql_num_rows($composant_suivant) > 0) {
+    			$composant_suivant = $connect->query ("select id_composant, ordre_composant from `" . $tblprefix . "composants` where ordre_composant != 0 and ordre_composant > $ordre_composant order by ordre_composant;");
+					if (mysqli_num_rows($composant_suivant) > 0) {
 						$idcomposant_suivant = mysql_result($composant_suivant,0,0);
 						$ordrecomposant_suivant = mysql_result($composant_suivant,0,1);
 
-						$order_this_composant = mysql_query("update `" . $tblprefix . "composants` set ordre_composant = $ordrecomposant_suivant where id_composant = $id_com;");
-						$order_composant_suivant = mysql_query("update `" . $tblprefix . "composants` set ordre_composant = $ordre_composant where id_composant = $idcomposant_suivant;");
+						$order_this_composant = $connect->query("update `" . $tblprefix . "composants` set ordre_composant = $ordrecomposant_suivant where id_composant = $id_com;");
+						$order_composant_suivant = $connect->query("update `" . $tblprefix . "composants` set ordre_composant = $ordre_composant where id_composant = $idcomposant_suivant;");
 					}
     		}
 			}
@@ -98,8 +98,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
    	// ****************** liste_composants **************************	
 		default : {
 			
-			$select_composant = mysql_query("select * from `" . $tblprefix . "composants` where ordre_composant = 0;");
-			if (mysql_num_rows($select_composant) > 0){
+			$select_composant = $connect->query("select * from `" . $tblprefix . "composants` where ordre_composant = 0;");
+			if (mysqli_num_rows($select_composant) > 0){
 				echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".nom_composant."</b></td>";
 				echo "\n<td class=\"affichage_table\"><b>".titre_composant."</b></td>";
@@ -109,7 +109,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				
 				$i_ordre = 1;
 				
-				while($composant = mysql_fetch_row($select_composant)){
+				while($composant = mysqli_fetch_row($select_composant)){
 					
 					$id_composant = $composant[0];
 					$nom_composant = html_ent($composant[1]);
@@ -141,8 +141,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 
     	echo "<hr /><a name=\"vertical_panel\"><b><u>- ".vertical_panel_comp." : </u></b></a><br /><br />";
     	
-			$select_composant = mysql_query("select * from `" . $tblprefix . "composants` where ordre_composant != 0 order by ordre_composant;");
-			if (mysql_num_rows($select_composant) > 0){
+			$select_composant = $connect->query("select * from `" . $tblprefix . "composants` where ordre_composant != 0 order by ordre_composant;");
+			if (mysqli_num_rows($select_composant) > 0){
 				echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".nom_composant."</b></td>";
 				echo "\n<td class=\"affichage_table\"><b>".titre_composant."</b></td>";
@@ -153,7 +153,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				
 				$i_ordre = 1;
 				
-				while($composant = mysql_fetch_row($select_composant)){
+				while($composant = mysqli_fetch_row($select_composant)){
 					
 					$id_composant = $composant[0];
 					$nom_composant = html_ent($composant[1]);
@@ -178,14 +178,14 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 
 					echo "\n<td class=\"affichage_table\" nowrap=\"nowrap\">";
 
-					$composant_precedent = mysql_query ("select id_composant from `" . $tblprefix . "composants` where ordre_composant < $ordre_composant and ordre_composant != 0 order by ordre_composant desc;");
-					if (mysql_num_rows($composant_precedent) > 0)
+					$composant_precedent = $connect->query ("select id_composant from `" . $tblprefix . "composants` where ordre_composant < $ordre_composant and ordre_composant != 0 order by ordre_composant desc;");
+					if (mysqli_num_rows($composant_precedent) > 0)
 						echo "<a href=\"?inc=components&do=orderup_component&id_com=".$id_composant."&key=".$key."\" title=\"".deplacer_haut."\"><img border=\"0\" src=\"../images/others/up.png\" width=\"15\" height=\"15\" /></a>";
 					else echo "<img border=\"0\" src=\"../images/others/up2.png\" width=\"15\" height=\"15\" />";
 					echo "<b> ".$i_ordre." </b>";
 					$i_ordre++;
-					$composant_suivant = mysql_query ("select id_composant from `" . $tblprefix . "composants` where ordre_composant > $ordre_composant and ordre_composant != 0 order by ordre_composant;");
-					if (mysql_num_rows($composant_suivant) > 0)
+					$composant_suivant = $connect->query ("select id_composant from `" . $tblprefix . "composants` where ordre_composant > $ordre_composant and ordre_composant != 0 order by ordre_composant;");
+					if (mysqli_num_rows($composant_suivant) > 0)
 						echo "<a href=\"?inc=components&do=orderdown_component&id_com=".$id_composant."&key=".$key."\" title=\"".deplacer_bas."\"><img border=\"0\" src=\"../images/others/down.png\" width=\"15\" height=\"15\" /></a>";
 					else echo "<img border=\"0\" src=\"../images/others/down2.png\" width=\"15\" height=\"15\" />";
 
@@ -198,10 +198,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			if (isset($_GET['edit_com']) && ctype_digit($_GET['edit_com'])){
 				$edit_com = intval($_GET['edit_com']);
 				
-				$select_component = mysql_query("select * from `" . $tblprefix . "composants` where id_composant = $edit_com;");
+				$select_component = $connect->query("select * from `" . $tblprefix . "composants` where id_composant = $edit_com;");
 
-				if (mysql_num_rows($select_component) > 0) {
-					$component = mysql_fetch_row($select_component);
+				if (mysqli_num_rows($select_component) > 0) {
+					$component = mysqli_fetch_row($select_component);
 
 					$nom_component = $component[1];
 					$titre_component = html_ent($component[2]);
@@ -213,12 +213,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						$titre_com = escape_string($_POST['titre_com']);
 						$titre_com = trim($titre_com);
 						if (!empty($titre_com) && $titre_com != $titre_component)
-							$update_component = mysql_query("update `" . $tblprefix . "composants` set titre_composant = '$titre_com' where id_composant = $edit_com;");
+							$update_component = $connect->query("update `" . $tblprefix . "composants` set titre_composant = '$titre_com' where id_composant = $edit_com;");
 
 						if ($nom_component == "additional_block"){
 							$contenu_com = escape_string($_POST['contenu_com']);
 							if (!empty($contenu_com) && $contenu_com != $contenu_component)
-								$update_component2 = mysql_query("update `" . $tblprefix . "composants` set contenu_composant = '$contenu_com' where id_composant = $edit_com;");
+								$update_component2 = $connect->query("update `" . $tblprefix . "composants` set contenu_composant = '$contenu_com' where id_composant = $edit_com;");
 						}
 						redirection(composant_modifie,"?inc=components",3,"tips",1);
 					}

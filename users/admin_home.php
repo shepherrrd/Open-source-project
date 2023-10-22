@@ -201,8 +201,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($_SESSION['id']) &
 									<br />
 									<?php
 										$select_nombre_elements_page = $connect->query("select nombre_elements_page from `" . $tblprefix . "site_infos`;");
-										if (mysqli_num_rows($select_nombre_elements_page) == 1 && $select_nombre_elements_page->fetch_row() > 0)
+										if (mysqli_num_rows($select_nombre_elements_page) == 1 && $select_nombre_elements_page->fetch_row() > 0) {
 											$nbr_resultats = $select_nombre_elements_page->fetch_row()[0] ?? null;
+                                        }
 										else $nbr_resultats = 10;
 										
 										if (file_exists("../install/next_install.php")) {
