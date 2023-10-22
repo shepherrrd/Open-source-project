@@ -61,16 +61,16 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     			}
 					else $article_acces = "*";
     						
-    			$select_article_titre = mysql_query("select id_article from `" . $tblprefix . "articles` where titre_article = '$article_titre';");
- 					if (mysql_num_rows($select_article_titre) == 0) {
- 						$select_max_orderaccueil = mysql_query("select max(ordre_accueil) from `" . $tblprefix . "articles`;");
- 						if (mysql_num_rows($select_max_orderaccueil) == 1)
- 							$ordre_accueil = mysql_result($select_max_orderaccueil,0) + 1;
+    			$select_article_titre = $connect->query("select id_article from `" . $tblprefix . "articles` where titre_article = '$article_titre';");
+ 					if (mysqli_num_rows($select_article_titre) == 0) {
+ 						$select_max_orderaccueil = $connect->query("select max(ordre_accueil) from `" . $tblprefix . "articles`;");
+ 						if (mysqli_num_rows($select_max_orderaccueil) == 1)
+ 							$ordre_accueil = mysqli_result($select_max_orderaccueil,0) + 1;
  						else $ordre_accueil = 1;
 						
 						$time_insert_article = time();
  						$insertarticle = "INSERT INTO `" . $tblprefix . "articles` VALUES (NULL,$id_user_session,0,'$article_titre','$article_contenu','0','0',1,$ordre_accueil,0,$time_insert_article,$time_insert_article,'$article_acces',0,1);";
-	          mysql_query($insertarticle,$connect);
+	          $connect->query($insertarticle,$connect);
 
 	          redirection(article_cree,"?inc=edit_articles",3,"tips",1);
  					} else goback(titre_existe,2,"error",1);
@@ -87,8 +87,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					echo "\n<input name=\"acces\" type=\"radio\" value=\"all\" onclick=\"disabled_select('classes',true)\" checked=\"checked\" /><b>".acces_ouvert."</b><br />";
 					echo "\n<input name=\"acces\" type=\"radio\" value=\"learner\" onclick=\"disabled_select('classes',true)\" /><b>".acces_apprenants."</b><br />";
 					echo "\n<input name=\"acces\" type=\"radio\" value=\"classe\" onclick=\"disabled_select('classes',false)\" /><b>".acces_classes." :</b>";
-    			$select_classes = mysql_query("select * from `" . $tblprefix . "classes`;");
-			 		if (mysql_num_rows($select_classes) > 0){
+    			$select_classes = $connect->query("select * from `" . $tblprefix . "classes`;");
+			 		if (mysqli_num_rows($select_classes) > 0){
 					 	echo "<table border=\"0\"><tr><td align=\"center\">";
 						echo "<table border=\"0\"><tr><td><a href=\"?inc=site_config&do=registration#classe\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=site_config&do=registration#classe\"><b>".ajouter_classe."</b></a></td></tr></table>";
 						echo "<select size=\"5\" name=\"classes[]\" id=\"classes\" multiple=\"multiple\">";
@@ -113,8 +113,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** edit_article **************************
     case "edit_article" : {
      	
-    		$select_article_complet = mysql_query("select * from `" . $tblprefix . "articles` where id_article = $id_article;");
-    		if (mysql_num_rows($select_article_complet) == 1) {
+    		$select_article_complet = $connect->query("select * from `" . $tblprefix . "articles` where id_article = $id_article;");
+    		if (mysqli_num_rows($select_article_complet) == 1) {
     			$article = mysql_fetch_row($select_article_complet);
     			
     			$titre_article = html_ent($article[3]);
@@ -137,10 +137,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     						}
     						else $article_acces = "*";
 
-    						$select_article_titre = mysql_query("select id_article from `" . $tblprefix . "articles` where titre_article = '$article_titre';");
- 								if ((mysql_num_rows($select_article_titre) == 0) || (mysql_num_rows($select_article_titre) == 1 && mysql_result($select_article_titre,0) == $article[0])) {
+    						$select_article_titre = $connect->query("select id_article from `" . $tblprefix . "articles` where titre_article = '$article_titre';");
+ 								if ((mysqli_num_rows($select_article_titre) == 0) || (mysqli_num_rows($select_article_titre) == 1 && mysqli_result($select_article_titre,0) == $article[0])) {
  									$update_article = "update `" . $tblprefix . "articles` SET titre_article = '$article_titre', contenu_article = '$article_contenu', date_modification_article = ".time().", acces_article = '$article_acces' where id_article = $id_article;";
- 									mysql_query($update_article);
+ 									$connect->query($update_article);
  									redirection(article_modifie,"?inc=edit_articles",3,"tips",1);
  								} else goback(titre_existe,2,"error",1);
     					} else goback(titre_contenu_vide,2,"error",1);
@@ -166,8 +166,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							 echo " checked=\"checked\"";
 							echo " /><b>".acces_classes." :</b>";
 							$tab_classes = explode("-",$acces_article);
-    					$select_classes = mysql_query("select * from `" . $tblprefix . "classes`;");
-					 		if (mysql_num_rows($select_classes) > 0){
+    					$select_classes = $connect->query("select * from `" . $tblprefix . "classes`;");
+					 		if (mysqli_num_rows($select_classes) > 0){
 					 			echo "<table border=\"0\"><tr><td align=\"center\">";
 					 			echo "<table border=\"0\"><tr><td><a href=\"?inc=site_config&do=registration#classe\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=site_config&do=registration#classe\"><b>".ajouter_classe."</b></a></td></tr></table>";
 								echo "<select size=\"5\" name=\"classes[]\" id=\"classes\" multiple=\"multiple\">";
@@ -198,7 +198,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 		// ****************** delete_article **************************
 		case "delete_article" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-				$delete_article = mysql_query("delete from `" . $tblprefix . "articles` where id_article = $id_article;");
+				$delete_article = $connect->query("delete from `" . $tblprefix . "articles` where id_article = $id_article;");
 			}
 			locationhref_admin("?inc=edit_articles");
 		} break;
@@ -206,7 +206,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** publier_article *************************
     case "publier_article" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$publier_article = mysql_query("update `" . $tblprefix . "articles` set publie_article = '1', id_validateur = $id_user_session where id_article = $id_article;");
+    		$publier_article = $connect->query("update `" . $tblprefix . "articles` set publie_article = '1', id_validateur = $id_user_session where id_article = $id_article;");
     	}
     	locationhref_admin("?inc=edit_articles");
     } break;
@@ -214,7 +214,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** depublier_article ***********************
     case "depublier_article" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$depublier_article = mysql_query("update `" . $tblprefix . "articles` set publie_article = '0' where id_article = $id_article;");
+    		$depublier_article = $connect->query("update `" . $tblprefix . "articles` set publie_article = '0' where id_article = $id_article;");
     	}
     	locationhref_admin("?inc=edit_articles");
     } break;
@@ -223,14 +223,14 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 		case "home_article" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
 				
-				$select_accueil = mysql_query("select accueil_article from `" . $tblprefix . "articles` where id_article = $id_article;");
-				if (mysql_num_rows($select_accueil) > 0) {
+				$select_accueil = $connect->query("select accueil_article from `" . $tblprefix . "articles` where id_article = $id_article;");
+				if (mysqli_num_rows($select_accueil) > 0) {
 					
-					$accueil_article = mysql_result($select_accueil,0);
+					$accueil_article = mysqli_result($select_accueil,0);
 					if ($accueil_article == 0) $edit_accueil_article = 1;
 					else $edit_accueil_article = 0;
 
-    			$update_accueil_article = mysql_query("update `" . $tblprefix . "articles` set accueil_article = '$edit_accueil_article' where id_article = $id_article;");
+    			$update_accueil_article = $connect->query("update `" . $tblprefix . "articles` set accueil_article = '$edit_accueil_article' where id_article = $id_article;");
 				}
 			}
 			locationhref_admin("?inc=edit_articles");
@@ -253,8 +253,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // En attente de validation
     	echo "<hr /><a name=\"en_attente\"><b><u>- ".articles_non_valides." : </u></b></a><br /><br />";
 
-  $select_articles_nonvalides = mysql_query("select * from `" . $tblprefix . "articles` where publie_article = '0' order by ordre_article;");
-	$nbr_trouve = mysql_num_rows($select_articles_nonvalides);
+  $select_articles_nonvalides = $connect->query("select * from `" . $tblprefix . "articles` where publie_article = '0' order by ordre_article;");
+	$nbr_trouve = mysqli_num_rows($select_articles_nonvalides);
   if ($nbr_trouve > 0){
 		$page_max = ceil($nbr_trouve / $nbr_resultats);
 		if ($page <= $page_max && $page > 1 && $page_max > 1)
@@ -264,7 +264,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			$page = 1;
 		}
 
-    	$select_articles_nonvalides_limit = mysql_query("select * from `" . $tblprefix . "articles` where publie_article = '0' order by ordre_article limit $limit, $nbr_resultats;");
+    	$select_articles_nonvalides_limit = $connect->query("select * from `" . $tblprefix . "articles` where publie_article = '0' order by ordre_article limit $limit, $nbr_resultats;");
 
     		echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".article."</b></td>";
@@ -290,9 +290,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					
 					echo "\n<td class=\"affichage_table\"><b>".$titre_article."</b></td>";
 
-    			$select_auteur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $article[1];");
-    			if (mysql_num_rows($select_auteur) == 1)
-    				$auteur = html_ent(mysql_result($select_auteur,0));
+    			$select_auteur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $article[1];");
+    			if (mysqli_num_rows($select_auteur) == 1)
+    				$auteur = html_ent(mysqli_result($select_auteur,0));
     			else $auteur = inconnu;
     			$auteur = wordwrap($auteur,15,"<br />",true);
 					echo "\n<td class=\"affichage_table\"><a href=\"../?profiles=".$article[1]."\" title=\"".user_profile."\"><b>".$auteur."</b></a></td>";
@@ -328,11 +328,11 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 		}
     	} else echo aucun_article_non_valide."<br />";
 
-    // validés
+    // validï¿½s
     	echo "<br /><hr /><a name=\"valides\"><b><u>- ".articles_valides." : </u></b></a><br /><br />";
 
-    	$select_articles_valides = mysql_query("select * from `" . $tblprefix . "articles` where publie_article = '1' order by ordre_article;");
-			 $nbr_trouve = mysql_num_rows($select_articles_valides);
+    	$select_articles_valides = $connect->query("select * from `" . $tblprefix . "articles` where publie_article = '1' order by ordre_article;");
+			 $nbr_trouve = mysqli_num_rows($select_articles_valides);
   		 if ($nbr_trouve > 0){
 				$page_max = ceil($nbr_trouve / $nbr_resultats);
 				if ($page2 <= $page_max && $page2 > 1 && $page_max > 1)
@@ -342,7 +342,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					$page2 = 1;
 				}
 
-    	$select_articles_valides_limit = mysql_query("select * from `" . $tblprefix . "articles` where publie_article = '1' order by ordre_article limit $limit, $nbr_resultats;");
+    	$select_articles_valides_limit = $connect->query("select * from `" . $tblprefix . "articles` where publie_article = '1' order by ordre_article limit $limit, $nbr_resultats;");
 
     		echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".article."</b></td>";
@@ -370,16 +370,16 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					
 					echo "\n<td class=\"affichage_table\"><b>".$titre_article."</b></td>";
 
-    			$select_auteur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $article[1];");
-    			if (mysql_num_rows($select_auteur) == 1)
-    				$auteur = html_ent(mysql_result($select_auteur,0));
+    			$select_auteur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $article[1];");
+    			if (mysqli_num_rows($select_auteur) == 1)
+    				$auteur = html_ent(mysqli_result($select_auteur,0));
     			else $auteur = inconnu;
     			$auteur = wordwrap($auteur,15,"<br />",true);
 					echo "\n<td class=\"affichage_table\"><a href=\"../?profiles=".$article[1]."\" title=\"".user_profile."\"><b>".$auteur."</b></a></td>";
 
-    			$select_validateur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $article[9];");
-    			if (mysql_num_rows($select_validateur) == 1)
-    				$validateur = html_ent(mysql_result($select_validateur,0));
+    			$select_validateur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $article[9];");
+    			if (mysqli_num_rows($select_validateur) == 1)
+    				$validateur = html_ent(mysqli_result($select_validateur,0));
     			else $validateur = inconnu;
     			$validateur = wordwrap($validateur,15,"<br />",true);
 					echo "\n<td class=\"affichage_table\"><a href=\"../?profiles=".$article[9]."\" title=\"".user_profile."\"><b>".$validateur."</b></a></td>";

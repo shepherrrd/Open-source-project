@@ -31,9 +31,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	echo "<div id=\"titre\">".gestion_sondage."</div>";
 	echo "<script language=\"javascript\" type=\"text/javascript\" src=\"../styles/radio_div.js\"></script>";
 
-	$select_statut_comp = mysql_query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'poll';");
-	if (mysql_num_rows($select_statut_comp) == 1) {
- 		$statut_comp = mysql_result($select_statut_comp,0);
+	$select_statut_comp = $connect->query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'poll';");
+	if (mysqli_num_rows($select_statut_comp) == 1) {
+ 		$statut_comp = mysqli_result($select_statut_comp,0);
 		if ($statut_comp == 0)
 		 echo "<h3><img src=\"../images/icones/warning.png\" /><font color=\"red\">".component_disabled." ".enable_it_now." : </font><a href=\"?inc=components\"\">".gestion_composants."</a></h3>";
 	}
@@ -61,12 +61,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     				$titre_simple = escape_string($titre_simple);
     				if (isset($_POST['nbr_votes_simple']) && ctype_digit($_POST['nbr_votes_simple']) && $_POST['nbr_votes_simple'] > 1 && $_POST['nbr_votes_simple'] <= 50){
     					$nbr_votes_simple = intval($_POST['nbr_votes_simple']);
-    					$insert_question = mysql_query("INSERT INTO `" . $tblprefix . "sondage_questions` VALUES (NULL,0,'$titre_simple','0');");
+    					$insert_question = $connect->query("INSERT INTO `" . $tblprefix . "sondage_questions` VALUES (NULL,0,'$titre_simple','0');");
     					$select_this_question = "select id_question, question from `" . $tblprefix . "sondage_questions` where question = '$titre_simple';";
-							$req_select_this_question = mysql_query($select_this_question);
-							if (mysql_num_rows($req_select_this_question) == 1){
-								$id_last_question = mysql_result($req_select_this_question,0,0);
-								$question_text = mysql_result($req_select_this_question,0,1);
+							$req_select_this_question = $connect->query($select_this_question);
+							if (mysqli_num_rows($req_select_this_question) == 1){
+								$id_last_question = mysqli_result($req_select_this_question,0,0);
+								$question_text = mysqli_result($req_select_this_question,0,1);
 								$question_text = html_ent($question_text);
     						echo "\n<form method=\"POST\" action=\"\">";
  	  						echo "<br /><b><font color=\"red\">*</font> ".question." : </b><br /><textarea name=\"titre_simple2\" id=\"titre_simple2\" rows=\"3\" cols=\"50\">".$question_text."</textarea>";
@@ -86,18 +86,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     				if (isset($_POST['nbr_votes1_crosstab']) && ctype_digit($_POST['nbr_votes1_crosstab']) && $_POST['nbr_votes1_crosstab'] > 1 && $_POST['nbr_votes1_crosstab'] <= 25 && isset($_POST['nbr_votes2_crosstab']) && ctype_digit($_POST['nbr_votes2_crosstab']) && $_POST['nbr_votes2_crosstab'] > 1 && $_POST['nbr_votes2_crosstab'] <= 25){
     					$nbr_votes1_crosstab = intval($_POST['nbr_votes1_crosstab']);
     					$nbr_votes2_crosstab = intval($_POST['nbr_votes2_crosstab']);
-    					$insert_question2 = mysql_query("INSERT INTO `" . $tblprefix . "sondage_questions` VALUES (NULL,0,'$titre2_crosstab','0');");
+    					$insert_question2 = $connect->query("INSERT INTO `" . $tblprefix . "sondage_questions` VALUES (NULL,0,'$titre2_crosstab','0');");
 							$select_this_question2 = "select id_question, question from `" . $tblprefix . "sondage_questions` where question = '$titre2_crosstab';";
-							$req_select_this_question2 = mysql_query($select_this_question2);
-							if (mysql_num_rows($req_select_this_question2) == 1){
-								$id_question2 = mysql_result($req_select_this_question2,0,0);
-								$question2_text = html_ent(mysql_result($req_select_this_question2,0,1));
-								$insert_question1 = mysql_query("INSERT INTO `" . $tblprefix . "sondage_questions` VALUES (NULL,$id_question2,'$titre1_crosstab','0');");
+							$req_select_this_question2 = $connect->query($select_this_question2);
+							if (mysqli_num_rows($req_select_this_question2) == 1){
+								$id_question2 = mysqli_result($req_select_this_question2,0,0);
+								$question2_text = html_ent(mysqli_result($req_select_this_question2,0,1));
+								$insert_question1 = $connect->query("INSERT INTO `" . $tblprefix . "sondage_questions` VALUES (NULL,$id_question2,'$titre1_crosstab','0');");
 	    					$select_this_question1 = "select id_question, question from `" . $tblprefix . "sondage_questions` where question = '$titre1_crosstab' and id_conjoint = $id_question2;";
-	    					$req_select_this_question1 = mysql_query($select_this_question1);
-								if (mysql_num_rows($req_select_this_question1) == 1){
-									$id_question1 = mysql_result($req_select_this_question1,0,0);
-	    						$question1_text = html_ent(mysql_result($req_select_this_question1,0,1));
+	    					$req_select_this_question1 = $connect->query($select_this_question1);
+								if (mysqli_num_rows($req_select_this_question1) == 1){
+									$id_question1 = mysqli_result($req_select_this_question1,0,0);
+	    						$question1_text = html_ent(mysqli_result($req_select_this_question1,0,1));
 	   							echo "\n<form method=\"POST\" action=\"\">";
 	   							echo "<table width=\"100%\" border=\"0\"><tr><td width=\"50%\" valign=\"top\">";
     							echo "<br /><b><font color=\"red\">*</font> ".question1."</b><br /><textarea name=\"titre1_crosstab2\" id=\"titre1_crosstab2\" rows=\"3\" cols=\"50\">".$question1_text."</textarea>";
@@ -130,18 +130,18 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     				$nbr_reponses = intval($_POST['nbr_reponses']);
     				if (!empty($titre_simple2)){
     					$titre_simple2 = escape_string($titre_simple2);
-    					$update_question_simple = mysql_query("update `" . $tblprefix . "sondage_questions` set question = '$titre_simple2' where id_question = $this_id_question;");
+    					$update_question_simple = $connect->query("update `" . $tblprefix . "sondage_questions` set question = '$titre_simple2' where id_question = $this_id_question;");
     				}
     				for ($i=1;$i<= $nbr_reponses;$i++){
     					$variable_rep = "reponse".$i;
     					$this_reponse = escape_string(trim($_POST[$variable_rep]));
      					if (!empty($this_reponse)){
-    						$insert_reponse = mysql_query("INSERT INTO `" . $tblprefix . "sondage_reponses` VALUES (NULL,$this_id_question,'$this_reponse');");
+    						$insert_reponse = $connect->query("INSERT INTO `" . $tblprefix . "sondage_reponses` VALUES (NULL,$this_id_question,'$this_reponse');");
     						$select_this_reponse = "select id_reponse from `" . $tblprefix . "sondage_reponses` where reponse = '$this_reponse' and id_question = $this_id_question;";
-    						$req_select_id_reponse = mysql_query($select_this_reponse);
-    						if (mysql_num_rows($req_select_id_reponse) == 1){
-    							$id_this_reponse = mysql_result($req_select_id_reponse,0);
-    							$insert_vote = mysql_query("INSERT INTO `" . $tblprefix . "sondage_votes` VALUES (NULL,$id_this_reponse,0,0);");
+    						$req_select_id_reponse = $connect->query($select_this_reponse);
+    						if (mysqli_num_rows($req_select_id_reponse) == 1){
+    							$id_this_reponse = mysqli_result($req_select_id_reponse,0);
+    							$insert_vote = $connect->query("INSERT INTO `" . $tblprefix . "sondage_votes` VALUES (NULL,$id_this_reponse,0,0);");
     						}
     					}
     				}
@@ -154,37 +154,37 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     			$titre2_crosstab2 = trim($_POST['titre2_crosstab2']);
     			if (isset($_POST['lastquestion']) && ctype_digit($_POST['lastquestion']) && isset($_POST['nbr_reponses1']) && ctype_digit($_POST['nbr_reponses1']) && isset($_POST['nbr_reponses2']) && ctype_digit($_POST['nbr_reponses2'])){
     				$this_id_question = intval($_POST['lastquestion']);
-    				$select_this_question2 = mysql_query("select id_conjoint from `" . $tblprefix . "sondage_questions` where id_question = $this_id_question;");
-    				$this_id_question2 = mysql_result($select_this_question2,0);
+    				$select_this_question2 = $connect->query("select id_conjoint from `" . $tblprefix . "sondage_questions` where id_question = $this_id_question;");
+    				$this_id_question2 = mysqli_result($select_this_question2,0);
     				$nbr_reponses1 = intval($_POST['nbr_reponses1']);
     				$nbr_reponses2 = intval($_POST['nbr_reponses2']);
     				if (!empty($titre1_crosstab2)){
     					$titre1_crosstab2 = escape_string($titre1_crosstab2);
-    					$update_question1 = mysql_query("update `" . $tblprefix . "sondage_questions` set question = '$titre1_crosstab2' where id_question = $this_id_question;");
+    					$update_question1 = $connect->query("update `" . $tblprefix . "sondage_questions` set question = '$titre1_crosstab2' where id_question = $this_id_question;");
     				}
     				if (!empty($titre2_crosstab2)){
     					$titre2_crosstab2 = escape_string($titre2_crosstab2);
-    					$update_question2 = mysql_query("update `" . $tblprefix . "sondage_questions` set question = '$titre2_crosstab2' where id_question = $this_id_question2;");
+    					$update_question2 = $connect->query("update `" . $tblprefix . "sondage_questions` set question = '$titre2_crosstab2' where id_question = $this_id_question2;");
     				}
     				for ($i=1;$i<= $nbr_reponses1;$i++){
     					$variable_rep1 = "1reponse".$i;
     					$this_reponse1 = escape_string(trim($_POST[$variable_rep1]));
      					if (!empty($this_reponse1))
-    						$insert_reponse1 = mysql_query("INSERT INTO `" . $tblprefix . "sondage_reponses` VALUES (NULL,$this_id_question,'$this_reponse1');");
+    						$insert_reponse1 = $connect->query("INSERT INTO `" . $tblprefix . "sondage_reponses` VALUES (NULL,$this_id_question,'$this_reponse1');");
     				}
     				for ($i=1;$i<= $nbr_reponses2;$i++){
     					$variable_rep2 = "2reponse".$i;
     					$this_reponse2 = escape_string(trim($_POST[$variable_rep2]));
      					if (!empty($this_reponse2))
-    						$insert_reponse2 = mysql_query("INSERT INTO `" . $tblprefix . "sondage_reponses` VALUES (NULL,$this_id_question2,'$this_reponse2');");
+    						$insert_reponse2 = $connect->query("INSERT INTO `" . $tblprefix . "sondage_reponses` VALUES (NULL,$this_id_question2,'$this_reponse2');");
     				}
-    				$select_reponses1_votes = mysql_query("select id_reponse from `" . $tblprefix . "sondage_reponses` where id_question = $this_id_question;");
-						$select_reponses2_votes = mysql_query("select id_reponse from `" . $tblprefix . "sondage_reponses` where id_question = $this_id_question2;");
-    				if (mysql_num_rows($select_reponses1_votes) > 0 && mysql_num_rows($select_reponses2_votes) > 0) {
+    				$select_reponses1_votes = $connect->query("select id_reponse from `" . $tblprefix . "sondage_reponses` where id_question = $this_id_question;");
+						$select_reponses2_votes = $connect->query("select id_reponse from `" . $tblprefix . "sondage_reponses` where id_question = $this_id_question2;");
+    				if (mysqli_num_rows($select_reponses1_votes) > 0 && mysqli_num_rows($select_reponses2_votes) > 0) {
  							while($reponse1_vote = mysql_fetch_row($select_reponses1_votes)){
  								@mysql_data_seek($select_reponses2_votes,0);
  								while($reponse2_vote = mysql_fetch_row($select_reponses2_votes))
- 									$insert_votes = mysql_query("INSERT INTO `" . $tblprefix . "sondage_votes` VALUES (NULL,$reponse1_vote[0],$reponse2_vote[0],0);");
+ 									$insert_votes = $connect->query("INSERT INTO `" . $tblprefix . "sondage_votes` VALUES (NULL,$reponse1_vote[0],$reponse2_vote[0],0);");
  							}
  							redirection(sondage_cree,"?inc=poll_manager",3,"tips",1);
     				} else goback(erreur_traitement_question,2,"error",1);
@@ -218,11 +218,11 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** view_poll **************************
     case "view_poll" : {
 			goback_button();
-    	$select_questions = mysql_query("select * from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
-    	if (mysql_num_rows($select_questions) == 1){
-    		$id_question1 = mysql_result($select_questions,0,0);
-    		$id_conjoint = mysql_result($select_questions,0,1);
-				$question1 = mysql_result($select_questions,0,2);
+    	$select_questions = $connect->query("select * from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
+    	if (mysqli_num_rows($select_questions) == 1){
+    		$id_question1 = mysqli_result($select_questions,0,0);
+    		$id_conjoint = mysqli_result($select_questions,0,1);
+				$question1 = mysqli_result($select_questions,0,2);
 				$question1 = html_ent($question1);
 				$question1 = bbcode_br($question1);
 
@@ -230,7 +230,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	
 	// analyse simple ***
 
-		$select_reponses1 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question1;");
+		$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question1;");
 
 		// sum votes
 		$array_rep1 = array();
@@ -245,13 +245,13 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 		
 		$select_sum_votes = substr($select_sum_votes,0,-1) . ") and id_reponse2 = 0;";
 		
-		$req_sum_votes = mysql_query($select_sum_votes);
+		$req_sum_votes = $connect->query($select_sum_votes);
 		if ($req_sum_votes)
-			$sum = mysql_result($req_sum_votes,0);
+			$sum = mysqli_result($req_sum_votes,0);
 		else $sum = 0;
 		@mysql_data_seek($select_reponses1,0);
 		
-		if (mysql_num_rows($req_sum_votes) > 0){
+		if (mysqli_num_rows($req_sum_votes) > 0){
 
 			// table resultats
 
@@ -260,8 +260,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			while($reponse1 = mysql_fetch_row($select_reponses1)){
 				$this_reponse = html_ent($reponse1[2]);
 				echo "\n<tr><td align=\"center\" class=\"verticalmenu\"><div id=\"verticalmenu_text\"><b>".$this_reponse."</b></div></td>";
- 				$select_votes = mysql_query("select SUM(nbr_votes) from `" . $tblprefix . "sondage_votes` where id_reponse1 = $reponse1[0];");
- 				$vote = mysql_result($select_votes,0);
+ 				$select_votes = $connect->query("select SUM(nbr_votes) from `" . $tblprefix . "sondage_votes` where id_reponse1 = $reponse1[0];");
+ 				$vote = mysqli_result($select_votes,0);
  				if ($sum != 0)
  					$resultat = round($vote*100/$sum,1);
  				else $resultat = 0;
@@ -277,16 +277,16 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	
 	else {
 
-		$select_question2 = mysql_query("select * from `" . $tblprefix . "sondage_questions` where id_question = $id_conjoint;");
-		$id_question2 = mysql_result($select_question2,0,0);
-		$question2 = mysql_result($select_question2,0,2);
+		$select_question2 = $connect->query("select * from `" . $tblprefix . "sondage_questions` where id_question = $id_conjoint;");
+		$id_question2 = mysqli_result($select_question2,0,0);
+		$question2 = mysqli_result($select_question2,0,2);
 		$question2 = html_ent($question2);
 		$question2 = bbcode_br($question2);
 		
-		$select_reponses1 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question1;");
-		$select_reponses2 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question2;");
-		$nbr_reponses1 = mysql_num_rows($select_reponses1)+2;
-		$nbr_reponses2 = mysql_num_rows($select_reponses2)+2;
+		$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question1;");
+		$select_reponses2 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question2;");
+		$nbr_reponses1 = mysqli_num_rows($select_reponses1)+2;
+		$nbr_reponses2 = mysqli_num_rows($select_reponses2)+2;
 
 		// crosstab table
 
@@ -325,13 +325,13 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			$select_sum_votes .= $id_rep.",";
 		
 		$select_sum_votes = substr($select_sum_votes,0,-1) . ");";
-		$req_sum_votes = mysql_query($select_sum_votes);
+		$req_sum_votes = $connect->query($select_sum_votes);
 		if ($req_sum_votes)
-			$sum = mysql_result($req_sum_votes,0);
+			$sum = mysqli_result($req_sum_votes,0);
 		else $sum = 0;
 		@mysql_data_seek($select_reponses1,0);
 		
-		if (mysql_num_rows($req_sum_votes) > 0) {
+		if (mysqli_num_rows($req_sum_votes) > 0) {
 
 			// boucle results
 		
@@ -342,8 +342,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
  				$sum_row = 0;
  				while($reponse2 = mysql_fetch_row($select_reponses2)){
  				
- 					$select_votes = mysql_query("select SUM(nbr_votes) from `" . $tblprefix . "sondage_votes` where id_reponse1 = $reponse1[0] and id_reponse2 = $reponse2[0];");
- 					$vote = mysql_result($select_votes,0);
+ 					$select_votes = $connect->query("select SUM(nbr_votes) from `" . $tblprefix . "sondage_votes` where id_reponse1 = $reponse1[0] and id_reponse2 = $reponse2[0];");
+ 					$vote = mysqli_result($select_votes,0);
  					if ($sum != 0)
  						$resultat = round($vote*100/$sum,1);
  					else $resultat = 0;
@@ -365,7 +365,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				$select_votes_column .= $id_rep.",";
 			
 			$select_votes_column = substr($select_votes_column,0,-1) . ") group by id_reponse2;";
-			$req_votes_column = mysql_query($select_votes_column);
+			$req_votes_column = $connect->query($select_votes_column);
 			
 			$total_sum = 0;
 			while($vote_column = mysql_fetch_row($req_votes_column)){
@@ -390,28 +390,28 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 
     // ****************** edit_poll **************************
     case "edit_poll" : {
-    		$select_question1 = mysql_query("select * from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
-    		if (mysql_num_rows($select_question1) == 1){
-    			$id_question1 = mysql_result($select_question1,0,0);
-    			$id_conjoint = mysql_result($select_question1,0,1);
-					$question1 = mysql_result($select_question1,0,2);
+    		$select_question1 = $connect->query("select * from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
+    		if (mysqli_num_rows($select_question1) == 1){
+    			$id_question1 = mysqli_result($select_question1,0,0);
+    			$id_conjoint = mysqli_result($select_question1,0,1);
+					$question1 = mysqli_result($select_question1,0,2);
 					$question1 = br_bbcode(bbcode_br(html_ent($question1)));
     			if ($id_conjoint == 0){
-    				$select_reponses1 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question1;");
+    				$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question1;");
     				// traitement simple poll
     				if (isset($_POST['polltype']) && $_POST['polltype'] == "simplepoll"){
     					if (!isset($_SESSION['random_key']) || $_SESSION['random_key'] != $_POST['random']){
 								$_SESSION['random_key'] = $_POST['random'];
 								$titre_simple = escape_string(trim($_POST['titre_simple']));
 		   					if (!empty($titre_simple) && $titre_simple != $question1)
- 									$update_question = mysql_query("update `" . $tblprefix . "sondage_questions` SET question = '$titre_simple' where id_question = $id_question1;");
+ 									$update_question = $connect->query("update `" . $tblprefix . "sondage_questions` SET question = '$titre_simple' where id_question = $id_question1;");
 		  					while($reponse1 = mysql_fetch_row($select_reponses1)){
     							$id_reponse = $reponse1[0];
 									$this_reponse = html_ent($reponse1[2]);
 									$variable_rep = "reponse".$id_reponse;
     							$reponse_post = escape_string(trim($_POST[$variable_rep]));
     	 						if (!empty($reponse_post) && $reponse_post != $this_reponse)
- 										$update_reponse = mysql_query("update `" . $tblprefix . "sondage_reponses` SET reponse = '$reponse_post' where id_reponse = $id_reponse;");
+ 										$update_reponse = $connect->query("update `" . $tblprefix . "sondage_reponses` SET reponse = '$reponse_post' where id_reponse = $id_reponse;");
 								}
 								redirection(poll_edited,"?inc=poll_manager",3,"tips",1);
 						 } else goback(err_data_saved,2,"error",1);
@@ -432,12 +432,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     				}
     			}
     			else{
-    				$select_question2 = mysql_query("select * from `" . $tblprefix . "sondage_questions` where id_question = $id_conjoint;");
-						$id_question2 = mysql_result($select_question2,0,0);
-						$question2 = mysql_result($select_question2,0,2);
+    				$select_question2 = $connect->query("select * from `" . $tblprefix . "sondage_questions` where id_question = $id_conjoint;");
+						$id_question2 = mysqli_result($select_question2,0,0);
+						$question2 = mysqli_result($select_question2,0,2);
 						$question2 = br_bbcode(bbcode_br(html_ent($question2)));
-						$select_reponses1 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question1;");
-						$select_reponses2 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question2;");
+						$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question1;");
+						$select_reponses2 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question2;");
     				// traitement crosstab
     				if (isset($_POST['polltype']) && $_POST['polltype'] == "crosstab"){
     					if (!isset($_SESSION['random_key']) || $_SESSION['random_key'] != $_POST['random']){
@@ -445,11 +445,11 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 
 								$titre1_crosstab = escape_string(trim($_POST['titre1_crosstab']));
 		   					if (!empty($titre1_crosstab) && $titre1_crosstab != $question1)
- 									$update_question1 = mysql_query("update `" . $tblprefix . "sondage_questions` SET question = '$titre1_crosstab' where id_question = $id_question1;");
+ 									$update_question1 = $connect->query("update `" . $tblprefix . "sondage_questions` SET question = '$titre1_crosstab' where id_question = $id_question1;");
 
 								$titre2_crosstab = escape_string(trim($_POST['titre2_crosstab']));
 		   					if (!empty($titre2_crosstab) && $titre2_crosstab != $question2)
- 									$update_question2 = mysql_query("update `" . $tblprefix . "sondage_questions` SET question = '$titre2_crosstab' where id_question = $id_question2;");
+ 									$update_question2 = $connect->query("update `" . $tblprefix . "sondage_questions` SET question = '$titre2_crosstab' where id_question = $id_question2;");
 
 		  					while($reponse1 = mysql_fetch_row($select_reponses1)){
     							$id_reponse = $reponse1[0];
@@ -457,7 +457,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 									$variable_rep = "1reponse".$id_reponse;
     							$reponse_post = escape_string(trim($_POST[$variable_rep]));
    	  						if (!empty($reponse_post) && $reponse_post != $this_reponse)
- 										$update_reponse = mysql_query("update `" . $tblprefix . "sondage_reponses` SET reponse = '$reponse_post' where id_reponse = $id_reponse;");
+ 										$update_reponse = $connect->query("update `" . $tblprefix . "sondage_reponses` SET reponse = '$reponse_post' where id_reponse = $id_reponse;");
 								}
 
 		  					while($reponse2 = mysql_fetch_row($select_reponses2)){
@@ -466,7 +466,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 									$variable_rep2 = "2reponse".$id_reponse2;
     							$reponse_post2 = escape_string(trim($_POST[$variable_rep2]));
    	  						if (!empty($reponse_post2) && $reponse_post2 != $this_reponse2)
- 										$update_reponse2 = mysql_query("update `" . $tblprefix . "sondage_reponses` SET reponse = '$reponse_post2' where id_reponse = $id_reponse2;");
+ 										$update_reponse2 = $connect->query("update `" . $tblprefix . "sondage_reponses` SET reponse = '$reponse_post2' where id_reponse = $id_reponse2;");
 								}
 								redirection(poll_edited,"?inc=poll_manager",3,"tips",1);
 							} else goback(err_data_saved,2,"error",1);
@@ -504,26 +504,26 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** delete_poll **************************
     case "delete_poll" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_question1 = mysql_query("select id_conjoint from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
-    		if (mysql_num_rows($select_question1) == 1){
+    		$select_question1 = $connect->query("select id_conjoint from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
+    		if (mysqli_num_rows($select_question1) == 1){
 					$array_rep1 = array();
 					$array_rep2 = array();
-    			$id_conjoint = mysql_result($select_question1,0);
+    			$id_conjoint = mysqli_result($select_question1,0);
     			if ($id_conjoint == 0){
-						$select_reponses1 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
+						$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
  						while($reponse1 = mysql_fetch_row($select_reponses1))
  							$array_rep1[] = $reponse1[0];
 						$delete_all_votes = "delete from `" . $tblprefix . "sondage_votes` where id_reponse1 in (";
  						foreach ($array_rep1 as $id_rep)
 							$delete_all_votes .= $id_rep.",";
 						$delete_all_votes = substr($delete_all_votes,0,-1) . ") and id_reponse2 = 0;";
-						$req_delete_all_votes = mysql_query($delete_all_votes);
-						$delete_reponses = mysql_query("delete from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
-						$delete_question = mysql_query("delete from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
+						$req_delete_all_votes = $connect->query($delete_all_votes);
+						$delete_reponses = $connect->query("delete from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
+						$delete_question = $connect->query("delete from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
     			}
     			else{
-						$select_reponses1 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
-						$select_reponses2 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_conjoint;");
+						$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
+						$select_reponses2 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_conjoint;");
  						while($reponse1 = mysql_fetch_row($select_reponses1))
  							$array_rep1[] = $reponse1[0];
  						while($reponse2 = mysql_fetch_row($select_reponses2))
@@ -535,9 +535,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
  						foreach ($array_rep2 as $id_rep)
 							$delete_all_votes2 .= $id_rep.",";
 						$delete_all_votes2 = substr($delete_all_votes2,0,-1) . ");";
-						$req_delete_all_votes2 = mysql_query($delete_all_votes2);
-						$delete_reponses2 = mysql_query("delete from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll or id_question = $id_conjoint;");
-						$delete_question2 = mysql_query("delete from `" . $tblprefix . "sondage_questions` where id_question = $id_poll or id_question = $id_conjoint;");
+						$req_delete_all_votes2 = $connect->query($delete_all_votes2);
+						$delete_reponses2 = $connect->query("delete from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll or id_question = $id_conjoint;");
+						$delete_question2 = $connect->query("delete from `" . $tblprefix . "sondage_questions` where id_question = $id_poll or id_question = $id_conjoint;");
     			}
     		}
     	}
@@ -547,16 +547,16 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** activer_poll **************************
     case "activer_poll" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_question1 = mysql_query("select id_conjoint from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
-    		if (mysql_num_rows($select_question1) == 1){
-    			$id_conjoint = mysql_result($select_question1,0);
+    		$select_question1 = $connect->query("select id_conjoint from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
+    		if (mysqli_num_rows($select_question1) == 1){
+    			$id_conjoint = mysqli_result($select_question1,0);
     			if ($id_conjoint == 0){
-    				$desactiver_others = mysql_query("update `" . $tblprefix . "sondage_questions` set active_question = '0' where id_question != $id_poll;");
-    				$activer_poll = mysql_query("update `" . $tblprefix . "sondage_questions` set active_question = '1' where id_question = $id_poll;");
+    				$desactiver_others = $connect->query("update `" . $tblprefix . "sondage_questions` set active_question = '0' where id_question != $id_poll;");
+    				$activer_poll = $connect->query("update `" . $tblprefix . "sondage_questions` set active_question = '1' where id_question = $id_poll;");
     			}
     			else{
-    				$desactiver_others = mysql_query("update `" . $tblprefix . "sondage_questions` set active_question = '0' where id_question != $id_poll and id_question != $id_conjoint;");
-    				$activer_poll = mysql_query("update `" . $tblprefix . "sondage_questions` set active_question = '1' where id_question = $id_poll or id_question = $id_conjoint;");
+    				$desactiver_others = $connect->query("update `" . $tblprefix . "sondage_questions` set active_question = '0' where id_question != $id_poll and id_question != $id_conjoint;");
+    				$activer_poll = $connect->query("update `" . $tblprefix . "sondage_questions` set active_question = '1' where id_question = $id_poll or id_question = $id_conjoint;");
     			}
     		}
     	}
@@ -566,13 +566,13 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** desactiver_poll **************************
     case "desactiver_poll" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_question1 = mysql_query("select id_conjoint from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
-    		if (mysql_num_rows($select_question1) == 1){
-    			$id_conjoint = mysql_result($select_question1,0);
+    		$select_question1 = $connect->query("select id_conjoint from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
+    		if (mysqli_num_rows($select_question1) == 1){
+    			$id_conjoint = mysqli_result($select_question1,0);
     			if ($id_conjoint == 0)
-    				$desactiver_poll = mysql_query("update `" . $tblprefix . "sondage_questions` set active_question = '0' where id_question = $id_poll;");
+    				$desactiver_poll = $connect->query("update `" . $tblprefix . "sondage_questions` set active_question = '0' where id_question = $id_poll;");
     			else
-    				$desactiver_poll = mysql_query("update `" . $tblprefix . "sondage_questions` set active_question = '0' where id_question = $id_poll or id_question = $id_conjoint;");
+    				$desactiver_poll = $connect->query("update `" . $tblprefix . "sondage_questions` set active_question = '0' where id_question = $id_poll or id_question = $id_conjoint;");
     		}
     	}
 			locationhref_admin("?inc=poll_manager");
@@ -581,24 +581,24 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     // ****************** reset_poll **************************
     case "reset_poll" : {
     	if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_question1 = mysql_query("select id_conjoint from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
-    		if (mysql_num_rows($select_question1) == 1){
+    		$select_question1 = $connect->query("select id_conjoint from `" . $tblprefix . "sondage_questions` where id_question = $id_poll;");
+    		if (mysqli_num_rows($select_question1) == 1){
 					$array_rep1 = array();
 					$array_rep2 = array();
-    			$id_conjoint = mysql_result($select_question1,0);
+    			$id_conjoint = mysqli_result($select_question1,0);
     			if ($id_conjoint == 0){
-						$select_reponses1 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
+						$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
  						while($reponse1 = mysql_fetch_row($select_reponses1))
  							$array_rep1[] = $reponse1[0];
 						$reset_all = "update `" . $tblprefix . "sondage_votes` set nbr_votes = 0 where id_reponse1 in (";
  						foreach ($array_rep1 as $id_rep)
 							$reset_all .= $id_rep.",";
 						$reset_all = substr($reset_all,0,-1) . ") and id_reponse2 = 0;";
-						$req_reset_all = mysql_query($reset_all);
+						$req_reset_all = $connect->query($reset_all);
     			}
     			else{
-						$select_reponses1 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
-						$select_reponses2 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_conjoint;");
+						$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
+						$select_reponses2 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_conjoint;");
  						while($reponse1 = mysql_fetch_row($select_reponses1))
  							$array_rep1[] = $reponse1[0];
  						while($reponse2 = mysql_fetch_row($select_reponses2))
@@ -610,7 +610,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
  						foreach ($array_rep2 as $id_rep)
 							$reset_all2 .= $id_rep.",";
 						$reset_all2 = substr($reset_all2,0,-1) . ");";
-						$req_reset_all2 = mysql_query($reset_all2);
+						$req_reset_all2 = $connect->query($reset_all2);
     			}
     		}
     	}
@@ -629,8 +629,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				$page = intval($_GET['l']);
 			else $page = 1;
 			
-			$select_questions = mysql_query("select * from `" . $tblprefix . "sondage_questions` where id_conjoint = 0 order by active_question desc;");
-			$nbr_trouve = mysql_num_rows($select_questions);
+			$select_questions = $connect->query("select * from `" . $tblprefix . "sondage_questions` where id_conjoint = 0 order by active_question desc;");
+			$nbr_trouve = mysqli_num_rows($select_questions);
   		if ($nbr_trouve > 0){
 				$page_max = ceil($nbr_trouve / $nbr_resultats);
 			if ($page <= $page_max && $page > 1 && $page_max > 1)
@@ -640,7 +640,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				$page = 1;
 			}
 			
-			$select_questions_limit = mysql_query("select * from `" . $tblprefix . "sondage_questions` where id_conjoint = 0 order by active_question desc limit $limit, $nbr_resultats;");
+			$select_questions_limit = $connect->query("select * from `" . $tblprefix . "sondage_questions` where id_conjoint = 0 order by active_question desc limit $limit, $nbr_resultats;");
 
 				echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".poll_title."</b></td>";
@@ -660,16 +660,16 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 					echo "<tr>\n";
 					echo "\n<td class=\"affichage_table\" style=\"text-align: left\"><ul>";
 					
-					$select_other_question = mysql_query("select * from `" . $tblprefix . "sondage_questions` where id_conjoint = $poll[0];");
-					if (mysql_num_rows($select_other_question) > 0){
+					$select_other_question = $connect->query("select * from `" . $tblprefix . "sondage_questions` where id_conjoint = $poll[0];");
+					if (mysqli_num_rows($select_other_question) > 0){
 						
 						// crosstab ***
 						
-						$id_question = mysql_result($select_other_question,0,0);
-						$question1 = mysql_result($select_other_question,0,2);
+						$id_question = mysqli_result($select_other_question,0,0);
+						$question1 = mysqli_result($select_other_question,0,2);
 						$question1 = html_ent($question1);
 						$question1 = readmore($question1,$max_len);
-						$active_question = mysql_result($select_other_question,0,3);
+						$active_question = mysqli_result($select_other_question,0,3);
 						
 						$id_question2 = $poll[0];
 						$question2 = $poll[2];
@@ -681,8 +681,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						else $color = "red";
 					
 						// sum votes
-						$select_reponses1 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question;");
-						$select_reponses2 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question2;");
+						$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question;");
+						$select_reponses2 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question2;");
  						while($reponse1 = mysql_fetch_row($select_reponses1))
  							$array_rep1[] = $reponse1[0];
  						while($reponse2 = mysql_fetch_row($select_reponses2))
@@ -694,9 +694,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
  						foreach ($array_rep2 as $id_rep)
 							$select_sum_votes .= $id_rep.",";
 						$select_sum_votes = substr($select_sum_votes,0,-1) . ");";
-						$req_sum_votes1 = mysql_query($select_sum_votes);
+						$req_sum_votes1 = $connect->query($select_sum_votes);
 						if ($req_sum_votes1)
-							$sum = mysql_result($req_sum_votes1,0);
+							$sum = mysqli_result($req_sum_votes1,0);
 						else $sum = 0;
 						
 						echo "<li><font color=\"".$color."\">".$question1."</font></li><li><font color=\"".$color."\">".$question2."</font></li>";
@@ -716,17 +716,17 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						else $color = "red";
 						
 						// sum votes
-						$select_reponses1 = mysql_query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question;");
+						$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question;");
  						while($reponse1 = mysql_fetch_row($select_reponses1))
  							$array_rep1[] = $reponse1[0];
 						$select_sum_votes = "select SUM(nbr_votes) from `" . $tblprefix . "sondage_votes` where id_reponse1 in (";
  						foreach ($array_rep1 as $id_rep)
 							$select_sum_votes .= $id_rep.",";
 						$select_sum_votes = substr($select_sum_votes,0,-1) . ") and id_reponse2 = 0;";
-						$req_sum_votes2 = mysql_query($select_sum_votes);
+						$req_sum_votes2 = $connect->query($select_sum_votes);
 						
 						if ($req_sum_votes2)
-							$sum = mysql_result($req_sum_votes2,0);
+							$sum = mysqli_result($req_sum_votes2,0);
 						else $sum = 0;
 						
 						echo "<li><font color=\"".$color."\">".$question1."</font></li>";

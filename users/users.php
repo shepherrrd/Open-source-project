@@ -88,9 +88,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
         			else goback(erreur_upload,2,"error",1);
   					} else goback(erreur_upload_type,2,"error",1);
  					}
-    			$select_app_login = mysql_query("select id_apprenant from `" . $tblprefix . "apprenants` where identifiant_apprenant = '$login';");
-    			$select_user_login = mysql_query("select id_user from `" . $tblprefix . "users` where identifiant_user = '$login';");
- 					if (mysql_num_rows($select_app_login) == 0 && mysql_num_rows($select_user_login) == 0) {
+    			$select_app_login = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants` where identifiant_apprenant = '$login';");
+    			$select_user_login = $connect->query("select id_user from `" . $tblprefix . "users` where identifiant_user = '$login';");
+ 					if (mysqli_num_rows($select_app_login) == 0 && mysqli_num_rows($select_user_login) == 0) {
 						if (mail_valide($email) || empty($email)) {
 	          	if ($password == $pass_conf) {
 	            	if (strlen($password) >= 5) {
@@ -101,12 +101,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 	                $mdp = $crypt.$rndm;
 	                
 	                if (($grade_user_session == "3" && ($groupe == "2" || $groupe == "1" || $groupe == "0")) || ($grade_user_session == "2" && ($groupe == "1" || $groupe == "0"))){
-										$selectlanguage_site_info = mysql_query("select langue_site from `" . $tblprefix . "site_infos`;");
-										if (mysql_num_rows($selectlanguage_site_info) > 0)
-											$language_site_info = escape_string(mysql_result($selectlanguage_site_info,0));
+										$selectlanguage_site_info = $connect->query("select langue_site from `" . $tblprefix . "site_infos`;");
+										if (mysqli_num_rows($selectlanguage_site_info) > 0)
+											$language_site_info = escape_string(mysqli_result($selectlanguage_site_info,0));
 										else $language_site_info = $language;
 	                	$insertuser = "INSERT INTO `" . $tblprefix . "users` VALUES (NULL, '".$name."', '".$login."', '".$mdp."', '".$email."','1','".$groupe."','".$photo_user."','".$sexe."',".time().",0,'0','".$language_site_info."','-','-',0,0,0,0);";
-	               		mysql_query($insertuser,$connect);
+	               		$connect->query($insertuser,$connect);
 	               		redirection(user_ajoute."<br />".identifiant." : ".html_ent($login),"?inc=users",10,"tips",1);
 	               	} else goback(groupe_invalide,2,"error",1);
 	              } else goback(pass_court,2,"error",1);
@@ -158,8 +158,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			
 			echo "<script language=\"javascript\" type=\"text/javascript\" src=\"../styles/radio_div.js\"></script>";
 			$err_comp = 0;
-			$select_user = mysql_query("select * from `" . $tblprefix . "users` where id_user = $id_user;");
-    	if (mysql_num_rows($select_user) == 1){
+			$select_user = $connect->query("select * from `" . $tblprefix . "users` where id_user = $id_user;");
+    	if (mysqli_num_rows($select_user) == 1){
     		$user = mysql_fetch_row($select_user);
 				if ($grade_user_session == "3" || $id_user == $id_user_session || $user[6] == "0" || $user[6] == "1") {
 					
@@ -181,10 +181,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							$login = special_chars($login);
 							$login = escape_string($login);
 							if ($login != $identifiant_user){
-								$select_app_login = mysql_query("select id_apprenant from `" . $tblprefix . "apprenants` where identifiant_apprenant = '$login';");
-								$select_user_id = mysql_query("select id_user from `" . $tblprefix . "users` where identifiant_user = '$login' and id_user != $id_user;");
- 								if (mysql_num_rows($select_app_login) == 0 && mysql_num_rows($select_user_id) == 0) {
- 									$update_login = mysql_query("update `" . $tblprefix . "users` set identifiant_user = '$login' where id_user = $id_user;");
+								$select_app_login = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants` where identifiant_apprenant = '$login';");
+								$select_user_id = $connect->query("select id_user from `" . $tblprefix . "users` where identifiant_user = '$login' and id_user != $id_user;");
+ 								if (mysqli_num_rows($select_app_login) == 0 && mysqli_num_rows($select_user_id) == 0) {
+ 									$update_login = $connect->query("update `" . $tblprefix . "users` set identifiant_user = '$login' where id_user = $id_user;");
  								}
  								else {
  									$err_comp = 1;
@@ -197,7 +197,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						$name = trim($_POST['name']);
 						$name = escape_string($name);
 						if ($name != $nom_user){
- 							$update_name = mysql_query("update `" . $tblprefix . "users` set nom_user = '$name' where id_user = $id_user;");
+ 							$update_name = $connect->query("update `" . $tblprefix . "users` set nom_user = '$name' where id_user = $id_user;");
  						}
 
 // update sexe
@@ -212,7 +212,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
  								if ($photo_profil == "man.jpg")
  									$danew_photo_profil = "woman.jpg"; 
  							} 
- 							$update_name = mysql_query("update `" . $tblprefix . "users` set photo_profil = '$danew_photo_profil', sexe_user = '$sexe' where id_user = $id_user;");
+ 							$update_name = $connect->query("update `" . $tblprefix . "users` set photo_profil = '$danew_photo_profil', sexe_user = '$sexe' where id_user = $id_user;");
  						}
  						
 // update photo
@@ -230,7 +230,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
   			$new_file = fonc_rand(24).".".$ext;
   		$destination = "../docs/".$new_file;
 			if ((@move_uploaded_file($_FILES['uploaded_file']['tmp_name'],$destination))){
-				$update_photo = mysql_query("update `" . $tblprefix . "users` set photo_profil = '$new_file' where id_user = $id_user;");
+				$update_photo = $connect->query("update `" . $tblprefix . "users` set photo_profil = '$new_file' where id_user = $id_user;");
 				if ($photo_profil != "man.jpg" && $photo_profil != "woman.jpg")
 					@unlink("../docs/".$photo_profil);
       }
@@ -251,7 +251,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 		if ($sexe_user == "M") $photo_remove = "man.jpg";
 		else if ($sexe_user == "F") $photo_remove = "woman.jpg";
 	}
- 	$update_photo = mysql_query("update `" . $tblprefix . "users` set photo_profil = '".$photo_remove."' where id_user = $id_user;");
+ 	$update_photo = $connect->query("update `" . $tblprefix . "users` set photo_profil = '".$photo_remove."' where id_user = $id_user;");
 	@unlink("../docs/".$photo_profil);
 }
 
@@ -260,7 +260,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 						$email = escape_string($email);
 						if ($email != $email_user){
 							if (mail_valide($email) || $email == ""){
- 								$update_email = mysql_query("update `" . $tblprefix . "users` set email_user = '$email' where id_user = $id_user;");
+ 								$update_email = $connect->query("update `" . $tblprefix . "users` set email_user = '$email' where id_user = $id_user;");
  							}
  							else {
  								$err_comp = 1;
@@ -289,7 +289,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 	                    $rndm2 = substr($rndm,4,4);
 	                    $crypt = md5($rndm2.$new_password.$rndm1);
 	                    $mdp = $crypt.$rndm;
-	                    $update_mdp = mysql_query("update `" . $tblprefix . "users` set mdp_user = '$mdp' where id_user = $id_user;");
+	                    $update_mdp = $connect->query("update `" . $tblprefix . "users` set mdp_user = '$mdp' where id_user = $id_user;");
 										}
 										else {
 											$err_comp = 1;
@@ -307,7 +307,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 	                $rndm2 = substr($rndm,4,4);
 	                $crypt = md5($rndm2.$new_password.$rndm1);
 	              	$mdp = $crypt.$rndm;
- 									$update_mdp = mysql_query("update `" . $tblprefix . "users` set mdp_user = '$mdp' where id_user = $id_user;");
+ 									$update_mdp = $connect->query("update `" . $tblprefix . "users` set mdp_user = '$mdp' where id_user = $id_user;");
  								}
  							 }
  							 else {
@@ -327,7 +327,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 							if ($groupe != $grade_user) {
 								if ($grade_user_session == "3"){
 									if ($groupe == "2" || $groupe == "1" || $groupe == "0") {
-										$update_grade = mysql_query("update `" . $tblprefix . "users` set grade_user = '$groupe' where id_user = $id_user;");
+										$update_grade = $connect->query("update `" . $tblprefix . "users` set grade_user = '$groupe' where id_user = $id_user;");
 									}
 									else {
 										$err_comp = 1;
@@ -336,7 +336,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 	            	}
 	            	else {
 									if ($groupe == "1" || $groupe == "0") {
-										$update_grade = mysql_query("update `" . $tblprefix . "users` set grade_user = '$groupe' where id_user = $id_user;");
+										$update_grade = $connect->query("update `" . $tblprefix . "users` set grade_user = '$groupe' where id_user = $id_user;");
 									}
 									else {
 										$err_comp = 1;
@@ -415,11 +415,11 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
    	// ****************** delete_user **************************
 		case "delete_user" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_grade_user = mysql_query("select grade_user from `" . $tblprefix . "users` where id_user = $id_user;");
-    		if (mysql_num_rows($select_grade_user) == 1){
-    			$grade_user = mysql_result($select_grade_user,0,0);
+    		$select_grade_user = $connect->query("select grade_user from `" . $tblprefix . "users` where id_user = $id_user;");
+    		if (mysqli_num_rows($select_grade_user) == 1){
+    			$grade_user = mysqli_result($select_grade_user,0,0);
     			if (($grade_user_session == "3" && $id_user != $id_user_session) || $grade_user == "0" || $grade_user == "1")
-    				$delete_user = mysql_query("delete from `" . $tblprefix . "users` where id_user = $id_user;");
+    				$delete_user = $connect->query("delete from `" . $tblprefix . "users` where id_user = $id_user;");
 				}
 			}
 			locationhref_admin("?inc=users&fonction_ad=".$fonction_ad."&search_usr=".$search_usr);
@@ -428,11 +428,11 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
    	// ****************** activer_user **************************
 		case "activer_user" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_grade_user = mysql_query("select grade_user from `" . $tblprefix . "users` where id_user = $id_user;");
-    		if (mysql_num_rows($select_grade_user) == 1){
-    			$grade_user = mysql_result($select_grade_user,0,0);
+    		$select_grade_user = $connect->query("select grade_user from `" . $tblprefix . "users` where id_user = $id_user;");
+    		if (mysqli_num_rows($select_grade_user) == 1){
+    			$grade_user = mysqli_result($select_grade_user,0,0);
     			if (($grade_user_session == "3" && $id_user != $id_user_session) || $grade_user == "0" || $grade_user == "1")
-    				$activer_user = mysql_query("update `" . $tblprefix . "users` set active_user = '1' where id_user = $id_user;");
+    				$activer_user = $connect->query("update `" . $tblprefix . "users` set active_user = '1' where id_user = $id_user;");
 				}
 			}
 			locationhref_admin("?inc=users&fonction_ad=".$fonction_ad."&search_usr=".$search_usr);
@@ -441,11 +441,11 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
    	// ****************** desactiver_user **************************
 		case "desactiver_user" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-    		$select_grade_user = mysql_query("select grade_user from `" . $tblprefix . "users` where id_user = $id_user;");
-    		if (mysql_num_rows($select_grade_user) == 1){
-    			$grade_user = mysql_result($select_grade_user,0,0);
+    		$select_grade_user = $connect->query("select grade_user from `" . $tblprefix . "users` where id_user = $id_user;");
+    		if (mysqli_num_rows($select_grade_user) == 1){
+    			$grade_user = mysqli_result($select_grade_user,0,0);
     			if (($grade_user_session == "3" && $id_user != $id_user_session) || $grade_user == "0" || $grade_user == "1")
-    				$desactiver_user = mysql_query("update `" . $tblprefix . "users` set active_user = '0' where id_user = $id_user;");
+    				$desactiver_user = $connect->query("update `" . $tblprefix . "users` set active_user = '0' where id_user = $id_user;");
 				}
 			}
 			locationhref_admin("?inc=users&fonction_ad=".$fonction_ad."&search_usr=".$search_usr);
@@ -490,11 +490,11 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 		$page2 = intval($_GET['t']);
 	else $page2 = 1;
 	
-			// activés
+			// activï¿½s
     	echo "<hr /><a name=\"active\"><font color=\"black\"><b><u>- ".utilisateurs_actives." : </u></b></font></a><br /><br />";
 
-	$select_users = mysql_query("select * from `" . $tblprefix . "users` where active_user = '1' ".$fonction_grade_ad." ".$req_search_usr." order by grade_user desc;");
-	$nbr_trouve = mysql_num_rows($select_users);
+	$select_users = $connect->query("select * from `" . $tblprefix . "users` where active_user = '1' ".$fonction_grade_ad." ".$req_search_usr." order by grade_user desc;");
+	$nbr_trouve = mysqli_num_rows($select_users);
   if ($nbr_trouve > 0){
 		$page_max = ceil($nbr_trouve / $nbr_resultats);
 		if ($page <= $page_max && $page > 1 && $page_max > 1)
@@ -503,7 +503,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 			$limit = 0;
 			$page = 1;
 		}
-		$select_users_limit = mysql_query("select * from `" . $tblprefix . "users` where active_user = '1' ".$fonction_grade_ad." ".$req_search_usr." order by grade_user desc limit $limit, $nbr_resultats;");
+		$select_users_limit = $connect->query("select * from `" . $tblprefix . "users` where active_user = '1' ".$fonction_grade_ad." ".$req_search_usr." order by grade_user desc limit $limit, $nbr_resultats;");
 
 				echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".identifiant."</b></td>";
@@ -603,11 +603,11 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 		}
 			} else echo aucun_utilisateur."<br />";
 
-			// désactivés
+			// dï¿½sactivï¿½s
 			echo "<br /><hr /><a name=\"desactive\"><font color=\"black\"><b><u>- ".utilisateurs_desactives." : </u></b></font></a><br /><br />";
 
-			$select_users = mysql_query("select * from `" . $tblprefix . "users` where active_user = '0' ".$fonction_grade_ad." ".$req_search_usr." order by grade_user desc;");
-			 $nbr_trouve = mysql_num_rows($select_users);
+			$select_users = $connect->query("select * from `" . $tblprefix . "users` where active_user = '0' ".$fonction_grade_ad." ".$req_search_usr." order by grade_user desc;");
+			 $nbr_trouve = mysqli_num_rows($select_users);
   		 if ($nbr_trouve > 0){
 				$page_max = ceil($nbr_trouve / $nbr_resultats);
 				if ($page2 <= $page_max && $page2 > 1 && $page_max > 1)
@@ -617,7 +617,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 					$page2 = 1;
 				}
 
-			$select_users_limit = mysql_query("select * from `" . $tblprefix . "users` where active_user = '0' ".$fonction_grade_ad." ".$req_search_usr." order by grade_user desc limit $limit, $nbr_resultats;");
+			$select_users_limit = $connect->query("select * from `" . $tblprefix . "users` where active_user = '0' ".$fonction_grade_ad." ".$req_search_usr." order by grade_user desc limit $limit, $nbr_resultats;");
 
 				echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".identifiant."</b></td>";
