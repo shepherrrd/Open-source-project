@@ -106,7 +106,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 											$language_site_info = escape_string(mysqli_result($selectlanguage_site_info,0));
 										else $language_site_info = $language;
 	                	$insertuser = "INSERT INTO `" . $tblprefix . "users` VALUES (NULL, '".$name."', '".$login."', '".$mdp."', '".$email."','1','".$groupe."','".$photo_user."','".$sexe."',".time().",0,'0','".$language_site_info."','-','-',0,0,0,0);";
-	               		$connect->query($insertuser,$connect);
+	               		$connect->query($insertuser);
 	               		redirection(user_ajoute."<br />".identifiant." : ".html_ent($login),"?inc=users",10,"tips",1);
 	               	} else goback(groupe_invalide,2,"error",1);
 	              } else goback(pass_court,2,"error",1);
@@ -160,7 +160,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			$err_comp = 0;
 			$select_user = $connect->query("select * from `" . $tblprefix . "users` where id_user = $id_user;");
     	if (mysqli_num_rows($select_user) == 1){
-    		$user = mysql_fetch_row($select_user);
+    		$user = mysqli_fetch_row($select_user);
 				if ($grade_user_session == "3" || $id_user == $id_user_session || $user[6] == "0" || $user[6] == "1") {
 					
 					$nom_user = html_ent($user[1]);
@@ -517,7 +517,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 				
-				while($user = mysql_fetch_row($select_users_limit)){
+				while($user = mysqli_fetch_row($select_users_limit)){
 					
 					$id_user = $user[0];
 					$nom_user = html_ent($user[1]);
@@ -631,7 +631,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 				
-				while($user = mysql_fetch_row($select_users_limit)){
+				while($user = mysqli_fetch_row($select_users_limit)){
 					
 					$id_user = $user[0];
 					$nom_user = html_ent($user[1]);
