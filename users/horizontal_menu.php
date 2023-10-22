@@ -79,7 +79,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     				$select_article = $connect->query("select id_article from `" . $tblprefix . "articles`;");
     				if (mysqli_num_rows($select_article) > 0){
     					$order_i = 1;
-    					while($article = mysql_fetch_row($select_article)){
+    					while($article = mysqli_fetch_row($select_article)){
     						$id_article = $article[0];
     						if (in_array($id_article,$array_art)){
 									$update_article = $connect->query("update `" . $tblprefix . "articles` set id_menu = $this_menu_insert, ordre_article = $order_i where id_article = $id_article;");
@@ -94,7 +94,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     				if (!empty($lien)) {
     					$lien = escape_string($lien);
     					$insert_menu = "INSERT INTO `" . $tblprefix . "hormenu` VALUES (NULL,'$menu_titre','url','$lien','1',$ordre_menu);";
-							$connect->query($insert_menu,$connect);
+							$connect->query($insert_menu);
 							redirection(element_ajoute,"?inc=horizontal_menu",3,"tips",1);
     				} else goback(remplir_lien,2,"error",1);
     			}
@@ -122,7 +122,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     			echo "\n<b><input name=\"menu_contenu\" type=\"radio\" value=\"article\" checked=\"checked\" onclick=\"DisplayHide('contenu_menu', 'contenu1')\"> " .article. " : </b>";
     			echo "<div style=\"display: block; margin-left: 20px;\" class=\"contenu_menu\" id=\"contenu1\">";
     			echo "<select size=\"10\" name=\"articles[]\" multiple=\"multiple\">";
-    			while($article = mysql_fetch_row($select_article)){
+    			while($article = mysqli_fetch_row($select_article)){
     				$id_article = $article[0];
     				$titre_article = html_ent($article[1]);
     				if ($article[2] == 1)
@@ -169,7 +169,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			
 		 $select_menu = $connect->query("select * from `" . $tblprefix . "hormenu` where id_hormenu = $id_menu;");
 		 if (mysqli_num_rows($select_menu) == 1) {
-		 	$menu = mysql_fetch_row($select_menu);
+		 	$menu = mysqli_fetch_row($select_menu);
 		 	$titre_hormenu = html_ent($menu[1]);
 		 	$lien_hormenu = html_ent($menu[3]);
 		 	$type_hormenu = $menu[2];
@@ -203,14 +203,14 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						$tab_order = array();
 						$select_order_tab = $connect->query("select ordre_article from `" . $tblprefix . "articles` where id_menu = $id_menu;");
  						if (mysqli_num_rows($select_order_tab) > 0){
- 							while ($re_tab_order = mysql_fetch_row($select_order_tab))
+ 							while ($re_tab_order = mysqli_fetch_row($select_order_tab))
  								$tab_order[] = $re_tab_order[0];
  						}
  						$order_new_article = 1;
  						
     				$select_article = $connect->query("select id_article, id_menu, ordre_article from `" . $tblprefix . "articles`;");
     				if (mysqli_num_rows($select_article) > 0){
-    					while($article = mysql_fetch_row($select_article)){
+    					while($article = mysqli_fetch_row($select_article)){
     						$id_article = $article[0];
     						$idmenu = $article[1];
     						$ordre_article = $article[2];
@@ -261,7 +261,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     			echo "\n<b><input name=\"menu_contenu\" type=\"radio\" value=\"article\"".check_menu('article',$type_hormenu,1)." onclick=\"DisplayHide('contenu_menu', 'contenu1')\"> " .article. " : </b>";
     			echo "\n<div style=\"display: ".check_menu('article',$type_hormenu,0)."; margin-left: 20px;\" class=\"contenu_menu\" id=\"contenu1\">";
     			echo "<select size=\"10\" name=\"articles[]\" multiple=\"multiple\">";
-    			while($article = mysql_fetch_row($select_article)){
+    			while($article = mysqli_fetch_row($select_article)){
     				$id_article = $article[0];
     				$id_menu_article = $article[1];
     				$titre_article = html_ent($article[2]);
@@ -456,7 +456,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				echo "</tr>\n";
 				
 				$i_ordre = ($page - 1) * $nbr_resultats + 1;
-				while($menu = mysql_fetch_row($select_menu_limit)){
+				while($menu = mysqli_fetch_row($select_menu_limit)){
 					
 					$id_menu = $menu[0];
 					$titre_menu = html_ent($menu[1]);
@@ -481,7 +481,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 		 			if (mysqli_num_rows($select_articles) > 0){
 		 				echo "<table width=\"100%\" align=\"center\" border=\"1\">";
 						$j_ordre = 1;
-						while($article = mysql_fetch_row($select_articles)){
+						while($article = mysqli_fetch_row($select_articles)){
 							$id_article = $article[0];
 							$titre_article = html_ent(trim($article[1]));
 							$contenu_article = html_ent($article[2]);

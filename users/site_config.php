@@ -158,14 +158,14 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						$id_classe = $_GET['id_classe'];
 						$select_classe_all = $connect->query("select * from `" . $tblprefix . "classes` where id_classe = $id_classe;");
     				if (mysqli_num_rows($select_classe_all) == 1) {
-    					$la_classe = mysql_result($select_classe_all,0,1);
+    					$la_classe = mysqli_result($select_classe_all,0,1);
     					
 							if (isset($_POST['nom_classe'])){
 								$nom_classe = trim($_POST['nom_classe']);
 								if (!empty($nom_classe)){
 									$nom_classe = escape_string($nom_classe);
 									$select_classe = $connect->query("select id_classe from `" . $tblprefix . "classes` where classe = '$nom_classe';");
- 									if ((mysqli_num_rows($select_classe) == 0) || (mysqli_num_rows($select_classe) == 1 && mysql_result($select_classe,0) == $id_classe)) {
+ 									if ((mysqli_num_rows($select_classe) == 0) || (mysqli_num_rows($select_classe) == 1 && mysqli_result($select_classe,0) == $id_classe)) {
  										$connect->query ("update `" . $tblprefix . "classes` SET classe = '$nom_classe' where id_classe = $id_classe;");
 	          				redirection(classe_modifiee,"?inc=site_config&do=registration#classe",1,"tips",1);
  									} else goback(classe_existe,2,"error",1);

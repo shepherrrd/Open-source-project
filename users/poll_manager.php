@@ -181,9 +181,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     				$select_reponses1_votes = $connect->query("select id_reponse from `" . $tblprefix . "sondage_reponses` where id_question = $this_id_question;");
 						$select_reponses2_votes = $connect->query("select id_reponse from `" . $tblprefix . "sondage_reponses` where id_question = $this_id_question2;");
     				if (mysqli_num_rows($select_reponses1_votes) > 0 && mysqli_num_rows($select_reponses2_votes) > 0) {
- 							while($reponse1_vote = mysql_fetch_row($select_reponses1_votes)){
+ 							while($reponse1_vote = mysqli_fetch_row($select_reponses1_votes)){
  								@mysql_data_seek($select_reponses2_votes,0);
- 								while($reponse2_vote = mysql_fetch_row($select_reponses2_votes))
+ 								while($reponse2_vote = mysqli_fetch_row($select_reponses2_votes))
  									$insert_votes = $connect->query("INSERT INTO `" . $tblprefix . "sondage_votes` VALUES (NULL,$reponse1_vote[0],$reponse2_vote[0],0);");
  							}
  							redirection(sondage_cree,"?inc=poll_manager",3,"tips",1);
@@ -235,7 +235,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 		// sum votes
 		$array_rep1 = array();
 		
- 		while($reponse1 = mysql_fetch_row($select_reponses1))
+ 		while($reponse1 = mysqli_fetch_row($select_reponses1))
  			$array_rep1[] = $reponse1[0];
  					
 		$select_sum_votes = "select SUM(nbr_votes) from `" . $tblprefix . "sondage_votes` where id_reponse1 in (";
@@ -257,7 +257,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 
 			echo "\n<table border=\"1\" class=\"infos\" cellpadding=\"3\" cellspacing=\"2\" align=\"center\" width=\"100%\">\n";
 			echo "\n<tr><td align=\"center\" colspan=\"2\" class=\"header\"><div id=\"horizontalmenu_text\"><h3>".$question1."</h3></div></td></tr>";
-			while($reponse1 = mysql_fetch_row($select_reponses1)){
+			while($reponse1 = mysqli_fetch_row($select_reponses1)){
 				$this_reponse = html_ent($reponse1[2]);
 				echo "\n<tr><td align=\"center\" class=\"verticalmenu\"><div id=\"verticalmenu_text\"><b>".$this_reponse."</b></div></td>";
  				$select_votes = $connect->query("select SUM(nbr_votes) from `" . $tblprefix . "sondage_votes` where id_reponse1 = $reponse1[0];");
@@ -301,10 +301,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 
 		$array_rep1 = array();
 		$array_rep2 = array();
- 		while($reponse1 = mysql_fetch_row($select_reponses1))
+ 		while($reponse1 = mysqli_fetch_row($select_reponses1))
  			$array_rep1[] = $reponse1[0];
  			
- 		while($reponse2 = mysql_fetch_row($select_reponses2)){
+ 		while($reponse2 = mysqli_fetch_row($select_reponses2)){
  			$this_reponse2 = html_ent($reponse2[2]);
  			echo "\n<td align=\"center\" class=\"verticalmenu\"><div id=\"verticalmenu_text\"><b>".$this_reponse2."</b></div></td>";
  			$array_rep2[] = $reponse2[0];
@@ -335,12 +335,12 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 
 			// boucle results
 		
- 			while($reponse1 = mysql_fetch_row($select_reponses1)){
+ 			while($reponse1 = mysqli_fetch_row($select_reponses1)){
  				@mysql_data_seek($select_reponses2,0);
  				$this_reponse1 = html_ent($reponse1[2]);
  				echo "\n<tr><td align=\"center\" class=\"verticalmenu\"><div id=\"verticalmenu_text\"><b>".$this_reponse1."</b></div></td>";
  				$sum_row = 0;
- 				while($reponse2 = mysql_fetch_row($select_reponses2)){
+ 				while($reponse2 = mysqli_fetch_row($select_reponses2)){
  				
  					$select_votes = $connect->query("select SUM(nbr_votes) from `" . $tblprefix . "sondage_votes` where id_reponse1 = $reponse1[0] and id_reponse2 = $reponse2[0];");
  					$vote = mysqli_result($select_votes,0);
@@ -368,7 +368,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			$req_votes_column = $connect->query($select_votes_column);
 			
 			$total_sum = 0;
-			while($vote_column = mysql_fetch_row($req_votes_column)){
+			while($vote_column = mysqli_fetch_row($req_votes_column)){
 				if ($sum != 0)
 					$sum_column = round($vote_column[0]*100/$sum,1);
 				else $sum_column = 0;
@@ -405,7 +405,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 								$titre_simple = escape_string(trim($_POST['titre_simple']));
 		   					if (!empty($titre_simple) && $titre_simple != $question1)
  									$update_question = $connect->query("update `" . $tblprefix . "sondage_questions` SET question = '$titre_simple' where id_question = $id_question1;");
-		  					while($reponse1 = mysql_fetch_row($select_reponses1)){
+		  					while($reponse1 = mysqli_fetch_row($select_reponses1)){
     							$id_reponse = $reponse1[0];
 									$this_reponse = html_ent($reponse1[2]);
 									$variable_rep = "reponse".$id_reponse;
@@ -422,7 +422,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     					echo "\n<form method=\"POST\" action=\"\">";
     					echo "<br /><b>".question." : </b><br /><textarea name=\"titre_simple\" id=\"titre_simple\" rows=\"3\" cols=\"50\">".$question1."</textarea>";
     					$i = 0;
-    					while($reponse1 = mysql_fetch_row($select_reponses1)){
+    					while($reponse1 = mysqli_fetch_row($select_reponses1)){
     						$i++;
     						$id_reponse = $reponse1[0];
 								$this_reponse = html_ent($reponse1[2]);
@@ -451,7 +451,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 		   					if (!empty($titre2_crosstab) && $titre2_crosstab != $question2)
  									$update_question2 = $connect->query("update `" . $tblprefix . "sondage_questions` SET question = '$titre2_crosstab' where id_question = $id_question2;");
 
-		  					while($reponse1 = mysql_fetch_row($select_reponses1)){
+		  					while($reponse1 = mysqli_fetch_row($select_reponses1)){
     							$id_reponse = $reponse1[0];
 									$this_reponse = html_ent($reponse1[2]);
 									$variable_rep = "1reponse".$id_reponse;
@@ -460,7 +460,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
  										$update_reponse = $connect->query("update `" . $tblprefix . "sondage_reponses` SET reponse = '$reponse_post' where id_reponse = $id_reponse;");
 								}
 
-		  					while($reponse2 = mysql_fetch_row($select_reponses2)){
+		  					while($reponse2 = mysqli_fetch_row($select_reponses2)){
     							$id_reponse2 = $reponse2[0];
 									$this_reponse2 = html_ent($reponse2[2]);
 									$variable_rep2 = "2reponse".$id_reponse2;
@@ -478,7 +478,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     					echo "<table width=\"100%\" border=\"0\"><tr><td width=\"50%\" valign=\"top\">";
     					echo "<br /><b>".question1."</b><br /><textarea name=\"titre1_crosstab\" id=\"titre1_crosstab\" rows=\"3\" cols=\"50\">".$question1."</textarea>";
     					$i = 0;
-    					while($reponse1 = mysql_fetch_row($select_reponses1)){
+    					while($reponse1 = mysqli_fetch_row($select_reponses1)){
     						$i++;
     						$id_reponse = $reponse1[0];
 								$this_reponse = html_ent($reponse1[2]);
@@ -487,7 +487,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 							echo "</td><td width=\"50%\" valign=\"top\">";
     					echo "<br /><b>".question2."</b><br /><textarea name=\"titre2_crosstab\" id=\"titre2_crosstab\" rows=\"3\" cols=\"50\">".$question2."</textarea>";
     					$i = 0;
-    					while($reponse2 = mysql_fetch_row($select_reponses2)){
+    					while($reponse2 = mysqli_fetch_row($select_reponses2)){
     						$i++;
     						$id_reponse2 = $reponse2[0];
 								$this_reponse2 = html_ent($reponse2[2]);
@@ -511,7 +511,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     			$id_conjoint = mysqli_result($select_question1,0);
     			if ($id_conjoint == 0){
 						$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
- 						while($reponse1 = mysql_fetch_row($select_reponses1))
+ 						while($reponse1 = mysqli_fetch_row($select_reponses1))
  							$array_rep1[] = $reponse1[0];
 						$delete_all_votes = "delete from `" . $tblprefix . "sondage_votes` where id_reponse1 in (";
  						foreach ($array_rep1 as $id_rep)
@@ -524,9 +524,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     			else{
 						$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
 						$select_reponses2 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_conjoint;");
- 						while($reponse1 = mysql_fetch_row($select_reponses1))
+ 						while($reponse1 = mysqli_fetch_row($select_reponses1))
  							$array_rep1[] = $reponse1[0];
- 						while($reponse2 = mysql_fetch_row($select_reponses2))
+ 						while($reponse2 = mysqli_fetch_row($select_reponses2))
  							$array_rep2[] = $reponse2[0];
 						$delete_all_votes2 = "delete from `" . $tblprefix . "sondage_votes` where id_reponse1 in (";
  						foreach ($array_rep1 as $id_rep)
@@ -588,7 +588,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     			$id_conjoint = mysqli_result($select_question1,0);
     			if ($id_conjoint == 0){
 						$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
- 						while($reponse1 = mysql_fetch_row($select_reponses1))
+ 						while($reponse1 = mysqli_fetch_row($select_reponses1))
  							$array_rep1[] = $reponse1[0];
 						$reset_all = "update `" . $tblprefix . "sondage_votes` set nbr_votes = 0 where id_reponse1 in (";
  						foreach ($array_rep1 as $id_rep)
@@ -599,9 +599,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
     			else{
 						$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_poll;");
 						$select_reponses2 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_conjoint;");
- 						while($reponse1 = mysql_fetch_row($select_reponses1))
+ 						while($reponse1 = mysqli_fetch_row($select_reponses1))
  							$array_rep1[] = $reponse1[0];
- 						while($reponse2 = mysql_fetch_row($select_reponses2))
+ 						while($reponse2 = mysqli_fetch_row($select_reponses2))
  							$array_rep2[] = $reponse2[0];
 						$reset_all2 = "update `" . $tblprefix . "sondage_votes` set nbr_votes = 0 where id_reponse1 in (";
  						foreach ($array_rep1 as $id_rep)
@@ -652,7 +652,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				echo "\n<td class=\"affichage_table\"><b>".raz."</b></td>";
 				echo "</tr>\n";
 
-				while($poll = mysql_fetch_row($select_questions_limit)){
+				while($poll = mysqli_fetch_row($select_questions_limit)){
 					
 					$array_rep1 = array();
 					$array_rep2 = array();
@@ -683,9 +683,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						// sum votes
 						$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question;");
 						$select_reponses2 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question2;");
- 						while($reponse1 = mysql_fetch_row($select_reponses1))
+ 						while($reponse1 = mysqli_fetch_row($select_reponses1))
  							$array_rep1[] = $reponse1[0];
- 						while($reponse2 = mysql_fetch_row($select_reponses2))
+ 						while($reponse2 = mysqli_fetch_row($select_reponses2))
  							$array_rep2[] = $reponse2[0];
 						$select_sum_votes = "select SUM(nbr_votes) from `" . $tblprefix . "sondage_votes` where id_reponse1 in (";
  						foreach ($array_rep1 as $id_rep)
@@ -717,7 +717,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						
 						// sum votes
 						$select_reponses1 = $connect->query("select * from `" . $tblprefix . "sondage_reponses` where id_question = $id_question;");
- 						while($reponse1 = mysql_fetch_row($select_reponses1))
+ 						while($reponse1 = mysqli_fetch_row($select_reponses1))
  							$array_rep1[] = $reponse1[0];
 						$select_sum_votes = "select SUM(nbr_votes) from `" . $tblprefix . "sondage_votes` where id_reponse1 in (";
  						foreach ($array_rep1 as $id_rep)

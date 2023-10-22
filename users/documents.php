@@ -85,7 +85,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 						
 						$time_insert_folder = time();
  						$insertfolder = "INSERT INTO `" . $tblprefix . "folders` VALUES (NULL,$id_user_session,'$folder_name','$folder_acces',$time_insert_folder,'1','$apps_upload');";
-	          $connect->query($insertfolder,$connect);
+	          $connect->query($insertfolder);
 
 	          redirection(folder_cree,"?inc=documents",3,"tips",1);
  					} else goback(nom_dossier_existe,2,"error",1);
@@ -107,7 +107,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					 	echo "<table border=\"0\"><tr><td align=\"center\">";
 						echo "<table border=\"0\"><tr><td><a href=\"?inc=site_config&do=registration#classe\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=site_config&do=registration#classe\"><b>".ajouter_classe."</b></a></td></tr></table>";
 						echo "<select size=\"5\" name=\"classes[]\" id=\"classes\" multiple=\"multiple\">";
- 						while($classe = mysql_fetch_row($select_classes)){
+ 						while($classe = mysqli_fetch_row($select_classes)){
     					$id_classe = $classe[0];
     					$nom_classe = html_ent($classe[1]);
     					echo "\n<option value=\"".$id_classe."\">".$nom_classe."</option>";
@@ -131,7 +131,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 
     		$select_folder_complet = $connect->query("select * from `" . $tblprefix . "folders` where id_folder = $id_folder;");
     		if (mysqli_num_rows($select_folder_complet) == 1) {
-    			$folder = mysql_fetch_row($select_folder_complet);
+    			$folder = mysqli_fetch_row($select_folder_complet);
     			if (isset($grade_user_session) && ($grade_user_session == "3" || $grade_user_session == "2" || $folder[1] == $id_user_session)){
     			$nom_folder_bd = html_ent($folder[2]);
 					$acces_folder_bd = $folder[3];
@@ -195,7 +195,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					 			echo "<table border=\"0\"><tr><td align=\"center\">";
 					 			echo "<table border=\"0\"><tr><td><a href=\"?inc=site_config&do=registration#classe\"><img border=\"0\" src=\"../images/others/add.png\" /></a></td><td><a href=\"?inc=site_config&do=registration#classe\"><b>".ajouter_classe."</b></a></td></tr></table>";
 								echo "<select size=\"5\" name=\"classes[]\" id=\"classes\" multiple=\"multiple\">";
-    						while($classe = mysql_fetch_row($select_classes)){
+    						while($classe = mysqli_fetch_row($select_classes)){
     							$id_classe = $classe[0];
     							$nom_classe = html_ent($classe[1]);
     							echo "\n<option value=\"".$id_classe."\"";
@@ -444,7 +444,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 			echo "\n<td class=\"affichage_table\"><b>".supprimer."</b></td>";
 			echo "</tr>";
 
-			while($fichier = mysql_fetch_row($select_files_limit)){
+			while($fichier = mysqli_fetch_row($select_files_limit)){
 					
 				$nom_fichier = html_ent($fichier[2]);
 				$nom_fichier = substr($nom_fichier, 0, strrpos($nom_fichier, '.'));
@@ -571,7 +571,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 
-				while($folder = mysql_fetch_row($select_published_folders_limit)){
+				while($folder = mysqli_fetch_row($select_published_folders_limit)){
 					
 					$id_folder = $folder[0];
 
@@ -595,7 +595,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 							$chaine_acces_folder = implode(",",$tab_acces_folder);
 							$select_classes = $connect->query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_folder.");");
 							if (mysqli_num_rows($select_classes) > 0){
-    						while($classe = mysql_fetch_row($select_classes))
+    						while($classe = mysqli_fetch_row($select_classes))
     							$acces_folder .= "<u>".$classe[1]."</u>, ";
     						$acces_folder = substr($acces_folder,0,-2);
     					}
@@ -687,7 +687,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 
-				while($folder = mysql_fetch_row($select_unpublished_folders_limit)){
+				while($folder = mysqli_fetch_row($select_unpublished_folders_limit)){
 					
 					$id_folder = $folder[0];
 
@@ -711,7 +711,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 							$chaine_acces_folder = implode(",",$tab_acces_folder);
 							$select_classes = $connect->query("select * from `" . $tblprefix . "classes` where id_classe in (".$chaine_acces_folder.");");
 							if (mysqli_num_rows($select_classes) > 0){
-    						while($classe = mysql_fetch_row($select_classes))
+    						while($classe = mysqli_fetch_row($select_classes))
     							$acces_folder .= "<u>".$classe[1]."</u>, ";
     						$acces_folder = substr($acces_folder,0,-2);
     					}
