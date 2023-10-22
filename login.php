@@ -122,10 +122,10 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
 			$resultat2 = $connect->query($selapp);
 
 			if ($resultat2 && mysqli_num_rows($resultat2) == 1) {
-				$id = mysql_result($resultat2, 0, "id_apprenant");
-				$pass = mysql_result($resultat2, 0, "mdp_apprenant");
-				$statut = mysql_result($resultat2, 0, "active_apprenant");
-    		$id_classe_access = mysql_result($resultat2, 0, "id_classe");
+				$id = mysqli_result($resultat2, 0, "id_apprenant");
+				$pass = mysqli_result($resultat2, 0, "mdp_apprenant");
+				$statut = mysqli_result($resultat2, 0, "active_apprenant");
+    		$id_classe_access = mysqli_result($resultat2, 0, "id_classe");
     		
 				if ($statut == 1) {
 						$passpart1 = substr($pass,0,32);
@@ -146,7 +146,7 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
 							$ip_app = escape_string($_SERVER['REMOTE_ADDR']);
 							$select_acces = $connect->query("select id_acces from `" . $tblprefix . "infos_acces` where type_user = 'l' and id_user = $id and ip_user = '$ip_app';");
 							if (mysqli_num_rows($select_acces) > 0){
-								$id_this_acces = mysql_result($select_acces,0);
+								$id_this_acces = mysqli_result($select_acces,0);
 								$update_acces = $connect->query("update `" . $tblprefix . "infos_acces` set date_acces = ".time()." where id_acces = $id_this_acces;");
 							}
 							else {
@@ -155,7 +155,7 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
  							
  							$select_grade_app = $connect->query("select grade_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id;");
 							if (mysqli_num_rows($select_grade_app) == 1)
-								$grade_app_session = mysql_result($select_grade_app,0);
+								$grade_app_session = mysqli_result($select_grade_app,0);
 							else $grade_app_session = "None";
 
 							if(stristr($_SERVER['HTTP_REFERER'],$_SERVER['SERVER_NAME']))
@@ -177,13 +177,13 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
 
 								$select_grade_chap = $connect->query("select grade_chapitre from `" . $tblprefix . "chapitres` where id_chapitre = $id_chap_devoir;");
 								if (mysqli_num_rows($select_grade_chap) == 1) {
-									$grade_chap = mysql_result($select_grade_chap,0);
+									$grade_chap = mysqli_result($select_grade_chap,0);
 									$tab_acces_chap = explode("-",trim($grade_chap,"-"));
 									if ($grade_chap == "*" || $grade_chap == "0" || in_array($grade_app_session,$tab_acces_chap)){
 									
      							 $select_access_tuto = $connect->query("select acces_tutoriel from `" . $tblprefix . "tutoriels`, `" . $tblprefix . "parties`, `" . $tblprefix . "chapitres` where `" . $tblprefix . "tutoriels`.id_tutoriel = `" . $tblprefix . "parties`.id_tutoriel and `" . $tblprefix . "parties`.id_partie = `" . $tblprefix . "chapitres`.id_partie and id_chapitre = $id_chap_devoir;");
 									 if (mysqli_num_rows($select_access_tuto) == 1) {
-										$access_tuto = mysql_result($select_access_tuto,0);
+										$access_tuto = mysqli_result($select_access_tuto,0);
 										$tab_acces_tuto = explode("-",trim($access_tuto,"-"));
 										if ($access_tuto == "*" || $access_tuto == "0" || in_array($id_classe_access,$tab_acces_tuto)){
 										
@@ -195,7 +195,7 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
 												else {
 													$select_classe = $connect->query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id;");
 													if (mysqli_num_rows($select_classe) == 1){
-														$id_classe = mysql_result($select_classe,0);
+														$id_classe = mysqli_result($select_classe,0);
 														$tab_classes = explode("-",$acces_devoir);
 														if (in_array($id_classe,$tab_classes))
 															$acces_devoir_valide = 1;

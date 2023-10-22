@@ -36,9 +36,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 			
 			$err_comp = 0;
 			
-			$select_user = mysql_query("select * from `" . $tblprefix . "users` where id_user = $id_user_session;");
-    	if (mysql_num_rows($select_user) == 1){
-    		$user = mysql_fetch_row($select_user);
+			$select_user = $connect->query("select * from `" . $tblprefix . "users` where id_user = $id_user_session;");
+    	if (mysqli_num_rows($select_user) == 1){
+    		$user = mysqli_fetch_row($select_user);
 					
 					$id_user = $user[0];
 					$nom_user = html_ent($user[1]);
@@ -57,10 +57,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						if (!empty($login)){
 							$login = escape_string($login);
 							if ($login != $identifiant_user){
-								$select_app_login = mysql_query("select id_apprenant from `" . $tblprefix . "apprenants` where identifiant_apprenant = '$login';");
-								$select_user_id = mysql_query("select id_user from `" . $tblprefix . "users` where identifiant_user = '$login' and id_user != $id_user;");
- 								if (mysql_num_rows($select_app_login) == 0 && mysql_num_rows($select_user_id) == 0) {
- 									$update_login = mysql_query("update `" . $tblprefix . "users` set identifiant_user = '$login' where id_user = $id_user;");
+								$select_app_login = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants` where identifiant_apprenant = '$login';");
+								$select_user_id = $connect->query("select id_user from `" . $tblprefix . "users` where identifiant_user = '$login' and id_user != $id_user;");
+ 								if (mysqli_num_rows($select_app_login) == 0 && mysqli_num_rows($select_user_id) == 0) {
+ 									$update_login = $connect->query("update `" . $tblprefix . "users` set identifiant_user = '$login' where id_user = $id_user;");
  								}
  								else {
  									$err_comp = 1;
@@ -73,7 +73,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						$name = trim($_POST['name']);
 						$name = escape_string($name);
 						if ($name != $nom_user){
- 							$update_name = mysql_query("update `" . $tblprefix . "users` set nom_user = '$name' where id_user = $id_user;");
+ 							$update_name = $connect->query("update `" . $tblprefix . "users` set nom_user = '$name' where id_user = $id_user;");
  						}
 
 // update sexe
@@ -88,7 +88,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
  								if ($photo_profil == "man.jpg")
  									$danew_photo_profil = "woman.jpg"; 
  							} 
- 							$update_name = mysql_query("update `" . $tblprefix . "users` set photo_profil = '$danew_photo_profil', sexe_user = '$sexe' where id_user = $id_user;");
+ 							$update_name = $connect->query("update `" . $tblprefix . "users` set photo_profil = '$danew_photo_profil', sexe_user = '$sexe' where id_user = $id_user;");
  						}
  						
 // update photo
@@ -107,7 +107,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 				$new_file = fonc_rand(24).".".$ext;
   		$destination = "../docs/".$new_file;
 			if ((@move_uploaded_file($_FILES['uploaded_file']['tmp_name'],$destination))){
-				$update_photo = mysql_query("update `" . $tblprefix . "users` set photo_profil = '$new_file' where id_user = $id_user;");
+				$update_photo = $connect->query("update `" . $tblprefix . "users` set photo_profil = '$new_file' where id_user = $id_user;");
 				if ($photo_profil != "man.jpg" && $photo_profil != "woman.jpg")
 					@unlink("../docs/".$photo_profil);
     	}
@@ -128,7 +128,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 		if ($sexe_user == "M") $photo_remove = "man.jpg";
 		else if ($sexe_user == "F") $photo_remove = "woman.jpg";
 	}
- 	$update_photo = mysql_query("update `" . $tblprefix . "users` set photo_profil = '".$photo_remove."' where id_user = $id_user;");
+ 	$update_photo = $connect->query("update `" . $tblprefix . "users` set photo_profil = '".$photo_remove."' where id_user = $id_user;");
 	@unlink("../docs/".$photo_profil);
 }
 // update email
@@ -136,7 +136,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 						$email = escape_string($email);
 						if ($email != $email_user){
 							if (mail_valide($email) || $email == ""){
- 								$update_email = mysql_query("update `" . $tblprefix . "users` set email_user = '$email' where id_user = $id_user;");
+ 								$update_email = $connect->query("update `" . $tblprefix . "users` set email_user = '$email' where id_user = $id_user;");
  							}
  							else {
  								$err_comp = 1;
@@ -163,7 +163,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 	                    $rndm2 = substr($rndm,4,4);
 	                    $crypt = md5($rndm2.$new_password.$rndm1);
 	                    $mdp = $crypt.$rndm;
-	                    $update_mdp = mysql_query("update `" . $tblprefix . "users` set mdp_user = '$mdp' where id_user = $id_user;");
+	                    $update_mdp = $connect->query("update `" . $tblprefix . "users` set mdp_user = '$mdp' where id_user = $id_user;");
 										}
  							 			else {
 											$err_comp = 1;
