@@ -179,8 +179,11 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 								</td>
 								<td bgcolor="#FFFFFF" valign="top" height="300"><br />
 									<?php 
-									//if(!isset($_GET['article']) || isset($_GET['profiles'])) include_once ("includes/body.php"); 
-										 if (isset($_GET['chapter']) && ctype_digit($_GET['chapter'])) {
+									if(!isset($_GET['article']) && !isset($_GET['profiles']) && !isset($_GET['search']) &&
+									 !isset($_GET['documents']) && !isset($_GET['questionnaire'])&& !isset($_GET['kolb']) &&
+									  !isset($_GET['felder']) && !isset($_GET['poll']) && !isset($_GET['register']) && 
+									  !isset($_GET['reset_pass']) && !isset($_GET['s_profiles']) && !isset($_GET['s_messages'])) include_once ("includes/body.php"); 
+										else if (isset($_GET['chapter']) && ctype_digit($_GET['chapter'])) {
 											include_once ("includes/chaps.php");
 										}
 										
