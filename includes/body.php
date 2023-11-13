@@ -40,7 +40,7 @@ if (mysqli_num_rows($select_nombre_caracteres) == 1 && mysqli_result($select_nom
 	$nombre_caracteres = mysqli_result($select_nombre_caracteres,0);
 else $nombre_caracteres = 500;
 
-$select_nombre_elements_page = mysql_query("select nombre_elements_page from `" . $tblprefix . "site_infos`;");
+$select_nombre_elements_page = $connect->query("select nombre_elements_page from `" . $tblprefix . "site_infos`;");
 if (mysqli_num_rows($select_nombre_elements_page) == 1 && mysqli_result($select_nombre_elements_page,0) > 0)
 	$nbr_resultats = mysqli_result($select_nombre_elements_page,0);
 else $nbr_resultats = 10;
@@ -48,7 +48,7 @@ else $nbr_resultats = 10;
 if (!empty($_SESSION['log']))
 	$afficher_profil = 1;
 else {
-	$afficher_profil_aux_visiteurs = mysql_query("select afficher_profil_aux_visiteurs from `" . $tblprefix . "site_infos`;");
+	$afficher_profil_aux_visiteurs = $connect->query("select afficher_profil_aux_visiteurs from `" . $tblprefix . "site_infos`;");
 	if (mysqli_num_rows($afficher_profil_aux_visiteurs) == 1) {
 		if (mysqli_result($afficher_profil_aux_visiteurs,0) == 1)
 			$afficher_profil = 1;
@@ -60,13 +60,13 @@ else {
 	
 if (isset($_GET['menu']) && ctype_digit($_GET['menu'])){
 	
- $select_statut_menu = mysql_query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'horizontal_menu';");
+ $select_statut_menu = $connect->query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'horizontal_menu';");
  if (mysqli_num_rows($select_statut_menu) == 1) {
   $statut_menu = mysqli_result($select_statut_menu,0);
   if ($statut_menu == 1) {
  	
 	 $menu = escape_string($_GET['menu']);
-	 $selectmenu = mysql_query("select * from `" . $tblprefix . "hormenu` where id_hormenu = $menu and active_hormenu = '1';");
+	 $selectmenu = $connect->query("select * from `" . $tblprefix . "hormenu` where id_hormenu = $menu and active_hormenu = '1';");
 	 if (mysqli_num_rows($selectmenu) == 1) {
 		$type_menu = mysqli_result($selectmenu,0,2);
 		$lien_menu = mysqli_result($selectmenu,0,3);
@@ -75,7 +75,7 @@ if (isset($_GET['menu']) && ctype_digit($_GET['menu'])){
 			// *** traitement articles ***
 			case "article" : {
 
-				$selectarticle = mysql_query("select * from `" . $tblprefix . "articles` where id_menu = $menu and publie_article = '1' order by ordre_article;");
+				$selectarticle = $connect->query("select * from `" . $tblprefix . "articles` where id_menu = $menu and publie_article = '1' order by ordre_article;");
 					if (mysqli_num_rows($selectarticle) > 0) {
 						
 						echo "\n<table border=\"0\" cellspacing=\"10\" cellpadding=\"5\" align=\"center\" width=\"100%\">";
@@ -91,7 +91,7 @@ if (isset($_GET['menu']) && ctype_digit($_GET['menu'])){
 						else if (!empty($_SESSION['log']) && $_SESSION['log'] == 1)
 								$acces_valide = 1;
 						else if (!empty($_SESSION['log']) && $_SESSION['log'] == 2){
-							$select_classe = mysql_query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
+							$select_classe = $connect->query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
 					    if (mysqli_num_rows($select_classe) == 1){
 								$id_classe = mysqli_result($select_classe,0);
 								$tab_classes = explode("-",trim($acces,"-"));
@@ -115,7 +115,7 @@ if (isset($_GET['menu']) && ctype_digit($_GET['menu'])){
 							$date_creation_article = set_date($dateformat,$article[10]);
 							$date_modification_article = set_date($dateformat,$article[11]);
 							
-							$selectauteur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $id_user;");
+							$selectauteur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $id_user;");
 							if (mysqli_num_rows($selectauteur) == 1) {
 								$auteur = html_ent(mysqli_result($selectauteur,0));
 							} else $auteur = inconnu;
@@ -178,13 +178,13 @@ if (isset($_GET['menu']) && ctype_digit($_GET['menu'])){
 	
 else if (isset($_GET['vermenu']) && ctype_digit($_GET['vermenu'])){
 	
- $select_statut_menu = mysql_query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'vertical_menu';");
+ $select_statut_menu = $connect->query("select active_composant from `" . $tblprefix . "composants` where nom_composant = 'vertical_menu';");
  if (mysqli_num_rows($select_statut_menu) == 1) {
   $statut_menu = mysqli_result($select_statut_menu,0);
   if ($statut_menu == 1) {
  	
 	 $vermenu = escape_string($_GET['vermenu']);
-	 $selectmenu = mysql_query("select * from `" . $tblprefix . "vermenu` where id_vermenu = $vermenu and active_vermenu = '1';");
+	 $selectmenu = $connect->query("select * from `" . $tblprefix . "vermenu` where id_vermenu = $vermenu and active_vermenu = '1';");
 	 if (mysqli_num_rows($selectmenu) == 1) {
 		$type_menu = mysqli_result($selectmenu,0,2);
 		$lien_menu = mysqli_result($selectmenu,0,3);
@@ -193,7 +193,7 @@ else if (isset($_GET['vermenu']) && ctype_digit($_GET['vermenu'])){
 			// *** traitement articles ***
 			case "article" : {
 
-				$selectarticle = mysql_query("select * from `" . $tblprefix . "articles` where id_menu_ver = $vermenu and publie_article = '1' order by ordre_article_ver;");
+				$selectarticle = $connect->query("select * from `" . $tblprefix . "articles` where id_menu_ver = $vermenu and publie_article = '1' order by ordre_article_ver;");
 					if (mysqli_num_rows($selectarticle) > 0) {
 						
 						echo "\n<table border=\"0\" cellspacing=\"10\" cellpadding=\"5\" align=\"center\" width=\"100%\">";
@@ -209,7 +209,7 @@ else if (isset($_GET['vermenu']) && ctype_digit($_GET['vermenu'])){
 						else if (!empty($_SESSION['log']) && $_SESSION['log'] == 1)
 								$acces_valide = 1;
 						else if (!empty($_SESSION['log']) && $_SESSION['log'] == 2){
-							$select_classe = mysql_query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
+							$select_classe = $connect->query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
 					    if (mysqli_num_rows($select_classe) == 1){
 								$id_classe = mysqli_result($select_classe,0);
 								$tab_classes = explode("-",trim($acces,"-"));
@@ -233,7 +233,7 @@ else if (isset($_GET['vermenu']) && ctype_digit($_GET['vermenu'])){
 							$date_creation_article = set_date($dateformat,$article[10]);
 							$date_modification_article = set_date($dateformat,$article[11]);
 							
-							$selectauteur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $id_user;");
+							$selectauteur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $id_user;");
 							if (mysqli_num_rows($selectauteur) == 1) {
 								$auteur = html_ent(mysqli_result($selectauteur,0));
 							} else $auteur = inconnu;
@@ -331,7 +331,8 @@ else if (isset($_GET['search'])) {
 
 //***************************************************
 // *** traitement articles ***
-else if (isset($_GET['article']) && ctype_digit($_GET['article'])) {
+else if (isset($_GET['article'])) {
+	echo "<script>console.log('article');</script>";
 	include_once ("includes/articles_inc.php");
 }
 
@@ -398,7 +399,7 @@ else if (isset($_GET['s_messages'])) {
 //***************************************************
 // *** traitement contact ***
 else if (isset($_GET['contact'])) {
-	$select_statut_contact = mysql_query("select titre_composant, active_composant from `" . $tblprefix . "composants` where nom_composant = 'contact';");
+	$select_statut_contact = $connect->query("select titre_composant, active_composant from `" . $tblprefix . "composants` where nom_composant = 'contact';");
 	if (mysqli_num_rows($select_statut_contact) == 1) {
 		$statut_contact = mysqli_result($select_statut_contact,0,1);
 		if ($statut_contact == 1) {
@@ -421,8 +422,8 @@ else if (isset($_GET['contact'])) {
 						$select_ip = $connect->query("select * from `" . $tblprefix . "sondage_ip` where ip_vote='$ip_user' and MINUTE(heure_vote)=".date('i',time())." and HOUR(heure_vote)=".date('H',time())." and id_question = 0;");
 						
 						if (mysqli_num_rows($select_ip) == 0){
-							mysql_query("INSERT INTO `" . $tblprefix . "messages` VALUES (NULL,0,0,'".$nom_emetteur."','".$mail_emetteur."','*','*','".$titre_msg."','".$contenu_msg."','-','-',".time().",'*','*','1');");
-							mysql_query("INSERT INTO `" . $tblprefix . "sondage_ip` VALUES(NULL,'".$ip_user."',Now(),0)");
+							$connect->query("INSERT INTO `" . $tblprefix . "messages` VALUES (NULL,0,0,'".$nom_emetteur."','".$mail_emetteur."','*','*','".$titre_msg."','".$contenu_msg."','-','-',".time().",'*','*','1');");
+							$connect->query("INSERT INTO `" . $tblprefix . "sondage_ip` VALUES(NULL,'".$ip_user."',Now(),0)");
 	           	redirection(bien_recu,"?",3,"tips",0);
 						}
 						else goback("message_min",3,"error",0);
@@ -445,10 +446,10 @@ else if (isset($_GET['contact'])) {
 //***************************************************
 // *** page d'accueil ***
 else {
-	$selectaccueil = mysql_query("select * from `" . $tblprefix . "articles` where publie_article = '1' and accueil_article = '1' order by ordre_accueil;");
+	$selectaccueil = $connect->query("select * from `" . $tblprefix . "articles` where publie_article = '1' and accueil_article = '1' order by ordre_accueil;");
 	if (mysqli_num_rows($selectaccueil) > 0) {
 		
-		$select_colonnes = mysql_query("select accueil_multicolonnes from `" . $tblprefix . "site_infos`;");
+		$select_colonnes = $connect->query("select accueil_multicolonnes from `" . $tblprefix . "site_infos`;");
 		if (mysqli_num_rows($select_colonnes) > 0 && mysqli_num_rows($selectaccueil) > 1) {
 			$multicolonnes = mysqli_result($select_colonnes,0);
 		} else $multicolonnes = 0;
@@ -469,7 +470,7 @@ else {
 		else if (!empty($_SESSION['log']) && $_SESSION['log'] == 1)
 			$acces_valide = 1;
 		else if (!empty($_SESSION['log']) && $_SESSION['log'] == 2){
-			$select_classe = mysql_query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
+			$select_classe = $connect->query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
 		  if (mysqli_num_rows($select_classe) == 1){
 				$id_classe = mysqli_result($select_classe,0);
 				$tab_classes = explode("-",trim($acces,"-"));
@@ -492,7 +493,7 @@ else {
 				$contenu_article = no_br($contenu_article);
 				$contenu_article = readmore($contenu_article,$nombre_caracteres);
 			}
-			$selectauteur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $id_user;");
+			$selectauteur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $id_user;");
 			if (mysqli_num_rows($selectauteur) == 1) {
 					$auteur = html_ent(mysqli_result($selectauteur,0));
 			} else $auteur = inconnu;

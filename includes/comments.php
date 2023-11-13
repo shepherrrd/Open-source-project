@@ -26,10 +26,10 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 
 defined("access_const") or die( 'Restricted access' );
 
- 		$select_statut_comments = mysql_query("select active_composant, titre_composant from `" . $tblprefix . "composants` where nom_composant = 'comments';");
- 		if (mysql_num_rows($select_statut_comments) == 1) {
-  		$statut_comments = mysql_result($select_statut_comments,0,0);
-  		$titre_comments = mysql_result($select_statut_comments,0,1);
+ 		$select_statut_comments = $connect->query("select active_composant, titre_composant from `" . $tblprefix . "composants` where nom_composant = 'comments';");
+ 		if (mysqli_num_rows($select_statut_comments) == 1) {
+  		$statut_comments = mysqli_result($select_statut_comments,0,0);
+  		$titre_comments = mysqli_result($select_statut_comments,0,1);
   		if ($statut_comments == 1) {
 
 				if (isset($_GET['l']) && ctype_digit($_GET['l']))
@@ -51,12 +51,12 @@ defined("access_const") or die( 'Restricted access' );
 				if (isset($_GET['id_com']) && ctype_digit($_GET['id_com'])){
 					if (isset($_GET['key']) && $_GET['key'] == $key){
 						$id_comment = $_GET['id_com'];
-						$select_user = mysql_query("select type_user, id_user from `" . $tblprefix . "commentaires` where id_post = $id_comment;");
-    				if (mysql_num_rows($select_user) == 1 && !empty($_SESSION['log'])){
-    					$id_user_com = mysql_result($select_user,0,1);
-							if (mysql_result($select_user,0,0) == "u")
+						$select_user = $connect->query("select type_user, id_user from `" . $tblprefix . "commentaires` where id_post = $id_comment;");
+    				if (mysqli_num_rows($select_user) == 1 && !empty($_SESSION['log'])){
+    					$id_user_com = mysqli_result($select_user,0,1);
+							if (mysqli_result($select_user,0,0) == "u")
 								$type_auteur = 1;
-							else if (mysql_result($select_user,0,0) == "l")
+							else if (mysqli_result($select_user,0,0) == "l")
 								$type_auteur = 2;
 							else $type_auteur = 0;
     					if(($type_auteur == $_SESSION['log'] && $id_user_com == $id_user_session) || (isset($grade_user_session) && ($grade_user_session == "3" || $grade_user_session == "2" || $grade_user_session == "1" || $id_user == $id_user_session)))

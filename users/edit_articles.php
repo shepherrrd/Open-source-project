@@ -28,7 +28,7 @@ defined("access_const") or die( 'Restricted access' );
 
 if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_session) && ($grade_user_session == "3" || $grade_user_session == "2" || $grade_user_session == "1")){
 
-	echo "<div id=\"titre\">".gestion_articles."</div>";
+	echo "<div id=\"titre\">"."gestion_articles"."</div>";
 
 	include_once ("ckeditor_init.php");
 	
@@ -70,7 +70,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 						
 						$time_insert_article = time();
  						$insertarticle = "INSERT INTO `" . $tblprefix . "articles` VALUES (NULL,$id_user_session,0,'$article_titre','$article_contenu','0','0',1,$ordre_accueil,0,$time_insert_article,$time_insert_article,'$article_acces',0,1);";
-	          $connect->query($insertarticle,$connect);
+	          $connect->query($insertarticle);
 
 	          redirection(article_cree,"?inc=edit_articles",3,"tips",1);
  					} else goback(titre_existe,2,"error",1);
@@ -275,7 +275,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 
-				while($article = mysql_fetch_row($select_articles_nonvalides_limit)){
+				while($article = mysqli_fetch_row($select_articles_nonvalides_limit)){
 					
 					$id_article = $article[0];
 					$titre_article = html_ent(trim($article[3]));
@@ -355,7 +355,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
 				echo "\n<td class=\"affichage_table\"><b>".action."</b></td>";
 				echo "</tr>";
 
-				while($article = mysql_fetch_row($select_articles_valides_limit)){
+				while($article = mysqli_fetch_row($select_articles_valides_limit)){
 					
 					$id_article = $article[0];
 					$titre_article = html_ent(trim($article[3]));

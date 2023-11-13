@@ -157,7 +157,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($_SESSION['id']) &
 												<?php
         									echo "<b>".$pseudo."</b> (";
 													echo $grade_tab[$grade_user_session];
-        									echo ") <a href=\"?task=logout\" class=\"menu_admin\">" ."linkdeconnection". "</a>";
+        									echo ") <a href=\"?task=logout\" class=\"menu_admin\">" ."logout". "</a>";
 												?>
 											</td>
 										</tr>
