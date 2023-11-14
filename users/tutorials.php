@@ -91,7 +91,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1 && isset($grade_user_sessio
  						$time_insert_tuto = time();
  						$inserttuto = "INSERT INTO `" . $tblprefix . "tutoriels` VALUES (NULL,$id_user_session,'$tuto_titre','','','','by','','0',$ordre_tuto,$time_insert_tuto,$time_insert_tuto,0,'*',0,0);";
 	          $connect->query($inserttuto);
-	          if ($this_tuto_insert = mysql_insert_id())
+	          if ($this_tuto_insert = $connect->insert_id)
 	          	$link = "?inc=tutorials&do=update_tuto&id_tuto=".$this_tuto_insert;
 	          else $link = "?inc=tutorials";
 	          redirection(tutoriel_cree,$link,3,"tips",1);

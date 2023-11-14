@@ -32,7 +32,7 @@ defined("access_const") or die( 'Restricted access' );
 		$id_user = $id_user_session;
 	if (isset($id_user) && !empty($id_user)){
 		echo "<div id=\"titre\">".user_profile."</div>";
-		
+		goback_button();
 		$select_user = $connect->query("select * from `" . $tblprefix . "users` where id_user = $id_user;");
 		
     if (mysqli_num_rows($select_user) == 1){

@@ -43,10 +43,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 	else $do="";
 
 	// need classe
-	$select_demande_classe = mysql_query("select demander_classe from `" . $tblprefix . "site_infos`;");
-	if (mysql_num_rows($select_demande_classe) == 1) {
-		$select_classes = mysql_query("select * from `" . $tblprefix . "classes`;");
-		if (mysql_num_rows($select_classes) > 0 && mysql_result($select_demande_classe,0) == 1)
+	$select_demande_classe = $connect->query("select demander_classe from `" . $tblprefix . "site_infos`;");
+	if (mysqli_num_rows($select_demande_classe) == 1) {
+		$select_classes = $connect->query("select * from `" . $tblprefix . "classes`;");
+		if (mysqli_num_rows($select_classes) > 0 && mysqli_result($select_demande_classe,0) == 1)
 			$need_classe = 1;
 		else $need_classe = 0;
 	} else $need_classe = 0;
@@ -58,20 +58,20 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 			
 			goback_button();
 
-			$select_un_msg = mysql_query("select * from `" . $tblprefix . "messages` where id_message = $id_msg and (id_destinataires_app like '%-$id_user_session-%' or id_emetteur_app = $id_user_session);");
+			$select_un_msg = $connect->query("select * from `" . $tblprefix . "messages` where id_message = $id_msg and (id_destinataires_app like '%-$id_user_session-%' or id_emetteur_app = $id_user_session);");
 
-			if (mysql_num_rows($select_un_msg) == 1) {
+			if (mysqli_num_rows($select_un_msg) == 1) {
 				
-				$id_emetteur = mysql_result($select_un_msg,0,1);
-				$id_emetteur_app = mysql_result($select_un_msg,0,2);
-				$titre_msg = html_ent(mysql_result($select_un_msg,0,7));
-				$contenu_msg = bbcode_br(html_ent(mysql_result($select_un_msg,0,8)));
+				$id_emetteur = mysqli_result($select_un_msg,0,1);
+				$id_emetteur_app = mysqli_result($select_un_msg,0,2);
+				$titre_msg = html_ent(mysqli_result($select_un_msg,0,7));
+				$contenu_msg = bbcode_br(html_ent(mysqli_result($select_un_msg,0,8)));
 				$contenu_msg = preg_replace("#\[\#\](.+)\[/\#\]#i", "<div id=\"fwd\">$1</div>", $contenu_msg);
 				$contenu_msg = preg_replace("#\[\#\]|\[/\#\]#", " ", $contenu_msg);
-				$lu_message_app = mysql_result($select_un_msg,0,10);
-				$ladate = mysql_result($select_un_msg,0,11);
-				$destinataires = html_ent(mysql_result($select_un_msg,0,12));
-				$destinataires_app = html_ent(mysql_result($select_un_msg,0,13));
+				$lu_message_app = mysqli_result($select_un_msg,0,10);
+				$ladate = mysqli_result($select_un_msg,0,11);
+				$destinataires = html_ent(mysqli_result($select_un_msg,0,12));
+				$destinataires_app = html_ent(mysqli_result($select_un_msg,0,13));
 
 					echo "<table border=\"0\"><tr>";
 					
@@ -88,10 +88,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 					echo "</tr></table><br />";
 					
 					if ($id_emetteur != 0){
-   					$select_emetteur = mysql_query("select nom_user, identifiant_user from `" . $tblprefix . "users` where id_user = $id_emetteur;");
-   					if (mysql_num_rows($select_emetteur) == 1){
-    					$nom_user = html_ent(mysql_result($select_emetteur,0,0));
-    					$identifiant_user = html_ent(mysql_result($select_emetteur,0,1));
+   					$select_emetteur = $connect->query("select nom_user, identifiant_user from `" . $tblprefix . "users` where id_user = $id_emetteur;");
+   					if (mysqli_num_rows($select_emetteur) == 1){
+    					$nom_user = html_ent(mysqli_result($select_emetteur,0,0));
+    					$identifiant_user = html_ent(mysqli_result($select_emetteur,0,1));
     					$emetteur = $identifiant_user;
     					if (!empty($nom_user))
     						$emetteur .= " (".$nom_user.")";
@@ -99,10 +99,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
    					else $emetteur = inconnu;
    				}
    				else if ($id_emetteur_app != 0){
-   					$select_emetteur_app = mysql_query("select nom_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id_emetteur_app;");
-   					if (mysql_num_rows($select_emetteur_app) == 1){
-    					$nom_apprenant = html_ent(mysql_result($select_emetteur_app,0,0));
-    					$identifiant_apprenant = html_ent(mysql_result($select_emetteur_app,0,1));
+   					$select_emetteur_app = $connect->query("select nom_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id_emetteur_app;");
+   					if (mysqli_num_rows($select_emetteur_app) == 1){
+    					$nom_apprenant = html_ent(mysqli_result($select_emetteur_app,0,0));
+    					$identifiant_apprenant = html_ent(mysqli_result($select_emetteur_app,0,1));
     					$emetteur = $identifiant_apprenant;
     					if (!empty($nom_apprenant))
     						$emetteur .= " (".$nom_apprenant.")";
@@ -112,7 +112,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 				
 				if (strpos($lu_message_app,"-".$id_user_session."-") === false){
 					$lu_message_app .= $id_user_session."-";
-					$update_lu_message_app = mysql_query("update `" . $tblprefix . "messages` set lu_message_app = '$lu_message_app' where id_message = $id_msg;");
+					$update_lu_message_app = $connect->query("update `" . $tblprefix . "messages` set lu_message_app = '$lu_message_app' where id_message = $id_msg;");
 				}
 
 				$date_msg = set_date($dateformat,$ladate);
@@ -126,10 +126,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 					
 				echo "<b>".to." : </b><ul>";
 				
-				$select_users = mysql_query("select id_user, identifiant_user, grade_user from `" . $tblprefix . "users`;");
-    		if (mysql_num_rows($select_users) > 0){
+				$select_users = $connect->query("select id_user, identifiant_user, grade_user from `" . $tblprefix . "users`;");
+    		if (mysqli_num_rows($select_users) > 0){
     			echo "<li><b>".users." : </b>";
-    			while($user = mysql_fetch_row($select_users)){
+    			while($user = mysqli_fetch_row($select_users)){
     				$id_user = $user[0];
     				$identifiant_user = html_ent($user[1]);
     				$identifiant_user = readmore($identifiant_user,$max_len2);
@@ -139,10 +139,10 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
     			}
     			echo "</li>";
     		}
-    		$select_learners = mysql_query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants`;");
-    		if (mysql_num_rows($select_learners) > 0){
+    		$select_learners = $connect->query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants`;");
+    		if (mysqli_num_rows($select_learners) > 0){
     			echo "<li><b>".learners." : </b>";
-    			while($apprenant = mysql_fetch_row($select_learners)){
+    			while($apprenant = mysqli_fetch_row($select_learners)){
     				$id_apprenant = $apprenant[0];
     				$identifiant_apprenant = html_ent($apprenant[1]);
     				$identifiant_apprenant = readmore($identifiant_apprenant,$max_len2);
@@ -158,25 +158,25 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 
 				//affichage suivant precedent
 				if ($id_emetteur == $id_user_session){
-					$msg_precedent = mysql_query ("select id_message from `" . $tblprefix . "messages` where date_message > $ladate and id_emetteur_app = $id_user_session order by date_message;");
-					$msg_suivant   = mysql_query ("select id_message from `" . $tblprefix . "messages` where date_message < $ladate and id_emetteur_app = $id_user_session order by date_message desc;");
+					$msg_precedent = $connect->query ("select id_message from `" . $tblprefix . "messages` where date_message > $ladate and id_emetteur_app = $id_user_session order by date_message;");
+					$msg_suivant   = $connect->query ("select id_message from `" . $tblprefix . "messages` where date_message < $ladate and id_emetteur_app = $id_user_session order by date_message desc;");
 				}
 				else{
-					$msg_precedent = mysql_query ("select id_message from `" . $tblprefix . "messages` where date_message > $ladate and id_destinataires_app like '%-$id_user_session-%' order by date_message;");
-					$msg_suivant   = mysql_query ("select id_message from `" . $tblprefix . "messages` where date_message < $ladate and id_destinataires_app like '%-$id_user_session-%' order by date_message desc;");
+					$msg_precedent = $connect->query ("select id_message from `" . $tblprefix . "messages` where date_message > $ladate and id_destinataires_app like '%-$id_user_session-%' order by date_message;");
+					$msg_suivant   = $connect->query ("select id_message from `" . $tblprefix . "messages` where date_message < $ladate and id_destinataires_app like '%-$id_user_session-%' order by date_message desc;");
 				}
 				echo "<table width=\"50%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr><td align=\"center\" width=\"50%\" style=\"border: 1px solid #000000;\"><b>";
 
-				if (mysql_num_rows($msg_precedent) > 0){
-					$id_msg_precedent = mysql_result($msg_precedent,0);
+				if (mysqli_num_rows($msg_precedent) > 0){
+					$id_msg_precedent = mysqli_result($msg_precedent,0);
 					echo "<table border=\"0\"><tr><td><a href=\"?s_messages&do=open_msg&id_msg=".$id_msg_precedent."\"><img border=\"0\" src=\"images/others/precedent.png\" width=\"32\" height=\"32\" /></a></td><td><a href=\"?s_messages&do=open_msg&id_msg=".$id_msg_precedent."\"><b>".msg_precedent."</b></a></td></tr></table>";
 				} else
 					echo "<table border=\"0\"><tr><td><img border=\"0\" src=\"images/others/precedent2.png\" width=\"32\" height=\"32\" /></td><td><b>".msg_precedent."</b></td></tr></table>";
 				
 				echo "</b></td><td align=\"center\" width=\"50%\" style=\"border: 1px solid #000000;\"><b>";
 
-				if (mysql_num_rows($msg_suivant) > 0){
-					$id_msg_suivant = mysql_result($msg_suivant,0);
+				if (mysqli_num_rows($msg_suivant) > 0){
+					$id_msg_suivant = mysqli_result($msg_suivant,0);
 					echo "<table border=\"0\"><tr><td><a href=\"?s_messages&do=open_msg&id_msg=".$id_msg_suivant."\"><b>".msg_suivant."</b></a></td><td><a href=\"?s_messages&do=open_msg&id_msg=".$id_msg_suivant."\"><img border=\"0\" src=\"images/others/suivant.png\" width=\"32\" height=\"32\" /></a></td></tr></table>";
 				} else
 					echo "<table border=\"0\"><tr><td><b>".msg_suivant."</b></td><td><img border=\"0\" src=\"images/others/suivant2.png\" width=\"32\" height=\"32\" /></td></tr></table>";
@@ -188,14 +188,14 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 	// ****************** delete_msg **************************
 		case "delete_msg" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-				$select_dest_msg = mysql_query("select id_destinataires_app from `" . $tblprefix . "messages` where id_message = $id_msg;");
-				if (mysql_num_rows($select_dest_msg) == 1) {
-					$id_destinataires_app = mysql_result($select_dest_msg,0);
+				$select_dest_msg = $connect->query("select id_destinataires_app from `" . $tblprefix . "messages` where id_message = $id_msg;");
+				if (mysqli_num_rows($select_dest_msg) == 1) {
+					$id_destinataires_app = mysqli_result($select_dest_msg,0);
 					if (strpos($id_destinataires_app,"-".$id_user_session."-") !== false){
 						$tab_dest = explode("-",$id_destinataires_app);
 						unset($tab_dest[array_search($id_user_session, $tab_dest)]);
 						$id_destinataires_app2 = implode("-",$tab_dest);
-						$update_dest_message = mysql_query("update `" . $tblprefix . "messages` set id_destinataires_app = '$id_destinataires_app2' where id_message = $id_msg;");
+						$update_dest_message = $connect->query("update `" . $tblprefix . "messages` set id_destinataires_app = '$id_destinataires_app2' where id_message = $id_msg;");
 					}
 				}
 			}
@@ -205,9 +205,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 	// ****************** delete_outbox_msg **************************
 		case "delete_outbox_msg" : {
 			if (isset($_GET['key']) && $_GET['key'] == $key){
-				$select_outbox_msg = mysql_query("select id_emetteur_app from `" . $tblprefix . "messages` where id_message = $id_msg;");
-				if (mysql_num_rows($select_outbox_msg) == 1 && mysql_result($select_outbox_msg,0) == $id_user_session)
-						$update_outbox_msg = mysql_query("update `" . $tblprefix . "messages` set deleted_from_outbox = '1' where id_message = $id_msg;");
+				$select_outbox_msg = $connect->query("select id_emetteur_app from `" . $tblprefix . "messages` where id_message = $id_msg;");
+				if (mysqli_num_rows($select_outbox_msg) == 1 && mysqli_result($select_outbox_msg,0) == $id_user_session)
+						$update_outbox_msg = $connect->query("update `" . $tblprefix . "messages` set deleted_from_outbox = '1' where id_message = $id_msg;");
 			}
 			locationhref_admin("?s_messages&do=outbox");
 		} break;
@@ -230,9 +230,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 				  if ($need_classe == 1){
 				  	if (isset($_POST['classes_app']) && !empty($_POST['classes_app'])){
 				  		foreach ($_POST['classes_app'] as $elem_classe){
-				  			$select_app_classe = mysql_query("select id_apprenant from `" . $tblprefix . "apprenants` where id_classe = $elem_classe and id_apprenant != $id_user_session;");
-								if (mysql_num_rows($select_app_classe) > 0){
-									while($app_classe = mysql_fetch_row($select_app_classe)){
+				  			$select_app_classe = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants` where id_classe = $elem_classe and id_apprenant != $id_user_session;");
+								if (mysqli_num_rows($select_app_classe) > 0){
+									while($app_classe = mysqli_fetch_row($select_app_classe)){
 										if (!in_array($app_classe[0],$dest_apprenants))
 											$dest_apprenants[] = $app_classe[0];
 									}
@@ -252,7 +252,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 				  
     			if ($chaine_users != "-" || $chaine_apps != "-"){
     				$insertmessage = "INSERT INTO `" . $tblprefix . "messages` VALUES (NULL,0,$id_user_session,'','','$chaine_users','$chaine_apps','".$titre_msg."','".$contenu_msg."','-','-',".time().",'$chaine_users','$chaine_apps','0');";
-	          mysql_query($insertmessage,$connect);
+	          $connect->query($insertmessage);
 	          redirection(message_succes,"?s_messages",3,"tips",0);
     			} else goback(choisir_distinataire,2,"error",0);
 				} else goback(tous_champs,2,"error",0);
@@ -267,15 +267,15 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 				if (!empty($_GET['tolearner']))
 					$tolearner = $_GET['tolearner'];
 				else $tolearner = "";
-    		$select_users = mysql_query("select id_user, identifiant_user, grade_user from `" . $tblprefix . "users` order by grade_user desc;");
-    		$select_apprenants = mysql_query("select id_apprenant, id_classe, identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant != $id_user_session order by id_classe desc;");
-    			if (mysql_num_rows($select_users) > 0 || mysql_num_rows($select_apprenants) > 0){
+    		$select_users = $connect->query("select id_user, identifiant_user, grade_user from `" . $tblprefix . "users` order by grade_user desc;");
+    		$select_apprenants = $connect->query("select id_apprenant, id_classe, identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant != $id_user_session order by id_classe desc;");
+    			if (mysqli_num_rows($select_users) > 0 || mysqli_num_rows($select_apprenants) > 0){
     			 echo "\n<form method=\"POST\" action=\"\">";
 					 echo "<b><u>" .to. " :</u></b><br /><br />\n";
 					 echo "<table border=\"0\"><tr><td align=\"center\">";
-					 if (mysql_num_rows($select_users) > 0){
+					 if (mysqli_num_rows($select_users) > 0){
 						echo "<b>".users."</b><br /><select size=\"10\" name=\"destinataires[]\" id=\"destinataires\" multiple=\"multiple\">";
-    				while($user = mysql_fetch_row($select_users)){
+    				while($user = mysqli_fetch_row($select_users)){
     					$id_user = $user[0];
     					$identifiant_user = html_ent($user[1]);
     					$grade_user = $grade_tab[$user[2]];
@@ -289,9 +289,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 						echo "<input type=\"button\" value=\"".deselect_all."\" onclick=\"selectAll('destinataires',false)\" />";
 						echo "</td><td align=\"center\">";
 					 }
-					 if (mysql_num_rows($select_apprenants) > 0){
+					 if (mysqli_num_rows($select_apprenants) > 0){
 						echo "<b>".learners."</b><br /><select size=\"10\" name=\"destinataires_app[]\" id=\"destinataires_app\" multiple=\"multiple\">";
-    				while($learner = mysql_fetch_row($select_apprenants)){
+    				while($learner = mysqli_fetch_row($select_apprenants)){
     					$id_apprenant = $learner[0];
     					$id_classe = $learner[1];
     					$identifiant_apprenant = html_ent($learner[2]);
@@ -299,9 +299,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
     					if ($id_apprenant == $tolearner)
     						echo " selected=\"selected\"";
     					echo ">".$identifiant_apprenant;
-    					$select_classe = mysql_query("select classe from `" . $tblprefix . "classes` where id_classe = $id_classe;");
-    	  			if (mysql_num_rows($select_classe) == 1){
-    						$classe_apprenant = html_ent(mysql_result($select_classe,0));
+    					$select_classe = $connect->query("select classe from `" . $tblprefix . "classes` where id_classe = $id_classe;");
+    	  			if (mysqli_num_rows($select_classe) == 1){
+    						$classe_apprenant = html_ent(mysqli_result($select_classe,0));
     						echo " (".$classe_apprenant.")";
     					}
     					echo "</option>";
@@ -313,7 +313,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 					 if ($need_classe == 1){
 					 		echo "</td><td align=\"center\" valign=\"top\">";
 	      			echo "<b>" .classe. " : </b><br /><select size=\"10\" name=\"classes_app[]\" id=\"classes_app\" multiple=\"multiple\">";
-    					while($classe = mysql_fetch_row($select_classes)){
+    					while($classe = mysqli_fetch_row($select_classes)){
     						$id_classe = $classe[0];
     						$nom_classe = $classe[1];
 								echo "<option value=\"".$id_classe."\">".$nom_classe."</option>";
@@ -333,21 +333,21 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 	// ****************** reply **************************
 		case "reply" : {
 			echo "<div id=\"titre\">".reply."</div><br />";
-			$select_this_msg = mysql_query("select * from `" . $tblprefix . "messages` where id_message = $id_msg and id_destinataires_app like '%-$id_user_session-%';");
-    	if (mysql_num_rows($select_this_msg) == 1) {
+			$select_this_msg = $connect->query("select * from `" . $tblprefix . "messages` where id_message = $id_msg and id_destinataires_app like '%-$id_user_session-%';");
+    	if (mysqli_num_rows($select_this_msg) == 1) {
 
-    		$this_msg = mysql_fetch_row($select_this_msg);
+    		$this_msg = mysqli_fetch_row($select_this_msg);
 
 				$emetteur_this_msg = $this_msg[1];
 				$emetteur_app_this_msg = $this_msg[2];
 				
 				if ($emetteur_this_msg != 0)
-    			$select_emetteur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $emetteur_this_msg;");
+    			$select_emetteur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $emetteur_this_msg;");
     		else if ($emetteur_app_this_msg != 0)
-    			$select_emetteur = mysql_query("select identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $emetteur_app_this_msg;");
+    			$select_emetteur = $connect->query("select identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $emetteur_app_this_msg;");
 
-    		if (mysql_num_rows($select_emetteur) == 1)
-    			$emetteur = html_ent(mysql_result($select_emetteur,0));
+    		if (mysqli_num_rows($select_emetteur) == 1)
+    			$emetteur = html_ent(mysqli_result($select_emetteur,0));
     		else $emetteur = inconnu;
 
 				$date_this_msg = $this_msg[11];
@@ -375,7 +375,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 					else $dest_app_reply = "-";
 					
     			$insertmessage = "INSERT INTO `" . $tblprefix . "messages` VALUES (NULL,0,$id_user_session,'','','$dest_reply','$dest_app_reply','".$titre_msg."','".$contenu_msg."','-','-',".time().",'$dest_reply','$dest_app_reply','0');";
-	         mysql_query($insertmessage,$connect);
+	         $connect->query($insertmessage,$connect);
 	         redirection(message_succes,"?s_messages",3,"tips",0);
 				} else goback(tous_champs,2,"error",0);
 			 } else goback(err_data_saved,2,"error",0);
@@ -397,21 +397,21 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 	// ****************** forward **************************
 		case "forward" : {
 		 echo "<div id=\"titre\">".forward."</div><br />";
-		 $select_this_msg = mysql_query("select * from `" . $tblprefix . "messages` where id_message = $id_msg and (id_destinataires_app like '%-$id_user_session-%' or id_emetteur_app = $id_user_session);");
-     if (mysql_num_rows($select_this_msg) == 1) {
+		 $select_this_msg = $connect->query("select * from `" . $tblprefix . "messages` where id_message = $id_msg and (id_destinataires_app like '%-$id_user_session-%' or id_emetteur_app = $id_user_session);");
+     if (mysqli_num_rows($select_this_msg) == 1) {
 
-    		$this_msg = mysql_fetch_row($select_this_msg);
+    		$this_msg = mysqli_fetch_row($select_this_msg);
 
 				$emetteur_this_msg = $this_msg[1];
 				$emetteur_app_this_msg = $this_msg[2];
 				
 				if ($emetteur_this_msg != 0)
-    			$select_emetteur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $emetteur_this_msg;");
+    			$select_emetteur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $emetteur_this_msg;");
     		else if ($emetteur_app_this_msg != 0)
-    			$select_emetteur = mysql_query("select identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $emetteur_app_this_msg;");
+    			$select_emetteur = $connect->query("select identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $emetteur_app_this_msg;");
 
-    		if (mysql_num_rows($select_emetteur) == 1)
-    			$emetteur = html_ent(mysql_result($select_emetteur,0));
+    		if (mysqli_num_rows($select_emetteur) == 1)
+    			$emetteur = html_ent(mysqli_result($select_emetteur,0));
     		else $emetteur = inconnu;
 
 				$date_this_msg = $this_msg[11];
@@ -440,9 +440,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 				  if ($need_classe == 1){
 				  	if (isset($_POST['classes_app']) && !empty($_POST['classes_app'])){
 				  		foreach ($_POST['classes_app'] as $elem_classe){
-				  			$select_app_classe = mysql_query("select id_apprenant from `" . $tblprefix . "apprenants` where id_classe = $elem_classe and id_apprenant != $id_user_session;");
-								if (mysql_num_rows($select_app_classe) > 0){
-									while($app_classe = mysql_fetch_row($select_app_classe)){
+				  			$select_app_classe = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants` where id_classe = $elem_classe and id_apprenant != $id_user_session;");
+								if (mysqli_num_rows($select_app_classe) > 0){
+									while($app_classe = mysqli_fetch_row($select_app_classe)){
 										if (!in_array($app_classe[0],$dest_apprenants))
 											$dest_apprenants[] = $app_classe[0];
 									}
@@ -462,7 +462,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 				  
     			if ($chaine_users != "-" || $chaine_apps != "-"){
     				$insertmessage = "INSERT INTO `" . $tblprefix . "messages` VALUES (NULL,0,$id_user_session,'','','$chaine_users','$chaine_apps','".$titre_msg."','".$contenu_msg."','-','-',".time().",'$chaine_users','$chaine_apps','0');";
-	          mysql_query($insertmessage,$connect);
+	          $connect->query($insertmessage,$connect);
 	          redirection(message_succes,"?s_messages",3,"tips",0);
     			} else goback(choisir_distinataire,2,"error",0);
 				} else goback(tous_champs,2,"error",0);
@@ -471,15 +471,15 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 			else{
 				echo "<script language=\"javascript\" type=\"text/javascript\" src=\"styles/selectall.js\"></script>";
 				goback_button();
-    		$select_users = mysql_query("select id_user, identifiant_user, grade_user from `" . $tblprefix . "users` order by grade_user desc;");
-    		$select_apprenants = mysql_query("select id_apprenant, id_classe, identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant != $id_user_session order by id_classe desc;");
-    			if (mysql_num_rows($select_users) > 0 || mysql_num_rows($select_apprenants) > 0){
+    		$select_users = $connect->query("select id_user, identifiant_user, grade_user from `" . $tblprefix . "users` order by grade_user desc;");
+    		$select_apprenants = $connect->query("select id_apprenant, id_classe, identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant != $id_user_session order by id_classe desc;");
+    			if (mysqli_num_rows($select_users) > 0 || mysqli_num_rows($select_apprenants) > 0){
     			 echo "\n<form method=\"POST\" action=\"\">";
 					 echo "<b><u>" .to. " :</u></b><br /><br />\n";
 					 echo "<table border=\"0\"><tr><td align=\"center\">";
-					 if (mysql_num_rows($select_users) > 0){
+					 if (mysqli_num_rows($select_users) > 0){
 						echo "<b>".users."</b><br /><select size=\"10\" name=\"destinataires[]\" id=\"destinataires\" multiple=\"multiple\">";
-    				while($user = mysql_fetch_row($select_users)){
+    				while($user = mysqli_fetch_row($select_users)){
     					$id_user = $user[0];
     					$identifiant_user = html_ent($user[1]);
     					$grade_user = $grade_tab[$user[2]];
@@ -490,16 +490,16 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 						echo "<input type=\"button\" value=\"".deselect_all."\" onclick=\"selectAll('destinataires',false)\" />";
 						echo "</td><td align=\"center\">";
 					 }
-					 if (mysql_num_rows($select_apprenants) > 0){
+					 if (mysqli_num_rows($select_apprenants) > 0){
 						echo "<b>".learners."</b><br /><select size=\"10\" name=\"destinataires_app[]\" id=\"destinataires_app\" multiple=\"multiple\">";
-    				while($learner = mysql_fetch_row($select_apprenants)){
+    				while($learner = mysqli_fetch_row($select_apprenants)){
     					$id_apprenant = $learner[0];
     					$id_classe = $learner[1];
     					$identifiant_apprenant = html_ent($learner[2]);
     					echo "\n<option value=\"".$id_apprenant."\">".$identifiant_apprenant;
-    					$select_classe = mysql_query("select classe from `" . $tblprefix . "classes` where id_classe = $id_classe;");
-    	  			if (mysql_num_rows($select_classe) == 1){
-    						$classe_apprenant = html_ent(mysql_result($select_classe,0));
+    					$select_classe = $connect->query("select classe from `" . $tblprefix . "classes` where id_classe = $id_classe;");
+    	  			if (mysqli_num_rows($select_classe) == 1){
+    						$classe_apprenant = html_ent(mysqli_result($select_classe,0));
     						echo " (".$classe_apprenant.")";
     					}
     					echo "</option>";
@@ -511,7 +511,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 					 if ($need_classe == 1){
 					 		echo "</td><td align=\"center\" valign=\"top\">";
 	      			echo "<b>" .classe. " : </b><br /><select size=\"10\" name=\"classes_app[]\" id=\"classes_app\" multiple=\"multiple\">";
-    					while($classe = mysql_fetch_row($select_classes)){
+    					while($classe = mysqli_fetch_row($select_classes)){
     						$id_classe = $classe[0];
     						$nom_classe = $classe[1];
 								echo "<option value=\"".$id_classe."\">".$nom_classe."</option>";
@@ -544,8 +544,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
    		echo "<td align=\"center\" width=\"33%\"><b>".outbox."</b></td>";
    		echo "</tr></table><hr />";
 
-	$select_msg = mysql_query("select * from `" . $tblprefix . "messages` where id_emetteur_app = $id_user_session and deleted_from_outbox = '0' order by date_message desc;"); 
-	$nbr_trouve = mysql_num_rows($select_msg);
+	$select_msg = $connect->query("select * from `" . $tblprefix . "messages` where id_emetteur_app = $id_user_session and deleted_from_outbox = '0' order by date_message desc;"); 
+	$nbr_trouve = mysqli_num_rows($select_msg);
   if ($nbr_trouve > 0){
 		$page_max = ceil($nbr_trouve / $nbr_resultats);
 		if ($page <= $page_max && $page > 1 && $page_max > 1)
@@ -555,7 +555,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 			$page = 1;
 		}
 
-		$select_msg_limit = mysql_query("select * from `" . $tblprefix . "messages` where id_emetteur_app = $id_user_session and deleted_from_outbox = '0' order by date_message desc limit $limit, $nbr_resultats;"); 
+		$select_msg_limit = $connect->query("select * from `" . $tblprefix . "messages` where id_emetteur_app = $id_user_session and deleted_from_outbox = '0' order by date_message desc limit $limit, $nbr_resultats;"); 
 
 				echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".titre_msg."</b></td>";
@@ -565,7 +565,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 				echo "\n<td class=\"affichage_table\"><b>".supprimer."</b></td>";
 				echo "</tr>\n";
 				
-				while($msg = mysql_fetch_row($select_msg_limit)){
+				while($msg = mysqli_fetch_row($select_msg_limit)){
 					
 					$id_msg = $msg[0];
 					$titre_msg = html_ent($msg[7]);
@@ -577,9 +577,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 					echo "\n<td class=\"affichage_table\"><b>";
 					$i = 0;
 					$destinataires = $msg[12];
-				  $select_users = mysql_query("select id_user, identifiant_user from `" . $tblprefix . "users`;");
-    			if (mysql_num_rows($select_users) > 0){
-    				while($user = mysql_fetch_row($select_users)){
+				  $select_users = $connect->query("select id_user, identifiant_user from `" . $tblprefix . "users`;");
+    			if (mysqli_num_rows($select_users) > 0){
+    				while($user = mysqli_fetch_row($select_users)){
     					$id_user = $user[0];
     					if (strpos($destinataires,"-".$id_user."-") !== false){
     						$identifiant_user = html_ent($user[1]);
@@ -595,9 +595,9 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
     			}
     			$i = 0;
     			$destinataires_app = $msg[13];
-    			$select_apps = mysql_query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant != $id_user_session;");
-    			if (mysql_num_rows($select_apps) > 0){
-    				while($app = mysql_fetch_row($select_apps)){
+    			$select_apps = $connect->query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant != $id_user_session;");
+    			if (mysqli_num_rows($select_apps) > 0){
+    				while($app = mysqli_fetch_row($select_apps)){
     					$id_app = $app[0];
     					if (strpos($destinataires_app,"-".$id_app."-") !== false){
        					$identifiant_app = html_ent($app[1]);
@@ -660,8 +660,8 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
    		
    		echo "<b><u>- ".user_messages." : </u></b><br /><br />";
 
-	$select_msg = mysql_query("select * from `" . $tblprefix . "messages` where id_destinataires_app like '%-$id_user_session-%' order by date_message desc;"); 
-	$nbr_trouve = mysql_num_rows($select_msg);
+	$select_msg = $connect->query("select * from `" . $tblprefix . "messages` where id_destinataires_app like '%-$id_user_session-%' order by date_message desc;"); 
+	$nbr_trouve = mysqli_num_rows($select_msg);
   if ($nbr_trouve > 0){
 		$page_max = ceil($nbr_trouve / $nbr_resultats);
 		if ($page <= $page_max && $page > 1 && $page_max > 1)
@@ -671,7 +671,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 			$page = 1;
 		}
 
-			$select_msg_limit = mysql_query("select * from `" . $tblprefix . "messages` where id_destinataires_app like '%-$id_user_session-%' order by date_message desc limit $limit, $nbr_resultats;"); 
+			$select_msg_limit = $connect->query("select * from `" . $tblprefix . "messages` where id_destinataires_app like '%-$id_user_session-%' order by date_message desc limit $limit, $nbr_resultats;"); 
 
 				echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".titre_msg."</b></td>";
@@ -682,7 +682,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 				echo "\n<td class=\"affichage_table\"><b>".supprimer."</b></td>";
 				echo "</tr>\n";
 				
-				while($msg = mysql_fetch_row($select_msg_limit)){
+				while($msg = mysqli_fetch_row($select_msg_limit)){
 					
 					$id_msg = $msg[0];
 					
@@ -702,22 +702,22 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 					$id_emetteur_app = $msg[2];
 					
 					if ($id_emetteur != 0){
-    				$select_emetteur = mysql_query("select identifiant_user, photo_profil from `" . $tblprefix . "users` where id_user = $id_emetteur;");
-    				if (mysql_num_rows($select_emetteur) == 1){
-    					$nom_emetteur = html_ent(mysql_result($select_emetteur,0,0));
+    				$select_emetteur = $connect->query("select identifiant_user, photo_profil from `" . $tblprefix . "users` where id_user = $id_emetteur;");
+    				if (mysqli_num_rows($select_emetteur) == 1){
+    					$nom_emetteur = html_ent(mysqli_result($select_emetteur,0,0));
     					$nom_emetteur = readmore($nom_emetteur,$max_len2);
-    					$photo_profil = mysql_result($select_emetteur,0,1);
+    					$photo_profil = mysqli_result($select_emetteur,0,1);
     				} else $nom_emetteur = inconnu;
     				
     				echo "\n<td class=\"affichage_table\"><a href=\"?profiles=".$id_emetteur."\" title=\"".user_profile."\"><img border=\"0\" src=\"docs/".$photo_profil."\" alt=\"".$nom_emetteur."\" width=\"40\" height=\"40\" /></a><br />";
     				echo "\n<a href=\"?profiles=".$id_emetteur."\" title=\"".user_profile."\"><b>".$nom_emetteur."</b></a></td>";
 					}
 					else if ($id_emetteur_app != 0){
-    				$select_emetteur = mysql_query("select identifiant_apprenant, photo_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id_emetteur_app;");
-    				if (mysql_num_rows($select_emetteur) == 1){
-    					$nom_emetteur = html_ent(mysql_result($select_emetteur,0,0));
+    				$select_emetteur = $connect->query("select identifiant_apprenant, photo_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id_emetteur_app;");
+    				if (mysqli_num_rows($select_emetteur) == 1){
+    					$nom_emetteur = html_ent(mysqli_result($select_emetteur,0,0));
     					$nom_emetteur = readmore($nom_emetteur,$max_len2);
-    					$photo_profil = mysql_result($select_emetteur,0,1);
+    					$photo_profil = mysqli_result($select_emetteur,0,1);
     				} else $nom_emetteur = inconnu;
     			
 					  echo "\n<td class=\"affichage_table\"><a href=\"?s_profiles=".$id_emetteur_app."\" title=\"".learner_profile."\"><img border=\"0\" src=\"docs/".$photo_profil."\" alt=\"".$nom_emetteur."\" width=\"40\" height=\"40\" /></a><br />";

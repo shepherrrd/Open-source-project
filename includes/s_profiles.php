@@ -57,7 +57,7 @@ function calcul_age ($birth) {
 	else if (isset($id_user_session) && !empty($id_user_session) && isset($_SESSION['log']) && $_SESSION['log'] == 2)
 		$id_stu = $id_user_session;
 
-	if (isset($id_stu) && !empty($id_stu) && $afficher_profil == 1){
+	if (isset($id_stu) && !empty($id_stu)){
 		if (!empty($_GET['action']) && $_GET['action'] == "edit"){
 			if (isset($_SESSION['log']) && $_SESSION['log'] == 2 && $id_stu == $id_user_session){
 
@@ -66,9 +66,9 @@ function calcul_age ($birth) {
 				goback_button();
 				$err_comp = 0;
 
-				$select_user = mysql_query("select * from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
-    		if (mysql_num_rows($select_user) == 1){
-    			$user = mysql_fetch_row($select_user);
+				$select_user = $connect->query("select * from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
+    		if (mysqli_num_rows($select_user) == 1){
+    			$user = mysqli_fetch_row($select_user);
 					
 					$id_user = $user[0];
 					$classe_user = $user[1];
@@ -82,18 +82,18 @@ function calcul_age ($birth) {
 					$langue_user = $user[15];
 					
 					// need classe
-					$select_demande_classe = mysql_query("select demander_classe from `" . $tblprefix . "site_infos`;");
-					if (mysql_num_rows($select_demande_classe) == 1) {
-						$select_classes = mysql_query("select * from `" . $tblprefix . "classes`;");
-						if (mysql_num_rows($select_classes) > 0 && mysql_result($select_demande_classe,0) == 1)
+					$select_demande_classe = $connect->query("select demander_classe from `" . $tblprefix . "site_infos`;");
+					if (mysqli_num_rows($select_demande_classe) == 1) {
+						$select_classes = $connect->query("select * from `" . $tblprefix . "classes`;");
+						if (mysqli_num_rows($select_classes) > 0 && mysqli_result($select_demande_classe,0) == 1)
 							$need_classe = 1;
 						else $need_classe = 0;
 					} else $need_classe = 0;
 					
 					//modifier classe
-					$autoriser_modification_classe = mysql_query("select autoriser_modification_classe from `" . $tblprefix . "site_infos`;");
-					if (mysql_num_rows($autoriser_modification_classe) == 1) {
-						if (mysql_result($autoriser_modification_classe,0) == 1)
+					$autoriser_modification_classe = $connect->query("select autoriser_modification_classe from `" . $tblprefix . "site_infos`;");
+					if (mysqli_num_rows($autoriser_modification_classe) == 1) {
+						if (mysqli_result($autoriser_modification_classe,0) == 1)
 							$edit_classe = 1;
 						else $edit_classe = 0;
 					} else $edit_classe = 0;
@@ -108,10 +108,10 @@ function calcul_age ($birth) {
 							$login = special_chars($login);
 							$login = escape_string($login);
 							if ($login != $identifiant_user){
-								$select_app_login = mysql_query("select id_apprenant from `" . $tblprefix . "apprenants` where identifiant_apprenant = '$login' and id_apprenant != $id_user;");
-								$select_user_id = mysql_query("select id_user from `" . $tblprefix . "users` where identifiant_user = '$login';");
- 								if (mysql_num_rows($select_app_login) == 0 && mysql_num_rows($select_user_id) == 0) {
- 									$update_login = mysql_query("update `" . $tblprefix . "apprenants` set identifiant_apprenant = '$login' where id_apprenant = $id_user;");
+								$select_app_login = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants` where identifiant_apprenant = '$login' and id_apprenant != $id_user;");
+								$select_user_id = $connect->query("select id_user from `" . $tblprefix . "users` where identifiant_user = '$login';");
+ 								if (mysqli_num_rows($select_app_login) == 0 && mysqli_num_rows($select_user_id) == 0) {
+ 									$update_login = $connect->query("update `" . $tblprefix . "apprenants` set identifiant_apprenant = '$login' where id_apprenant = $id_user;");
  								}
  								else {
  									$err_comp = 1;
@@ -124,7 +124,7 @@ function calcul_age ($birth) {
 						$name = trim($_POST['name']);
 						$name = escape_string($name);
 						if ($name != $nom_user){
- 							$update_name = mysql_query("update `" . $tblprefix . "apprenants` set nom_apprenant = '$name' where id_apprenant = $id_user;");
+ 							$update_name = $connect->query("update `" . $tblprefix . "apprenants` set nom_apprenant = '$name' where id_apprenant = $id_user;");
  						}
 
 // update langue
@@ -132,7 +132,7 @@ function calcul_age ($birth) {
  						if (!empty($langue_home)){
 							$langue_home = escape_string($langue_home);
 							if ($langue_home != $langue_user){
- 								$update_langue = mysql_query("update `" . $tblprefix . "apprenants` set langue_apprenant = '$langue_home' where id_apprenant = $id_user;");
+ 								$update_langue = $connect->query("update `" . $tblprefix . "apprenants` set langue_apprenant = '$langue_home' where id_apprenant = $id_user;");
  							}
  						}
  						
@@ -148,7 +148,7 @@ function calcul_age ($birth) {
  								if ($photo_profil == "man.jpg")
  									$danew_photo_profil = "woman.jpg"; 
  							} 
- 							$update_name = mysql_query("update `" . $tblprefix . "apprenants` set photo_apprenant = '$danew_photo_profil', sexe_apprenant = '$sexe' where id_apprenant = $id_user;");
+ 							$update_name = $connect->query("update `" . $tblprefix . "apprenants` set photo_apprenant = '$danew_photo_profil', sexe_apprenant = '$sexe' where id_apprenant = $id_user;");
  						}
  						
 // update photo
@@ -167,7 +167,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 				$new_file = fonc_rand(24).".".$ext;
   		$destination = "docs/".$new_file;
 			if ((@move_uploaded_file($_FILES['uploaded_file']['tmp_name'],$destination))){
-				$update_photo = mysql_query("update `" . $tblprefix . "apprenants` set photo_apprenant = '$new_file' where id_apprenant = $id_user;");
+				$update_photo = $connect->query("update `" . $tblprefix . "apprenants` set photo_apprenant = '$new_file' where id_apprenant = $id_user;");
 				if ($photo_profil != "man.jpg" && $photo_profil != "woman.jpg")
 					@unlink("docs/".$photo_profil);
     	}
@@ -188,7 +188,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 		if ($sexe_user == "M") $photo_remove = "man.jpg";
 		else if ($sexe_user == "F") $photo_remove = "woman.jpg";
 	}
- 	$update_photo = mysql_query("update `" . $tblprefix . "apprenants` set photo_apprenant = '".$photo_remove."' where id_apprenant = $id_user;");
+ 	$update_photo = $connect->query("update `" . $tblprefix . "apprenants` set photo_apprenant = '".$photo_remove."' where id_apprenant = $id_user;");
 	@unlink("docs/".$photo_profil);
 }
 
@@ -197,7 +197,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 						$email = escape_string($email);
 						if ($email != $email_user){
 							if (mail_valide($email) || $email == ""){
- 								$update_email = mysql_query("update `" . $tblprefix . "apprenants` set email_apprenant = '$email' where id_apprenant = $id_user;");
+ 								$update_email = $connect->query("update `" . $tblprefix . "apprenants` set email_apprenant = '$email' where id_apprenant = $id_user;");
  							}
  							else {
  								$err_comp = 1;
@@ -209,7 +209,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 				if ($need_classe == 1 && $edit_classe == 1 && ctype_digit($_POST['classe_app'])){
 				 	if ($_POST['classe_app'] != $classe_user){
 				 		$classe_app = $_POST['classe_app'];
-				 		$update_classe = mysql_query("update `" . $tblprefix . "apprenants` set id_classe = $classe_app where id_apprenant = $id_user;");
+				 		$update_classe = $connect->query("update `" . $tblprefix . "apprenants` set id_classe = $classe_app where id_apprenant = $id_user;");
 				 	}
 				}
 
@@ -220,7 +220,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 					$yyyy = escape_string($_POST['yyyy']);
 					if (ctype_digit($jj) && $jj >= 1 && $jj <= 31 && ctype_digit($mm) && $mm >= 1 && $mm <= 12 && ctype_digit($yyyy) && $yyyy >= (date("Y",time()) - 65) && $yyyy <= (date("Y",time()) - 5)){
 					 	$naissance_app = $jj."/".$mm."/".$yyyy;
-						$update_naissance = mysql_query("update `" . $tblprefix . "apprenants` set naissance_apprenant = '$naissance_app' where id_apprenant = $id_user;");
+						$update_naissance = $connect->query("update `" . $tblprefix . "apprenants` set naissance_apprenant = '$naissance_app' where id_apprenant = $id_user;");
 					}
 					else {
 						$err_comp = 1;
@@ -247,7 +247,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 	                    $rndm2 = substr($rndm,4,4);
 	                    $crypt = md5($rndm2.$new_password.$rndm1);
 	                    $mdp = $crypt.$rndm;
-	                    $update_mdp = mysql_query("update `" . $tblprefix . "apprenants` set mdp_apprenant = '$mdp' where id_apprenant = $id_user;");
+	                    $update_mdp = $connect->query("update `" . $tblprefix . "apprenants` set mdp_apprenant = '$mdp' where id_apprenant = $id_user;");
 										}
  							 			else {
 											$err_comp = 1;
@@ -284,7 +284,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 	      			if ($edit_classe == 0)
 	      				echo " disabled=\"disabled\"";
 	      			echo "><option value=\"0\"></option>";
-    					while($classe = mysql_fetch_row($select_classes)){
+    					while($classe = mysqli_fetch_row($select_classes)){
     						$id_classe = $classe[0];
     						$nom_classe = $classe[1];
 								echo "<option ";
@@ -381,9 +381,9 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 			
 			echo "<div id=\"titre\">".learner_profile."</div>";
 			goback_button();
-			$select_stu = mysql_query("select * from `" . $tblprefix . "apprenants` where id_apprenant = $id_stu;");
-    	if (mysql_num_rows($select_stu) == 1){
-    			$user = mysql_fetch_row($select_stu);
+			$select_stu = $connect->query("select * from `" . $tblprefix . "apprenants` where id_apprenant = $id_stu;");
+    	if (mysqli_num_rows($select_stu) == 1){
+    			$user = mysqli_fetch_row($select_stu);
 
 					$id_classe = $user[1];
     		
@@ -448,9 +448,9 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 					echo "<li><p><b>" .nom_complet. " : ".$nom_user."</b></p></li>";
 					echo "<li><p><b>" .email. " : ".$email_user."</b></p></li>";
 					
-					$select_classe = mysql_query("select classe from `" . $tblprefix . "classes` where id_classe = $id_classe;");
-    	  	if (mysql_num_rows($select_classe) == 1){
-    				$classe = html_ent(mysql_result($select_classe,0));
+					$select_classe = $connect->query("select classe from `" . $tblprefix . "classes` where id_classe = $id_classe;");
+    	  	if (mysqli_num_rows($select_classe) == 1){
+    				$classe = html_ent(mysqli_result($select_classe,0));
 						echo "<li><p><b>" .classe. " : ".$classe."</b></p></li>";
 					}
 					echo "<li><p><b>" .date_naissance. " : </b>";
@@ -482,17 +482,17 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 				}
 				echo "</ul></fieldset>";
 				if (!empty($id_user_session) && isset($_SESSION['log']) && ($_SESSION['log'] == 1 || ($_SESSION['log'] == 2 && $id_stu == $id_user_session))){
-    			$select_devoirs_cet_apprenant = mysql_query("select * from `" . $tblprefix . "devoirs_notes` where id_apprenant = $user[0];");
-					if (mysql_num_rows($select_devoirs_cet_apprenant) > 0){
+    			$select_devoirs_cet_apprenant = $connect->query("select * from `" . $tblprefix . "devoirs_notes` where id_apprenant = $user[0];");
+					if (mysqli_num_rows($select_devoirs_cet_apprenant) > 0){
 						echo "<fieldset><legend><b>".homework_assignments."</b></legend><ul>";
-						while($devoir_cet_apprenant = mysql_fetch_row($select_devoirs_cet_apprenant)){
+						while($devoir_cet_apprenant = mysqli_fetch_row($select_devoirs_cet_apprenant)){
 							$id_devoir_cet_apprenant = $devoir_cet_apprenant[1];
 							$note_devoir_cet_apprenant = $devoir_cet_apprenant[3];
 							
-							$select_devoir_titre_cet_apprenant = mysql_query("select titre_devoir, date_expire_devoir from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir_cet_apprenant;");
-    	  			if (mysql_num_rows($select_devoir_titre_cet_apprenant) == 1){
-    						$titre_devoir_cet_apprenant = html_ent(mysql_result($select_devoir_titre_cet_apprenant,0,0));
-    						$exp_devoir_cet_apprenant = set_date($dateformat,mysql_result($select_devoir_titre_cet_apprenant,0,1));
+							$select_devoir_titre_cet_apprenant = $connect->query("select titre_devoir, date_expire_devoir from `" . $tblprefix . "devoirs` where id_devoir = $id_devoir_cet_apprenant;");
+    	  			if (mysqli_num_rows($select_devoir_titre_cet_apprenant) == 1){
+    						$titre_devoir_cet_apprenant = html_ent(mysqli_result($select_devoir_titre_cet_apprenant,0,0));
+    						$exp_devoir_cet_apprenant = set_date($dateformat,mysqli_result($select_devoir_titre_cet_apprenant,0,1));
     					} else {
     						$titre_devoir_cet_apprenant = "---";
     						$exp_devoir_cet_apprenant = "---";
@@ -517,12 +517,12 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 					echo "<li><b>" .number_connections. " : ".$nbr_of_connexion."</b></li>";
 					echo "<li><b>" .number_visited_pages. " : ".$nbr_pages."</b></li>";
 					
-					$select_count_comments = mysql_query("select count(id_post) from `" . $tblprefix . "commentaires` where type_user = 'l' and id_user = $user[0];");
-					$nbr_comments = mysql_result($select_count_comments,0);
+					$select_count_comments = $connect->query("select count(id_post) from `" . $tblprefix . "commentaires` where type_user = 'l' and id_user = $user[0];");
+					$nbr_comments = mysqli_result($select_count_comments,0);
 					echo "<li><b>" .number_comments. " : ".$nbr_comments."</b></li>";
 
-					$select_count_messages = mysql_query("select count(id_message) from `" . $tblprefix . "messages` where id_emetteur_app = $user[0];");
-					$nbr_messages = mysql_result($select_count_messages,0);
+					$select_count_messages = $connect->query("select count(id_message) from `" . $tblprefix . "messages` where id_emetteur_app = $user[0];");
+					$nbr_messages = mysqli_result($select_count_messages,0);
 					echo "<li><b>" .number_messages. " : ".$nbr_messages."</b></li>";
 
 					if ($total_essais_app != 0 && $total_correct_app <= $total_essais_app)
@@ -533,8 +533,8 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 					}
 					echo "<li><b>".$total_essais_app." ".essais_qcm." ".$reponses_correctes." % ".reponses_sont_correctes."</b></li>";
 
-					$select_count_devoirs = mysql_query("select count(id_devoir_rendu) from `" . $tblprefix . "devoirs_rendus` where id_apprenant = $user[0];");
-					$nbr_devoirs = mysql_result($select_count_devoirs,0);
+					$select_count_devoirs = $connect->query("select count(id_devoir_rendu) from `" . $tblprefix . "devoirs_rendus` where id_apprenant = $user[0];");
+					$nbr_devoirs = mysqli_result($select_count_devoirs,0);
 					echo "<li><b>" .number_achieved_assignments. " : ".$nbr_devoirs."</b></li>";
 
 					echo "</ul>";
@@ -544,35 +544,35 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 					$note_totale = 0;
 					$nbr_notes = 0;
 					$count_apps_stats = 0;
-					$select_count_apps_same_classe = mysql_query("select count(id_apprenant) from `" . $tblprefix . "apprenants` where nbr_connexion > 0 and active_apprenant = '1' and id_classe = $user[1];");
-					$select_count_apps_active = mysql_query("select count(id_apprenant) from `" . $tblprefix . "apprenants` where nbr_connexion > 0 and active_apprenant = '1';");
-					$select_count_apps = mysql_query("select count(id_apprenant) from `" . $tblprefix . "apprenants` where nbr_connexion > 0;");
-					if (mysql_num_rows($select_count_apps_same_classe) > 0 && mysql_result($select_count_apps_same_classe,0) > 1){
-						$count_apps_stats = mysql_result($select_count_apps_same_classe,0);
+					$select_count_apps_same_classe = $connect->query("select count(id_apprenant) from `" . $tblprefix . "apprenants` where nbr_connexion > 0 and active_apprenant = '1' and id_classe = $user[1];");
+					$select_count_apps_active = $connect->query("select count(id_apprenant) from `" . $tblprefix . "apprenants` where nbr_connexion > 0 and active_apprenant = '1';");
+					$select_count_apps = $connect->query("select count(id_apprenant) from `" . $tblprefix . "apprenants` where nbr_connexion > 0;");
+					if (mysqli_num_rows($select_count_apps_same_classe) > 0 && mysqli_result($select_count_apps_same_classe,0) > 1){
+						$count_apps_stats = mysqli_result($select_count_apps_same_classe,0);
 						$req_apps_stats = "where nbr_connexion > 0 and active_apprenant = '1' and id_classe = $user[1]";
-						$select_apps_stats = mysql_query("select id_apprenant from `" . $tblprefix . "apprenants` where nbr_connexion > 0 and active_apprenant = '1' and id_classe = $user[1];");
+						$select_apps_stats = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants` where nbr_connexion > 0 and active_apprenant = '1' and id_classe = $user[1];");
 					}
-					else if (mysql_num_rows($select_count_apps_active) > 0 && mysql_result($select_count_apps_active,0) > 1){
-						$count_apps_stats = mysql_result($select_count_apps_active,0);
+					else if (mysqli_num_rows($select_count_apps_active) > 0 && mysqli_result($select_count_apps_active,0) > 1){
+						$count_apps_stats = mysqli_result($select_count_apps_active,0);
 						$req_apps_stats = "where nbr_connexion > 0 and active_apprenant = '1'";
-						$select_apps_stats = mysql_query("select id_apprenant from `" . $tblprefix . "apprenants` where nbr_connexion > 0 and active_apprenant = '1';");
+						$select_apps_stats = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants` where nbr_connexion > 0 and active_apprenant = '1';");
 					}
-					else if (mysql_num_rows($select_count_apps) > 0 && mysql_result($select_count_apps,0) > 1){
-						$count_apps_stats = mysql_result($select_count_apps,0);
+					else if (mysqli_num_rows($select_count_apps) > 0 && mysqli_result($select_count_apps,0) > 1){
+						$count_apps_stats = mysqli_result($select_count_apps,0);
 						$req_apps_stats = "where nbr_connexion > 0";
-						$select_apps_stats = mysql_query("select id_apprenant from `" . $tblprefix . "apprenants` where nbr_connexion > 0;");
+						$select_apps_stats = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants` where nbr_connexion > 0;");
 					}
 
 					if (!empty($count_apps_stats) && isset($req_apps_stats)){
 						$count_apps_10 = $count_apps_stats / 10;
 						$tab_apps_stats = array();
-						while ($one_apps_stats = mysql_fetch_row($select_apps_stats))
+						while ($one_apps_stats = mysqli_fetch_row($select_apps_stats))
 							$tab_apps_stats[] = $one_apps_stats[0];
 							$chaine_apps_stats = implode(",",$tab_apps_stats);
 						//******* total_duration
-						$select_sum_total_duration = mysql_query("select sum(total_duration) from `" . $tblprefix . "apprenants` ".$req_apps_stats.";");
-						if (mysql_num_rows($select_sum_total_duration) > 0 && mysql_result($select_sum_total_duration,0) > 0 && mysql_result($select_sum_total_duration,0) > $count_apps_10){
-							$sum_total_duration = mysql_result($select_sum_total_duration,0);
+						$select_sum_total_duration = $connect->query("select sum(total_duration) from `" . $tblprefix . "apprenants` ".$req_apps_stats.";");
+						if (mysqli_num_rows($select_sum_total_duration) > 0 && mysqli_result($select_sum_total_duration,0) > 0 && mysqli_result($select_sum_total_duration,0) > $count_apps_10){
+							$sum_total_duration = mysqli_result($select_sum_total_duration,0);
 							$note_total_duration = round(100*$user[17]/$sum_total_duration,5);
 							if ($note_total_duration < 0) $note_total_duration = 0;
 							if ($note_total_duration > 100) $note_total_duration = 100;
@@ -580,9 +580,9 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 							$nbr_notes += 1;
 						}
 						//******* nbr_connexion
-						$select_sum_nbr_connexion = mysql_query("select sum(nbr_connexion) from `" . $tblprefix . "apprenants` ".$req_apps_stats.";");
-						if (mysql_num_rows($select_sum_nbr_connexion) > 0 && mysql_result($select_sum_nbr_connexion,0) > 0 && mysql_result($select_sum_nbr_connexion,0) > $count_apps_10){
-							$sum_nbr_connexion = mysql_result($select_sum_nbr_connexion,0);
+						$select_sum_nbr_connexion = $connect->query("select sum(nbr_connexion) from `" . $tblprefix . "apprenants` ".$req_apps_stats.";");
+						if (mysqli_num_rows($select_sum_nbr_connexion) > 0 && mysqli_result($select_sum_nbr_connexion,0) > 0 && mysqli_result($select_sum_nbr_connexion,0) > $count_apps_10){
+							$sum_nbr_connexion = mysqli_result($select_sum_nbr_connexion,0);
 							$note_nbr_connexion = round(100*$nbr_of_connexion/$sum_nbr_connexion,5);
 							if ($note_nbr_connexion < 0) $note_nbr_connexion = 0;
 							if ($note_nbr_connexion > 100) $note_nbr_connexion = 100;
@@ -590,9 +590,9 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 							$nbr_notes += 1;
 						}
 						//******* nbr_pages
-						$select_sum_nbr_pages = mysql_query("select sum(nbr_pages) from `" . $tblprefix . "apprenants` ".$req_apps_stats.";");
-						if (mysql_num_rows($select_sum_nbr_pages) > 0 && mysql_result($select_sum_nbr_pages,0) > 0 && mysql_result($select_sum_nbr_pages,0) > $count_apps_10){
-							$sum_nbr_pages = mysql_result($select_sum_nbr_pages,0);
+						$select_sum_nbr_pages = $connect->query("select sum(nbr_pages) from `" . $tblprefix . "apprenants` ".$req_apps_stats.";");
+						if (mysqli_num_rows($select_sum_nbr_pages) > 0 && mysqli_result($select_sum_nbr_pages,0) > 0 && mysqli_result($select_sum_nbr_pages,0) > $count_apps_10){
+							$sum_nbr_pages = mysqli_result($select_sum_nbr_pages,0);
 							$note_nbr_pages = round(100*$nbr_pages/$sum_nbr_pages,5);
 							if ($note_nbr_pages < 0) $note_nbr_pages = 0;
 							if ($note_nbr_pages > 100) $note_nbr_pages = 100;
@@ -600,9 +600,9 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 							$nbr_notes += 1;
 						}
 						//******* total_essais_qcm
-						$select_sum_total_essais = mysql_query("select sum(total_essais) from `" . $tblprefix . "apprenants` ".$req_apps_stats.";");
-						if (mysql_num_rows($select_sum_total_essais) > 0 && mysql_result($select_sum_total_essais,0) > 0 && mysql_result($select_sum_total_essais,0) > $count_apps_10){
-							$sum_total_essais = mysql_result($select_sum_total_essais,0);
+						$select_sum_total_essais = $connect->query("select sum(total_essais) from `" . $tblprefix . "apprenants` ".$req_apps_stats.";");
+						if (mysqli_num_rows($select_sum_total_essais) > 0 && mysqli_result($select_sum_total_essais,0) > 0 && mysqli_result($select_sum_total_essais,0) > $count_apps_10){
+							$sum_total_essais = mysqli_result($select_sum_total_essais,0);
 							$note_total_essais = round(100*$total_essais_app/$sum_total_essais,5);
 							if ($note_total_essais < 0) $note_total_essais = 0;
 							if ($note_total_essais > 100) $note_total_essais = 100;
@@ -610,9 +610,9 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 							$nbr_notes += 1;
 						}
 						//******* total_reponses_correctes
-						$select_sum_total_reponses_correctes = mysql_query("select sum(total_reponses_correctes) from `" . $tblprefix . "apprenants` ".$req_apps_stats.";");
-						if (mysql_num_rows($select_sum_total_reponses_correctes) > 0 && mysql_result($select_sum_total_reponses_correctes,0) > 0 && mysql_result($select_sum_total_reponses_correctes,0) > $count_apps_10){
-							$sum_total_reponses_correctes = mysql_result($select_sum_total_reponses_correctes,0);
+						$select_sum_total_reponses_correctes = $connect->query("select sum(total_reponses_correctes) from `" . $tblprefix . "apprenants` ".$req_apps_stats.";");
+						if (mysqli_num_rows($select_sum_total_reponses_correctes) > 0 && mysqli_result($select_sum_total_reponses_correctes,0) > 0 && mysqli_result($select_sum_total_reponses_correctes,0) > $count_apps_10){
+							$sum_total_reponses_correctes = mysqli_result($select_sum_total_reponses_correctes,0);
 							$note_total_reponses_correctes = round(100*$total_correct_app/$sum_total_reponses_correctes,5);
 							if ($note_total_reponses_correctes < 0) $note_total_reponses_correctes = 0;
 							if ($note_total_reponses_correctes > 100) $note_total_reponses_correctes = 100;
@@ -620,9 +620,9 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 							$nbr_notes += 1;
 						}
 						//******* total_commentaires
-						$select_count_apps_comments = mysql_query("select count(id_post) from `" . $tblprefix . "commentaires` where type_user = 'l' and id_user in (".$chaine_apps_stats.");");
-						if (mysql_num_rows($select_count_apps_comments) > 0 && mysql_result($select_count_apps_comments,0) > 0 && mysql_result($select_count_apps_comments,0) > $count_apps_10){
-							$count_apps_comments = mysql_result($select_count_apps_comments,0);
+						$select_count_apps_comments = $connect->query("select count(id_post) from `" . $tblprefix . "commentaires` where type_user = 'l' and id_user in (".$chaine_apps_stats.");");
+						if (mysqli_num_rows($select_count_apps_comments) > 0 && mysqli_result($select_count_apps_comments,0) > 0 && mysqli_result($select_count_apps_comments,0) > $count_apps_10){
+							$count_apps_comments = mysqli_result($select_count_apps_comments,0);
 							$note_apps_comments = round(100*$nbr_comments/$count_apps_comments,5);
 							if ($note_apps_comments < 0) $note_apps_comments = 0;
 							if ($note_apps_comments > 100) $note_apps_comments = 100;
@@ -630,9 +630,9 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 							$nbr_notes += 1;
 						}
 						//******* total_messages
-						$select_count_apps_messages = mysql_query("select count(id_message) from `" . $tblprefix . "messages` where id_emetteur_app in (".$chaine_apps_stats.");");
-						if (mysql_num_rows($select_count_apps_messages) > 0 && mysql_result($select_count_apps_messages,0) > 0 && mysql_result($select_count_apps_messages,0) > $count_apps_10){
-							$count_apps_messages = mysql_result($select_count_apps_messages,0);
+						$select_count_apps_messages = $connect->query("select count(id_message) from `" . $tblprefix . "messages` where id_emetteur_app in (".$chaine_apps_stats.");");
+						if (mysqli_num_rows($select_count_apps_messages) > 0 && mysqli_result($select_count_apps_messages,0) > 0 && mysqli_result($select_count_apps_messages,0) > $count_apps_10){
+							$count_apps_messages = mysqli_result($select_count_apps_messages,0);
 							$note_apps_messages = round(100*$nbr_messages/$count_apps_messages,5);
 							if ($note_apps_messages < 0) $note_apps_messages = 0;
 							if ($note_apps_messages > 100) $note_apps_messages = 100;
@@ -640,9 +640,9 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 							$nbr_notes += 1;
 						}
 						//******* total_devoirs
-						$select_count_apps_devoirs = mysql_query("select count(id_devoir_rendu) from `" . $tblprefix . "devoirs_rendus` where id_apprenant in (".$chaine_apps_stats.");");
-						if (mysql_num_rows($select_count_apps_devoirs) > 0 && mysql_result($select_count_apps_devoirs,0) > 0 && mysql_result($select_count_apps_devoirs,0) > $count_apps_10){
-							$count_apps_devoirs = mysql_result($select_count_apps_devoirs,0);
+						$select_count_apps_devoirs = $connect->query("select count(id_devoir_rendu) from `" . $tblprefix . "devoirs_rendus` where id_apprenant in (".$chaine_apps_stats.");");
+						if (mysqli_num_rows($select_count_apps_devoirs) > 0 && mysqli_result($select_count_apps_devoirs,0) > 0 && mysqli_result($select_count_apps_devoirs,0) > $count_apps_10){
+							$count_apps_devoirs = mysqli_result($select_count_apps_devoirs,0);
 							$note_apps_devoirs = round(100*$nbr_devoirs/$count_apps_devoirs,5);
 							if ($note_apps_devoirs < 0) $note_apps_devoirs = 0;
 							if ($note_apps_devoirs > 100) $note_apps_devoirs = 100;
@@ -657,25 +657,25 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 					 $note_finale_behavior = round($note_totale / $nbr_notes,5);
 					 if ($note_finale_behavior >= 0 && $note_finale_behavior <= 100){
 
-   					$select_note_finale_behavior = mysql_query("select id_behavior_note, behavior_note from `" . $tblprefix . "behavior_notes` where id_apprenant = $user[0] and mois_note = $this_month and annee_note = $this_year;");
-      			if (mysql_num_rows($select_note_finale_behavior) > 0){
-   						$id_note_finale_behavior = mysql_result($select_note_finale_behavior,0,0);
-   						$ancien_note_finale_behavior = mysql_result($select_note_finale_behavior,0,1);
+   					$select_note_finale_behavior = $connect->query("select id_behavior_note, behavior_note from `" . $tblprefix . "behavior_notes` where id_apprenant = $user[0] and mois_note = $this_month and annee_note = $this_year;");
+      			if (mysqli_num_rows($select_note_finale_behavior) > 0){
+   						$id_note_finale_behavior = mysqli_result($select_note_finale_behavior,0,0);
+   						$ancien_note_finale_behavior = mysqli_result($select_note_finale_behavior,0,1);
    						if ($ancien_note_finale_behavior != $note_finale_behavior){
-   							$update_note_finale_behavior = mysql_query("update `" . $tblprefix . "behavior_notes` set behavior_note = $note_finale_behavior where id_behavior_note = $id_note_finale_behavior;");
+   							$update_note_finale_behavior = $connect->query("update `" . $tblprefix . "behavior_notes` set behavior_note = $note_finale_behavior where id_behavior_note = $id_note_finale_behavior;");
    							locationhref_admin("?s_profiles=".$user[0]);
    						}
    					}
    					else {
-   						$insert_note_finale_behavior = mysql_query("INSERT INTO `" . $tblprefix . "behavior_notes` VALUES (NULL,$this_month,$this_year,$user[0],$note_finale_behavior);");
+   						$insert_note_finale_behavior = $connect->query("INSERT INTO `" . $tblprefix . "behavior_notes` VALUES (NULL,$this_month,$this_year,$user[0],$note_finale_behavior);");
    						locationhref_admin("?s_profiles=".$user[0]);
    					}
    				 }
    				} else $note_finale_behavior = 0;
    				//************
-					$select_this_app_note = mysql_query("select behavior_note from `" . $tblprefix . "behavior_notes` where id_apprenant = $user[0] and mois_note = $this_month and annee_note = $this_year;");
-					if (mysql_num_rows($select_this_app_note) > 0) {
-						$note_apps_final = mysql_result($select_this_app_note,0);
+					$select_this_app_note = $connect->query("select behavior_note from `" . $tblprefix . "behavior_notes` where id_apprenant = $user[0] and mois_note = $this_month and annee_note = $this_year;");
+					if (mysqli_num_rows($select_this_app_note) > 0) {
+						$note_apps_final = mysqli_result($select_this_app_note,0);
 						if ($count_apps_stats > 0){
 							$coef_apps = 100 / $count_apps_stats;
 							$note_for_grade = $note_apps_final / $coef_apps;
@@ -692,7 +692,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
    							$grade_behavior_final = "A";
 							else $grade_behavior_final = "E";
 
-							$update_grade = mysql_query("update `" . $tblprefix . "apprenants` set grade_apprenant = '$grade_behavior_final' where id_apprenant = $user[0];");
+							$update_grade = $connect->query("update `" . $tblprefix . "apprenants` set grade_apprenant = '$grade_behavior_final' where id_apprenant = $user[0];");
 						} else $grade_behavior_final = "E";
 					}
 
@@ -767,8 +767,8 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 				echo "</td></tr></table>";
 
 				if (isset($id_user_session) && !empty($id_user_session) && isset($_SESSION['log']) && $_SESSION['log'] == 1){
-					$select_all_notes = mysql_query("select * from `" . $tblprefix . "behavior_notes` where id_apprenant = $user[0] order by annee_note desc,mois_note desc;");
-					if (mysql_num_rows($select_all_notes) > 0) {
+					$select_all_notes = $connect->query("select * from `" . $tblprefix . "behavior_notes` where id_apprenant = $user[0] order by annee_note desc,mois_note desc;");
+					if (mysqli_num_rows($select_all_notes) > 0) {
 						$last_note_app = 0;
 						
 						echo "\n<table width=\"50%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
@@ -777,7 +777,7 @@ if ($photo_profil == "man.jpg" || $photo_profil == "woman.jpg" || (isset($_POST[
 						echo "\n<td class=\"affichage_table\" width=\"20%\"><b>".behavior_score."</b></td>";
 						echo "\n<td class=\"affichage_table\" width=\"20%\"><b>".increase_decrease."</b></td>";
 						echo "</tr>\n";
-						while($note_this_app = mysql_fetch_row($select_all_notes)){
+						while($note_this_app = mysqli_fetch_row($select_all_notes)){
 							$mois_note = $month_tab[$note_this_app[1]];
 							$annee_note = $note_this_app[2];
 							$this_note = round($note_this_app[4],2);
