@@ -1,0 +1,122 @@
+:root {
+    --primary: #ee6352;
+    --secondary: #0c2b34;
+    --test: #345862;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+nav {
+    display: flex;
+    max-width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+}
+
+a {
+    text-decoration: none;
+    color: indianred;
+}
+
+ul {
+    list-style: none;
+}
+
+nav div:nth-child(2) {
+    display: flex;
+    gap: 2rem;
+}
+
+nav li {
+    font-weight: bold;
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+nav a::before {
+    content: '\2022';
+    position: relative;
+    right: 0.5rem;
+}
+
+nav a {
+    font-size: 1.3rem;
+}
+
+
+.container {
+    max-width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-container {
+    display: flex;
+    align-items: center;
+    margin-top: 4rem;
+}
+
+.hero-children {
+    flex: 1;
+}
+
+.hero-children div:nth-child(2) {
+    margin-top: 1rem;
+}
+
+.hero-children div:nth-child(3) {
+    margin-top: 1.5rem;
+}
+
+.hero-children p {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    color: var(--test);
+}
+
+h1 {
+    color: var(--primary);
+    font-size: 4.5rem;
+    max-width: 40rem;
+    line-height: 1.2;
+}
+
+#hero-image-div img {
+    width: 100%;
+}
+
+.cta-button {
+    background-color: #ee6352;
+    color: #F1F1F1;
+    font-size: 1.3rem;
+    padding: 0.4rem 1.2rem;
+    border-radius: 2px;
+    transition: all ease-in-out 0.2s;
+}
+
+.cta-button:hover {
+    color: #ee6352;
+    background-color: white;
+    border: 1px solid #ee6352;
+    font-size: 1.3rem;
+    padding: 0.4rem 1.2rem;
+    border-radius: 2px;
+}
+
+@media screen and (min-width: 1440px) {
+    nav {
+        max-width: 1300px;
+    }
+    .container {
+        max-width: 1300px;
+    }
+}
