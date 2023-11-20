@@ -26,10 +26,10 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 
 defined("access_const") or die( 'Restricted access' );
 
- 		$select_statut_comments = mysql_query("select active_composant, titre_composant from `" . $tblprefix . "composants` where nom_composant = 'comments';");
- 		if (mysql_num_rows($select_statut_comments) == 1) {
-  		$statut_comments = mysql_result($select_statut_comments,0,0);
-  		$titre_comments = mysql_result($select_statut_comments,0,1);
+ 		$select_statut_comments = $connect->query("select active_composant, titre_composant from `" . $tblprefix . "composants` where nom_composant = 'comments';");
+ 		if (mysqli_num_rows($select_statut_comments) == 1) {
+  		$statut_comments = mysqli_result($select_statut_comments,0,0);
+  		$titre_comments = mysqli_result($select_statut_comments,0,1);
   		if ($statut_comments == 1) {
 
 				if (isset($_GET['l']) && ctype_digit($_GET['l']))
@@ -51,16 +51,16 @@ defined("access_const") or die( 'Restricted access' );
 				if (isset($_GET['id_com']) && ctype_digit($_GET['id_com'])){
 					if (isset($_GET['key']) && $_GET['key'] == $key){
 						$id_comment = $_GET['id_com'];
-						$select_user = mysql_query("select type_user, id_user from `" . $tblprefix . "commentaires` where id_post = $id_comment;");
-    				if (mysql_num_rows($select_user) == 1 && !empty($_SESSION['log'])){
-    					$id_user_com = mysql_result($select_user,0,1);
-							if (mysql_result($select_user,0,0) == "u")
+						$select_user = $connect->query("select type_user, id_user from `" . $tblprefix . "commentaires` where id_post = $id_comment;");
+    				if (mysqli_num_rows($select_user) == 1 && !empty($_SESSION['log'])){
+    					$id_user_com = mysqli_result($select_user,0,1);
+							if (mysqli_result($select_user,0,0) == "u")
 								$type_auteur = 1;
-							else if (mysql_result($select_user,0,0) == "l")
+							else if (mysqli_result($select_user,0,0) == "l")
 								$type_auteur = 2;
 							else $type_auteur = 0;
     					if(($type_auteur == $_SESSION['log'] && $id_user_com == $id_user_session) || (isset($grade_user_session) && ($grade_user_session == "3" || $grade_user_session == "2" || $grade_user_session == "1" || $id_user == $id_user_session)))
-								$delete_com = mysql_query("delete from `" . $tblprefix . "commentaires` where id_post = $id_comment;");
+								$delete_com = $connect->query("delete from `" . $tblprefix . "commentaires` where id_post = $id_comment;");
 						}
 					}
 				}
@@ -71,12 +71,12 @@ defined("access_const") or die( 'Restricted access' );
 				if (isset($_GET['id_com']) && ctype_digit($_GET['id_com']) && isset($_POST['contenu_comment'])){
 					if (isset($_GET['key']) && $_GET['key'] == $key){
 						$id_comment = $_GET['id_com'];
-						$select_user = mysql_query("select type_user, id_user from `" . $tblprefix . "commentaires` where id_post = $id_comment;");
-    				if (mysql_num_rows($select_user) == 1 && !empty($_SESSION['log'])){
-    					$id_user_com = mysql_result($select_user,0,1);
-							if (mysql_result($select_user,0,0) == "u")
+						$select_user = $connect->query("select type_user, id_user from `" . $tblprefix . "commentaires` where id_post = $id_comment;");
+    				if (mysqli_num_rows($select_user) == 1 && !empty($_SESSION['log'])){
+    					$id_user_com = mysqli_result($select_user,0,1);
+							if (mysqli_result($select_user,0,0) == "u")
 								$type_auteur = 1;
-							else if (mysql_result($select_user,0,0) == "l")
+							else if (mysqli_result($select_user,0,0) == "l")
 								$type_auteur = 2;
 							else $type_auteur = 0;
 							$contenu_comment = trim($_POST['contenu_comment']);
@@ -84,7 +84,7 @@ defined("access_const") or die( 'Restricted access' );
 						 		$contenu_comment = escape_string($contenu_comment);
 						 		if (strlen($contenu_comment) > $maxlen_area_comment)
 						 			$contenu_comment = substr($contenu_comment,0,$maxlen_area_comment);
- 								$update_com = mysql_query("update `" . $tblprefix . "commentaires` SET contenu_post = '$contenu_comment', date_modification = ".time()." where id_post = $id_comment;");
+ 								$update_com = $connect->query("update `" . $tblprefix . "commentaires` SET contenu_post = '$contenu_comment', date_modification = ".time()." where id_post = $id_comment;");
 							}
 						}
 					}
@@ -104,7 +104,7 @@ defined("access_const") or die( 'Restricted access' );
 						 		$contenu_comment = escape_string($contenu_comment);
 						 		if (strlen($contenu_comment) > $maxlen_area_comment)
 						 			$contenu_comment = substr($contenu_comment,0,$maxlen_area_comment);
- 								$insert_com = mysql_query("INSERT INTO `" . $tblprefix . "commentaires` VALUES (NULL,'$type_objet',$id_objet,'$type_user',$id_user_session,'$contenu_comment',".time().",".time().");");
+ 								$insert_com = $connect->query("INSERT INTO `" . $tblprefix . "commentaires` VALUES (NULL,'$type_objet',$id_objet,'$type_user',$id_user_session,'$contenu_comment',".time().",".time().");");
 							}
 						}
 					}
@@ -116,8 +116,8 @@ defined("access_const") or die( 'Restricted access' );
 				confirmer();
 				echo "<script type=\"text/javascript\">function DisplayHideDiv(id_div){var lay=document.getElementById(id_div);var lay2=document.getElementById(id_div+'_edit');if(lay.style.display=='none'){lay.style.display='block';lay2.style.display='none';}else{lay.style.display='none';lay2.style.display='block';document.getElementById(id_div+'_area').focus();}}</script>";
 
-				$select_comments = mysql_query("select * from `" . $tblprefix . "commentaires` where type_objet = '$type_objet' and id_objet = $id_objet order by date_creation ".$order_com.";");
-				$nbr_trouve = mysql_num_rows($select_comments);
+				$select_comments = $connect->query("select * from `" . $tblprefix . "commentaires` where type_objet = '$type_objet' and id_objet = $id_objet order by date_creation ".$order_com.";");
+				$nbr_trouve = mysqli_num_rows($select_comments);
 				if ($nbr_trouve > 0){
 					$page_max = ceil($nbr_trouve / $nbr_resultats);
 					if ($page <= $page_max && $page > 1 && $page_max > 1)
@@ -161,7 +161,7 @@ defined("access_const") or die( 'Restricted access' );
 						echo "</form><hr />";
 					}
 						
-				  $select_comments_limit = mysql_query("select * from `" . $tblprefix . "commentaires` where type_objet = '$type_objet' and id_objet = $id_objet order by date_creation ".$order_com." limit $limit, $nbr_resultats;");
+				  $select_comments_limit = $connect->query("select * from `" . $tblprefix . "commentaires` where type_objet = '$type_objet' and id_objet = $id_objet order by date_creation ".$order_com." limit $limit, $nbr_resultats;");
 					while($comment = mysql_fetch_row($select_comments_limit)){
 
 						$id_comment = $comment[0];
@@ -180,16 +180,16 @@ defined("access_const") or die( 'Restricted access' );
 						else $type_auteur = 0;
 						
 						if ($type_auteur == 1){
-							$selectauteur = mysql_query("select identifiant_user, photo_profil from `" . $tblprefix . "users` where id_user = $comment[4];");
+							$selectauteur = $connect->query("select identifiant_user, photo_profil from `" . $tblprefix . "users` where id_user = $comment[4];");
 							$lien_profile = "profiles";
 						}
 						else {
-							$selectauteur = mysql_query("select identifiant_apprenant, photo_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $comment[4];");
+							$selectauteur = $connect->query("select identifiant_apprenant, photo_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $comment[4];");
 							$lien_profile = "s_profiles";
 						}
-						if (mysql_num_rows($selectauteur) == 1) {
-							$auteur = html_ent(mysql_result($selectauteur,0,0));
-							$photo_profil = html_ent(mysql_result($selectauteur,0,1));
+						if (mysqli_num_rows($selectauteur) == 1) {
+							$auteur = html_ent(mysqli_result($selectauteur,0,0));
+							$photo_profil = html_ent(mysqli_result($selectauteur,0,1));
 						}
 						else {
 							$auteur = inconnu;

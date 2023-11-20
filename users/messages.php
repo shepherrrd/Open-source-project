@@ -143,7 +143,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				$select_users = $connect->query("select id_user, identifiant_user, grade_user from `" . $tblprefix . "users`;");
     		if (mysqli_num_rows($select_users) > 0){
     			echo "<li><b>".users." : </b>";
-    			while($user = mysql_fetch_row($select_users)){
+    			while($user = mysqli_fetch_row($select_users)){
     				$id_user = $user[0];
     				$identifiant_user = html_ent($user[1]);
     				$identifiant_user = readmore($identifiant_user,$max_len2);
@@ -156,7 +156,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
     		$select_learners = $connect->query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants`;");
     		if (mysqli_num_rows($select_learners) > 0){
     			echo "<li><b>".learners." : </b>";
-    			while($apprenant = mysql_fetch_row($select_learners)){
+    			while($apprenant = mysqli_fetch_row($select_learners)){
     				$id_apprenant = $apprenant[0];
     				$identifiant_apprenant = html_ent($apprenant[1]);
     				$identifiant_apprenant = readmore($identifiant_apprenant,$max_len2);
@@ -258,7 +258,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				  		foreach ($_POST['classes_app'] as $elem_classe){
 				  			$select_app_classe = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants` where id_classe = $elem_classe;");
 								if (mysqli_num_rows($select_app_classe) > 0){
-									while($app_classe = mysql_fetch_row($select_app_classe)){
+									while($app_classe = mysqli_fetch_row($select_app_classe)){
 										if (!in_array($app_classe[0],$dest_apprenants))
 											$dest_apprenants[] = $app_classe[0];
 									}
@@ -301,7 +301,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					 echo "<table border=\"0\"><tr><td align=\"center\">";
 					 if (mysqli_num_rows($select_users) > 0){
 						echo "<b>".users."</b><br /><select size=\"10\" name=\"destinataires[]\" id=\"destinataires\" multiple=\"multiple\">";
-    				while($user = mysql_fetch_row($select_users)){
+    				while($user = mysqli_fetch_row($select_users)){
     					$id_user = $user[0];
     					$identifiant_user = html_ent($user[1]);
     					$grade_user = $grade_tab[$user[2]];
@@ -317,7 +317,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					 }
 					 if (mysqli_num_rows($select_apprenants) > 0){
 						echo "<b>".learners."</b><br /><select size=\"10\" name=\"destinataires_app[]\" id=\"destinataires_app\" multiple=\"multiple\">";
-    				while($learner = mysql_fetch_row($select_apprenants)){
+    				while($learner = mysqli_fetch_row($select_apprenants)){
     					$id_apprenant = $learner[0];
     					$id_classe = $learner[1];
     					$identifiant_apprenant = html_ent($learner[2]);
@@ -339,7 +339,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					 if ($need_classe == 1){
 					 		echo "</td><td align=\"center\" valign=\"top\">";
 	      			echo "<b>" .classe. " : </b><br /><select size=\"10\" name=\"classes_app[]\" id=\"classes_app\" multiple=\"multiple\">";
-    					while($classe = mysql_fetch_row($select_classes)){
+    					while($classe = mysqli_fetch_row($select_classes)){
     						$id_classe = $classe[0];
     						$nom_classe = $classe[1];
 								echo "<option value=\"".$id_classe."\">".$nom_classe."</option>";
@@ -362,7 +362,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 			$select_this_msg = $connect->query("select * from `" . $tblprefix . "messages` where id_message = $id_msg and id_destinataires like '%-$id_user_session-%';");
     	if (mysqli_num_rows($select_this_msg) == 1) {
 
-    		$this_msg = mysql_fetch_row($select_this_msg);
+    		$this_msg = mysqli_fetch_row($select_this_msg);
 
 				$emetteur_this_msg = $this_msg[1];
 				$emetteur_app_this_msg = $this_msg[2];
@@ -401,7 +401,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					else $dest_app_reply = "-";
 					
     			$insertmessage = "INSERT INTO `" . $tblprefix . "messages` VALUES (NULL,$id_user_session,0,'','','$dest_reply','$dest_app_reply','".$titre_msg."','".$contenu_msg."','-','-',".time().",'$dest_reply','$dest_app_reply','0');";
-	         $connect->query($insertmessage,$connect);
+	         $connect->query($insertmessage);
 	         redirection(message_succes,"?inc=messages",3,"tips",1);
 				} else goback(tous_champs,2,"error",1);
 			 } else goback(err_data_saved,2,"error",1);
@@ -426,7 +426,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 		 $select_this_msg = $connect->query("select * from `" . $tblprefix . "messages` where id_message = $id_msg and (id_destinataires like '%-$id_user_session-%' or id_emetteur = $id_user_session);");
      if (mysqli_num_rows($select_this_msg) == 1) {
 
-    		$this_msg = mysql_fetch_row($select_this_msg);
+    		$this_msg = mysqli_fetch_row($select_this_msg);
 
 				$emetteur_this_msg = $this_msg[1];
 				$emetteur_app_this_msg = $this_msg[2];
@@ -467,7 +467,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				  		foreach ($_POST['classes_app'] as $elem_classe){
 				  			$select_app_classe = $connect->query("select id_apprenant from `" . $tblprefix . "apprenants` where id_classe = $elem_classe;");
 								if (mysqli_num_rows($select_app_classe) > 0){
-									while($app_classe = mysql_fetch_row($select_app_classe)){
+									while($app_classe = mysqli_fetch_row($select_app_classe)){
 										if (!in_array($app_classe[0],$dest_apprenants))
 											$dest_apprenants[] = $app_classe[0];
 									}
@@ -503,7 +503,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					 echo "<table border=\"0\"><tr><td align=\"center\">";
 					 if (mysqli_num_rows($select_users) > 0){
 						echo "<b>".users."</b><br /><select size=\"10\" name=\"destinataires[]\" id=\"destinataires\" multiple=\"multiple\">";
-    				while($user = mysql_fetch_row($select_users)){
+    				while($user = mysqli_fetch_row($select_users)){
     					$id_user = $user[0];
     					$identifiant_user = html_ent($user[1]);
     					$grade_user = $grade_tab[$user[2]];
@@ -516,7 +516,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					 }
 					 if (mysqli_num_rows($select_apprenants) > 0){
 						echo "<b>".learners."</b><br /><select size=\"10\" name=\"destinataires_app[]\" id=\"destinataires_app\" multiple=\"multiple\">";
-    				while($learner = mysql_fetch_row($select_apprenants)){
+    				while($learner = mysqli_fetch_row($select_apprenants)){
     					$id_apprenant = $learner[0];
     					$id_classe = $learner[1];
     					$identifiant_apprenant = html_ent($learner[2]);
@@ -535,7 +535,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					 if ($need_classe == 1){
 					 		echo "</td><td align=\"center\" valign=\"top\">";
 	      			echo "<b>" .classe. " : </b><br /><select size=\"10\" name=\"classes_app[]\" id=\"classes_app\" multiple=\"multiple\">";
-    					while($classe = mysql_fetch_row($select_classes)){
+    					while($classe = mysqli_fetch_row($select_classes)){
     						$id_classe = $classe[0];
     						$nom_classe = $classe[1];
 								echo "<option value=\"".$id_classe."\">".$nom_classe."</option>";
@@ -589,7 +589,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				echo "\n<td class=\"affichage_table\"><b>".supprimer."</b></td>";
 				echo "</tr>\n";
 				
-				while($msg = mysql_fetch_row($select_msg_limit)){
+				while($msg = mysqli_fetch_row($select_msg_limit)){
 					
 					$id_msg = $msg[0];
 					$titre_msg = html_ent($msg[7]);
@@ -603,7 +603,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					$destinataires = $msg[12];
 				  $select_users = $connect->query("select id_user, identifiant_user from `" . $tblprefix . "users` where id_user != $id_user_session;");
     			if (mysqli_num_rows($select_users) > 0){
-    				while($user = mysql_fetch_row($select_users)){
+    				while($user = mysqli_fetch_row($select_users)){
     					$id_user = $user[0];
     					if (strpos($destinataires,"-".$id_user."-") !== false){
     						$identifiant_user = html_ent($user[1]);
@@ -621,7 +621,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
     			$destinataires_app = $msg[13];
     			$select_apps = $connect->query("select id_apprenant, identifiant_apprenant from `" . $tblprefix . "apprenants`;");
     			if (mysqli_num_rows($select_apps) > 0){
-    				while($app = mysql_fetch_row($select_apps)){
+    				while($app = mysqli_fetch_row($select_apps)){
     					$id_app = $app[0];
     					if (strpos($destinataires_app,"-".$id_app."-") !== false){
        					$identifiant_app = html_ent($app[1]);
@@ -709,7 +709,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				echo "\n<td class=\"affichage_table\"><b>".supprimer."</b></td>";
 				echo "</tr>\n";
 				
-				while($msg = mysql_fetch_row($select_msg_limit)){
+				while($msg = mysqli_fetch_row($select_msg_limit)){
 					
 					$id_msg = $msg[0];
 					
@@ -809,7 +809,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 				echo "\n<td class=\"affichage_table\"><b>".supprimer."</b></td>";
 				echo "</tr>\n";
 				
-				while($msg = mysql_fetch_row($select_msg_limit)){
+				while($msg = mysqli_fetch_row($select_msg_limit)){
 					
 					$id_msg = $msg[0];
 					
@@ -833,7 +833,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 1){
 					echo "\n<td class=\"affichage_table\"><b>";
 				  $select_users = $connect->query("select id_user, identifiant_user from `" . $tblprefix . "users` where id_user != $id_user_session and (grade_user = '2' or grade_user = '3');");
     			if (mysqli_num_rows($select_users) > 0){
-    				while($user = mysql_fetch_row($select_users)){
+    				while($user = mysqli_fetch_row($select_users)){
     					$id_user = $user[0];
     					$identifiant_user = html_ent($user[1]);
     					$identifiant_user = readmore($identifiant_user,$max_len2);

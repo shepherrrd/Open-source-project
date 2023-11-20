@@ -26,11 +26,11 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 
 defined("access_const") or die( 'Restricted access' );
 
-	$select_statut_docs = mysql_query("select titre_composant, active_composant from `" . $tblprefix . "composants` where nom_composant = 'documents';");
-	if (mysql_num_rows($select_statut_docs) == 1) {
-		$statut_docs = mysql_result($select_statut_docs,0,1);
+	$select_statut_docs = $connect->query("select titre_composant, active_composant from `" . $tblprefix . "composants` where nom_composant = 'documents';");
+	if (mysqli_num_rows($select_statut_docs) == 1) {
+		$statut_docs = mysqli_result($select_statut_docs,0,1);
 		if ($statut_docs == 1) {
-			$titre_docs = mysql_result($select_statut_docs,0,0);
+			$titre_docs = mysqli_result($select_statut_docs,0,0);
 			$titre_docs = html_ent($titre_docs);
 			echo "<div id=\"titre\">".$titre_docs."</div><br />\n";
 
@@ -64,10 +64,10 @@ defined("access_const") or die( 'Restricted access' );
 		
 		goback_lien("?documents");
 		
-		$select_folder_apps_up = mysql_query("select acces_folder,apps_upload from `" . $tblprefix . "folders` where id_folder = $id_folder;");
-		if (mysql_num_rows($select_folder_apps_up) > 0) {
-			$acces_folder = mysql_result($select_folder_apps_up,0,0);
-			$apps_upload = mysql_result($select_folder_apps_up,0,1);
+		$select_folder_apps_up = $connect->query("select acces_folder,apps_upload from `" . $tblprefix . "folders` where id_folder = $id_folder;");
+		if (mysqli_num_rows($select_folder_apps_up) > 0) {
+			$acces_folder = mysqli_result($select_folder_apps_up,0,0);
+			$apps_upload = mysqli_result($select_folder_apps_up,0,1);
 			
 			if ((isset($_SESSION['log']) && $_SESSION['log'] == 2 && $apps_upload == "1") || (isset($_SESSION['log']) && $_SESSION['log'] == 1)){
 				if (isset($_SESSION['log']) && $_SESSION['log'] == 1)
@@ -85,9 +85,9 @@ defined("access_const") or die( 'Restricted access' );
 				else if (!empty($_SESSION['log']) && $_SESSION['log'] == 1)
 						$acces_valide = 1;
 				else if (!empty($_SESSION['log']) && $_SESSION['log'] == 2){
-					$select_classe = mysql_query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
-				  if (mysql_num_rows($select_classe) == 1){
-						$id_classe = mysql_result($select_classe,0);
+					$select_classe = $connect->query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
+				  if (mysqli_num_rows($select_classe) == 1){
+						$id_classe = mysqli_result($select_classe,0);
 						$tab_classes = explode("-",trim($acces,"-"));
 						if (in_array($id_classe,$tab_classes))
 							$acces_valide = 1;
@@ -107,8 +107,8 @@ defined("access_const") or die( 'Restricted access' );
   				$ext = substr($filename, strrpos($filename, '.') + 1);
   				$ext = strtolower($ext);
   				if (in_array($ext, $extensions) && $_FILES['uploaded_file']['type'] != "application/octet-stream"){
-  					$select_this_file = mysql_query("select id_file from `" . $tblprefix . "files` where nom_file = '$filename' and taille_file = $file_size and id_user = $id_user_session and type_user = '$type_usr_file';");
-						if (mysql_num_rows($select_this_file) == 0) {
+  					$select_this_file = $connect->query("select id_file from `" . $tblprefix . "files` where nom_file = '$filename' and taille_file = $file_size and id_user = $id_user_session and type_user = '$type_usr_file';");
+						if (mysqli_num_rows($select_this_file) == 0) {
   						$new_file = fonc_rand(24).".".$ext;
   						while (file_exists("docs/".$new_file))
   							$new_file = fonc_rand(24).".".$ext;
@@ -121,7 +121,7 @@ defined("access_const") or die( 'Restricted access' );
 
 								$time_upload = time();
  								$insertfile = "INSERT INTO `" . $tblprefix . "files` VALUES (NULL,$id_user_session,'$filename',$file_size,'$new_file',$time_upload,'$is_image','$type_usr_file',$id_folder);";
-	        			mysql_query($insertfile,$connect);
+	        			$connect->query($insertfile,$connect);
 	        			redirection(fichier_uploade,"?documents",3,"tips",0);
         			} else echo "<font color=\"red\"><b>".erreur_upload."</b></font><br />";
 						} else echo "<font color=\"red\"><b>".erreur_upload_key."</b></font><br />";
@@ -178,12 +178,12 @@ defined("access_const") or die( 'Restricted access' );
 				$id_file = intval($_GET['id_file']);
 			else $id_file = 0;
 
-			$select_file = mysql_query("select id_user,lien_file,type_user from `" . $tblprefix . "files` where id_file = $id_file;");
-			if (mysql_num_rows($select_file) == 1){
+			$select_file = $connect->query("select id_user,lien_file,type_user from `" . $tblprefix . "files` where id_file = $id_file;");
+			if (mysqli_num_rows($select_file) == 1){
 				
-				$user_file = html_ent(mysql_result($select_file,0,0));
-		  	$lien_fichier = html_ent(mysql_result($select_file,0,1));
-		  	$type_user = html_ent(mysql_result($select_file,0,2));
+				$user_file = html_ent(mysqli_result($select_file,0,0));
+		  	$lien_fichier = html_ent(mysqli_result($select_file,0,1));
+		  	$type_user = html_ent(mysqli_result($select_file,0,2));
 
 				if ($type_user == "u")
 					$type_usr_file = 1;
@@ -192,7 +192,7 @@ defined("access_const") or die( 'Restricted access' );
 				else $type_usr_file = 0;
 				
 				if ((isset($grade_user_session) && ($grade_user_session == "3" || $grade_user_session == "2")) || ($type_usr_file == $_SESSION['log'] && $user_file == $id_user_session) || ($_SESSION['log'] == 1 && $type_usr_file == 2)){
-		  		$delete_file = mysql_query("delete from `" . $tblprefix . "files` where id_file = $id_file;");
+		  		$delete_file = $connect->query("delete from `" . $tblprefix . "files` where id_file = $id_file;");
 		  		@unlink("docs/".$lien_fichier);
 		  	}
     	}
@@ -208,11 +208,11 @@ defined("access_const") or die( 'Restricted access' );
 				$id_file_edit = escape_string($_POST['id_file_edit']);
 				$name_file_edit = escape_string($_POST['name_file_edit']);
 				
-				$select_file_edit = mysql_query("select id_user,nom_file,type_user from `" . $tblprefix . "files` where id_file = $id_file_edit;");
-				if (mysql_num_rows($select_file_edit) > 0) {
-					$user_file = html_ent(mysql_result($select_file_edit,0,0));
-		  		$file_edit = html_ent(mysql_result($select_file_edit,0,1));
-		  		$type_user = html_ent(mysql_result($select_file_edit,0,2));
+				$select_file_edit = $connect->query("select id_user,nom_file,type_user from `" . $tblprefix . "files` where id_file = $id_file_edit;");
+				if (mysqli_num_rows($select_file_edit) > 0) {
+					$user_file = html_ent(mysqli_result($select_file_edit,0,0));
+		  		$file_edit = html_ent(mysqli_result($select_file_edit,0,1));
+		  		$type_user = html_ent(mysqli_result($select_file_edit,0,2));
 
 					if ($type_user == "u")
 						$type_usr_file = 1;
@@ -225,7 +225,7 @@ defined("access_const") or die( 'Restricted access' );
 						$file_edit2 = substr($file_edit, 0, strrpos($file_edit, '.'));
 						if ($file_edit2 != $name_file_edit){
 							$name_file_edit = $name_file_edit.".".$ext_file_edit;
-							$update_component = mysql_query("update `" . $tblprefix . "files` set nom_file = '$name_file_edit' where id_file = $id_file_edit;");
+							$update_component = $connect->query("update `" . $tblprefix . "files` set nom_file = '$name_file_edit' where id_file = $id_file_edit;");
 						}
 					}
 				}
@@ -237,15 +237,15 @@ defined("access_const") or die( 'Restricted access' );
   // ****************** liste **************************
   default : {
   
-  	$select_published_folders = mysql_query("select * from `" . $tblprefix . "folders` where publie_folder = '1' order by nom_folder ;");
-		if (mysql_num_rows($select_published_folders)> 0) {
+  	$select_published_folders = $connect->query("select * from `" . $tblprefix . "folders` where publie_folder = '1' order by nom_folder ;");
+		if (mysqli_num_rows($select_published_folders)> 0) {
 			echo "<script type=\"text/javascript\">function DisplayHideDiv(id_div){var lay=document.getElementById(id_div);if(lay.style.display=='none'){lay.style.display='block';}else{lay.style.display='none';}}</script>";
-			while($published_folder = mysql_fetch_row($select_published_folders)){
+			while($published_folder = mysqli_fetch_row($select_published_folders)){
 				$id_folder = $published_folder[0];
 
-    		$select_auteur = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $published_folder[1];");
-    		if (mysql_num_rows($select_auteur) == 1)
-    			$auteur = html_ent(mysql_result($select_auteur,0));
+    		$select_auteur = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $published_folder[1];");
+    		if (mysqli_num_rows($select_auteur) == 1)
+    			$auteur = html_ent(mysqli_result($select_auteur,0));
     		else $auteur = inconnu;
 
 				$nom_folder = html_ent(trim($published_folder[2]));
@@ -261,9 +261,9 @@ defined("access_const") or die( 'Restricted access' );
 				else if (!empty($_SESSION['log']) && $_SESSION['log'] == 1)
 						$acces_valide = 1;
 				else if (!empty($_SESSION['log']) && $_SESSION['log'] == 2){
-					$select_classe = mysql_query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
-				  if (mysql_num_rows($select_classe) == 1){
-						$id_classe = mysql_result($select_classe,0);
+					$select_classe = $connect->query("select id_classe from `" . $tblprefix . "apprenants` where id_apprenant = $id_user_session;");
+				  if (mysqli_num_rows($select_classe) == 1){
+						$id_classe = mysqli_result($select_classe,0);
 						$tab_classes = explode("-",trim($acces,"-"));
 						if (in_array($id_classe,$tab_classes))
 							$acces_valide = 1;
@@ -281,7 +281,7 @@ defined("access_const") or die( 'Restricted access' );
 				if (!empty($_SESSION['log']) && ($_SESSION['log'] == 1 || ($_SESSION['log'] == 2 && $published_folder[6] == "1")))
    				echo "<table border=\"0\" align=\"center\"><tr><td><a href=\"?documents&do=upload_file&id_folder=".$id_folder."\"><img border=\"0\" src=\"images/others/add.png\" /></a></td><td><a href=\"?documents&do=upload_file&id_folder=".$id_folder."\"><b>".upload_file."</b></a></td></tr></table>";
 
-    $select_files = mysql_query("select * from `" . $tblprefix . "files` where id_folder = $id_folder order by date_file desc;");
+    $select_files = $connect->query("select * from `" . $tblprefix . "files` where id_folder = $id_folder order by date_file desc;");
     if (mysql_num_rows($select_files)> 0) {
     	echo "<br /><table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 			echo "\n<td class=\"affichage_table\"><b>".fichier."</b></td>";
@@ -319,17 +319,17 @@ defined("access_const") or die( 'Restricted access' );
 				echo "\n<td class=\"affichage_table\"><b>".$nom_fichier."</b></td>";
 				
 				if ($type_usr_file == 2) {
-					$select_user = mysql_query("select identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id_owner;");
+					$select_user = $connect->query("select identifiant_apprenant from `" . $tblprefix . "apprenants` where id_apprenant = $id_owner;");
 					$lien_profile = "s_profiles";
 					$is_learner = " (".learner.")";
 				}
 				else {
-    			$select_user = mysql_query("select identifiant_user from `" . $tblprefix . "users` where id_user = $id_owner;");
+    			$select_user = $connect->query("select identifiant_user from `" . $tblprefix . "users` where id_user = $id_owner;");
     			$lien_profile = "profiles";
     			$is_learner = "";
     		}
-    		if (mysql_num_rows($select_user) == 1)
-    			$user = html_ent(mysql_result($select_user,0));
+    		if (mysqli_num_rows($select_user) == 1)
+    			$user = html_ent(mysqli_result($select_user,0));
     		else $user = inconnu;
     		$user = wordwrap($user,15,"<br />",true);
     		if ($afficher_profil == 1)

@@ -135,17 +135,17 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
         	if ($classe_apprenant != "")
 						echo "(".$classe_apprenant.")<br />";
 				}
-        echo "<input type=\"button\" class=\"searchbtn\" value=\""."linkdeconnection"."\" onclick=\"window.location.href='?task=logout'\" />";
+        echo "<input type=\"button\" class=\"searchbtn\" value=\""."logout"."\" onclick=\"window.location.href='?task=logout'\" />";
       }
 		}
 		else {
 			echo "\n<form method=\"POST\" action=\"login.php\">";
 			echo "\n<table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" align=\"center\" width=\"100%\">\n";
-			echo "\n<tr><td align=\"left\" width=\"100%\"><b>"."identifiant"."</b></td></tr>";
+			echo "\n<tr><td align=\"left\" width=\"100%\"><b>"."User"."</b></td></tr>";
 			echo "\n<tr><td align=\"center\" width=\"100%\"><input name=\"login\" class=\"input\" type=\"text\" maxlength=\"30\" value=\"\"></td></tr>";
 			echo "\n<tr><td align=\"left\" width=\"100%\"><b>"."password"."</b></td></tr>";
 			echo "\n<tr><td align=\"center\" width=\"100%\"><input name=\"password\" class=\"input\" type=\"password\" maxlength=\"30\" value=\"\"></td></tr>";
-			echo "\n<tr><td align=\"center\" width=\"100%\"><input type=\"submit\" class=\"searchbtn\" value=\""."btnconnection"."\"></td></tr>";
+			echo "\n<tr><td align=\"center\" width=\"100%\"><input type=\"submit\" class=\"searchbtn\" value=\""."login"."\"></td></tr>";
 			
 			$select_inscription = $connect->query("select inscription from `" . $tblprefix . "site_infos`;");
 			if (mysqli_num_rows($select_inscription) == 1) {
@@ -153,7 +153,7 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
 				if ($inscription == 1)
 					echo "\n<tr><td align=\"center\" width=\"100%\"><a href=\"?register\"><b>"."create_account"."</b></a></td></tr>";
 			}
-			echo "\n<tr><td align=\"center\" width=\"100%\"><a href=\"?reset_pass\"><b>"."pass_oublie"." ?</b></a></td></tr>";
+			echo "\n<tr><td align=\"center\" width=\"100%\"><a href=\"?reset_pass\"><b>"."forgot password"." ?</b></a></td></tr>";
 			
 			echo "</table></form>";
 		}

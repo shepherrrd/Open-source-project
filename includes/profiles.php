@@ -25,18 +25,18 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 defined("access_const") or die( 'Restricted access' );
-	
+	echo"<script>console.log('ohoh')</script>";
 	if (!empty($_GET['profiles']) && ctype_digit($_GET['profiles']))
 		$id_user = intval($_GET['profiles']);
 	else if (isset($id_user_session) && !empty($id_user_session) && isset($_SESSION['log']) && $_SESSION['log'] == 1)
 		$id_user = $id_user_session;
-	
-	if (isset($id_user) && !empty($id_user) && $afficher_profil == 1){
+	if (isset($id_user) && !empty($id_user)){
 		echo "<div id=\"titre\">".user_profile."</div>";
 		goback_button();
-		$select_user = mysql_query("select * from `" . $tblprefix . "users` where id_user = $id_user;");
-    if (mysql_num_rows($select_user) == 1){
-    		$user = mysql_fetch_row($select_user);
+		$select_user = $connect->query("select * from `" . $tblprefix . "users` where id_user = $id_user;");
+		
+    if (mysqli_num_rows($select_user) == 1){
+    		$user = mysqli_fetch_row($select_user);
 					
 					$nom_user = html_ent($user[1]);
 					$identifiant_user = html_ent($user[2]);
@@ -126,20 +126,20 @@ defined("access_const") or die( 'Restricted access' );
 					echo "<li><p><b>" .number_connections. " : ".$nbr_of_connexion."</b></p></li>";
 					echo "<li><p><b>" .number_visited_pages. " : ".$nbr_pages."</b></p></li>";
 					
-					$select_count_tutos = mysql_query("select count(id_tutoriel) from `" . $tblprefix . "tutoriels` where id_user = $user[0];");
-					$nbr_tutos = mysql_result($select_count_tutos,0);
+					$select_count_tutos = $connect->query("select count(id_tutoriel) from `" . $tblprefix . "tutoriels` where id_user = $user[0];");
+					$nbr_tutos = mysqli_result($select_count_tutos,0);
 					
-					$select_count_articles = mysql_query("select count(id_article) from `" . $tblprefix . "articles` where id_user = $user[0];");
-					$nbr_articles = mysql_result($select_count_articles,0);
+					$select_count_articles = $connect->query("select count(id_article) from `" . $tblprefix . "articles` where id_user = $user[0];");
+					$nbr_articles = mysqli_result($select_count_articles,0);
 					
 					echo "<li><p><b>" .number_courses. " : ".$nbr_tutos."</b></p></li>";
 					echo "<li><p><b>" .number_articles. " : ".$nbr_articles."</b></p></li>";
 
-					$select_count_comments = mysql_query("select count(id_post) from `" . $tblprefix . "commentaires` where type_user = 'u' and id_user = $user[0];");
-					$nbr_comments = mysql_result($select_count_comments,0);
+					$select_count_comments = $connect->query("select count(id_post) from `" . $tblprefix . "commentaires` where type_user = 'u' and id_user = $user[0];");
+					$nbr_comments = mysqli_result($select_count_comments,0);
 
-					$select_count_messages = mysql_query("select count(id_message) from `" . $tblprefix . "messages` where id_emetteur = $user[0];");
-					$nbr_messages = mysql_result($select_count_messages,0);
+					$select_count_messages = $connect->query("select count(id_message) from `" . $tblprefix . "messages` where id_emetteur = $user[0];");
+					$nbr_messages = mysqli_result($select_count_messages,0);
 
 					echo "<li><p><b>" .number_comments. " : ".$nbr_comments."</b></p></li>";
 					echo "<li><p><b>" .number_messages. " : ".$nbr_messages."</b></p></li>";

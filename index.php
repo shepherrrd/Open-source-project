@@ -178,7 +178,89 @@ along with Manhali.  If not, see <http://www.gnu.org/licenses/>.
 									</table>
 								</td>
 								<td bgcolor="#FFFFFF" valign="top" height="300"><br />
-									<?php include_once ("includes/body.php"); ?>
+									<?php 
+									if(!isset($_GET['article']) && !isset($_GET['profiles']) && !isset($_GET['search']) &&
+									 !isset($_GET['documents']) && !isset($_GET['questionnaire'])&& !isset($_GET['kolb']) &&
+									  !isset($_GET['felder']) && !isset($_GET['poll']) && !isset($_GET['register']) && 
+									  !isset($_GET['reset_pass']) && !isset($_GET['s_profiles']) && !isset($_GET['s_messages'])) include_once ("includes/body.php"); 
+										else if (isset($_GET['chapter']) && ctype_digit($_GET['chapter'])) {
+											include_once ("includes/chaps.php");
+										}
+										
+										//***************************************************
+										// *** traitement recherche ***
+										else if (isset($_GET['search'])) {
+											include_once ("includes/search_inc.php");
+										}
+										
+										//***************************************************
+										// *** traitement articles ***
+										else if (isset($_GET['article'])) {
+											echo "<script>console.log('article');</script>";
+											include_once ("includes/articles_inc.php");
+										}
+										
+										//***************************************************
+										// *** traitement documents ***
+										else if (isset($_GET['documents'])) {
+											include_once ("includes/documents_inc.php");
+										}
+										
+										//***************************************************
+										// *** traitement questionnaire ***
+										else if (isset($_GET['questionnaire'])) {
+											include_once ("includes/felder_ils.php");
+										}
+										
+										//***************************************************
+										// *** traitement kolb ***
+										else if (isset($_GET['kolb'])) {
+											include_once ("includes/kolb.php");
+										}
+										
+										//***************************************************
+										// *** traitement felder ***
+										else if (isset($_GET['felder'])) {
+											include_once ("includes/felder.php");
+										}
+										
+										//***************************************************
+										// *** traitement sondage resultats ***
+										else if (isset($_GET['poll'])) {
+											include_once ("includes/poll_inc.php");
+										}
+										
+										//***************************************************
+										// *** traitement inscription ***
+										else if (isset($_GET['register'])) {
+											include_once ("includes/register_inc.php");
+										}
+										
+										//***************************************************
+										// *** traitement reset pass ***
+										else if (isset($_GET['reset_pass'])) {
+											include_once ("includes/reset_pass.php");
+										}
+										
+										//***************************************************
+										// *** traitement profiles ***
+										else if (isset($_GET['profiles'])) {
+											include_once ("includes/profiles.php");
+										}
+										
+										//***************************************************
+										// *** traitement s_profiles ***
+										else if (isset($_GET['s_profiles'])) {
+											include_once ("includes/s_profiles.php");
+										}
+										
+										//***************************************************
+										// *** traitement s_messages ***
+										else if (isset($_GET['s_messages'])) {
+											include_once ("includes/s_messages.php");
+										}
+									
+									?>
 								</td>
 								<td width="24" height="100%" background="images/tpl_img<?php echo $tpl; ?>/tpl_09.gif" style="background-repeat: repeat-y;"></td>
 							</tr>
