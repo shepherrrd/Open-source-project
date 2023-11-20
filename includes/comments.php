@@ -119,7 +119,7 @@ defined("access_const") or die( 'Restricted access' );
 				$select_comments = $connect->query("select * from `" . $tblprefix . "commentaires` where type_objet = '$type_objet' and id_objet = $id_objet order by date_creation ".$order_com.";");
 				$nbr_trouve = mysqli_num_rows($select_comments);
 				if ($nbr_trouve > 0){
-					$page_max = ceil($nbr_trouve / $nbr_resultats);
+					$page_max =  $nbr_resultats <= 0 ? 1 : ceil($nbr_trouve / $nbr_resultats);
 					if ($page <= $page_max && $page > 1 && $page_max > 1)
 						$limit = ($page - 1) * $nbr_resultats;
 					else {
@@ -161,8 +161,8 @@ defined("access_const") or die( 'Restricted access' );
 						echo "</form><hr />";
 					}
 						
-				  $select_comments_limit = $connect->query("select * from `" . $tblprefix . "commentaires` where type_objet = '$type_objet' and id_objet = $id_objet order by date_creation ".$order_com." limit $limit, $nbr_resultats;");
-					while($comment = mysql_fetch_row($select_comments_limit)){
+				  $select_comments_limit = $connect->query("select * from `" . $tblprefix . "commentaires` where type_objet = '$type_objet' and id_objet = $id_objet order by date_creation ".$order_com." limit $limit, 100");
+					while($comment = mysqli_fetch_row($select_comments_limit)){
 
 						$id_comment = $comment[0];
 						$contenu_comment = bbcode_br(html_ent(trim($comment[5])));

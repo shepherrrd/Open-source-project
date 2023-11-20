@@ -663,7 +663,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 	$select_msg = $connect->query("select * from `" . $tblprefix . "messages` where id_destinataires_app like '%-$id_user_session-%' order by date_message desc;"); 
 	$nbr_trouve = mysqli_num_rows($select_msg);
   if ($nbr_trouve > 0){
-		$page_max = ceil($nbr_trouve / $nbr_resultats);
+		$page_max = $nbr_resultats ==0 ? 1 : ceil($nbr_trouve / $nbr_resultats);
 		if ($page <= $page_max && $page > 1 && $page_max > 1)
 			$limit = ($page - 1) * $nbr_resultats;
 		else {
@@ -671,7 +671,7 @@ if (isset($_SESSION['log']) && $_SESSION['log'] == 2){
 			$page = 1;
 		}
 
-			$select_msg_limit = $connect->query("select * from `" . $tblprefix . "messages` where id_destinataires_app like '%-$id_user_session-%' order by date_message desc limit $limit, $nbr_resultats;"); 
+			$select_msg_limit = $connect->query("select * from `" . $tblprefix . "messages` where id_destinataires_app like '%-$id_user_session-%' order by date_message desc limit $limit, 100;"); 
 
 				echo "<table width=\"100%\" align=\"center\" style=\"border: 1px solid #000000;\"><tr bgcolor=\"#f1d3bd\">\n";
 				echo "\n<td class=\"affichage_table\"><b>".titre_msg."</b></td>";
