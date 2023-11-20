@@ -113,7 +113,10 @@ h1 {
 }
 
 @media screen and (min-width: 1440px) {
-    #hero-text-div h1 {
-        font-size: 20%;
+    nav {
+        max-width: 1300px;
+    }
+    .container {
+        max-width: 1300px;
     }
 }
