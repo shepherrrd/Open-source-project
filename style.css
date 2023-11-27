@@ -19,7 +19,8 @@ nav {
     margin-left: auto;
     margin-right: auto;
     justify-content: space-between;
-    padding: 0.5rem 0;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid indianred;
 }
 
 a {
