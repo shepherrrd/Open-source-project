@@ -113,8 +113,8 @@ if (mysqli_num_rows($select_statut_identification) == 1) {
 								if(stristr($_SERVER['HTTP_REFERER'],$_SERVER['SERVER_NAME']))
 									$redir_link = $_SERVER['HTTP_REFERER'];
 								else $redir_link = "index.php";
-								redirection("merci_connexion",$redir_link,3,"tips",0);
-						} else goback("mdp_invalide",2,"error",0);
+								redirection("Successfull",$redir_link,3,"tips",0);
+						} else goback("Invalid Credentials",2,"error",0);
 			} else goback("compte_desac",2,"error",0);
 		}
 		else {

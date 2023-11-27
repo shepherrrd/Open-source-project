@@ -95,7 +95,7 @@ if (isset($_POST['login']) && !empty($_POST['login']) && isset($_POST['password'
 									$insert_acces = $connect->query("INSERT INTO `" . $tblprefix . "infos_acces` VALUES (NULL,'u',$id,'$ip_user',".time().");");
 								}
 								
-								redirection(merci_connexion,"admin_home.php",3,"tips",1);
+								redirection("logged in","admin_home.php",3,"tips",1);
 						} else goback(mdp_invalide,2,"error",1);
 			} else goback(compte_desac,2,"error",1);
 		} else goback(login_invalide,2,"error",1);
